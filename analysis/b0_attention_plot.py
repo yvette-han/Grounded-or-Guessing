@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
 from common.numbers import extract_numbers, find_match, same_value  # noqa: E402
-from common.prompt import encode, tokens_in_span  # noqa: E402
+from common.prompt import encode, encode_answer, tokens_in_span  # noqa: E402
 
 # Colors (light chart surface, one blue for the attention line, orange for marks).
 SURFACE, INK, INK_2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
@@ -222,10 +222,11 @@ def main():
           f"  {ex['gold_program']}\n\nanswer:\n{answer}\n")
 
     # 2. Teacher forcing over prompt + answer, tokenized as one string.
-    full = tokenizer(enc["text"] + answer, add_special_tokens=False, return_offsets_mapping=True)
-    ids, offsets = full["input_ids"], full["offset_mapping"]
-    if ids[:n_prompt] != enc["input_ids"]:
-        sys.exit("the prompt's tokens changed when the answer was appended; pick another --id")
+    try:
+        full = encode_answer(tokenizer, enc["text"], answer, enc["input_ids"])
+    except ValueError as err:
+        sys.exit(f"{err}; pick another --id")
+    ids, offsets = full["input_ids"], full["offsets"]
 
     # 3. Choose a number and the attention row to plot.
     tol = cfg["label_tolerance"]

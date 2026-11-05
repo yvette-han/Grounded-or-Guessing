@@ -74,6 +74,24 @@ git clone <repo-url> && cd grounded-or-guessing
 pip install torch transformers accelerate datasets numpy scipy scikit-learn pandas matplotlib pyyaml tqdm
 ```
 
+**Running on Colab:** To run it, open Colab with a GPU runtime and run these in one session. Use `!` before shell lines and `%cd` to change folders.
+
+```bash
+git clone -b claude/new-session-yg0a2h https://github.com/yvette-han/Grounded-or-Guessing
+```
+
+```bash
+cd Grounded-or-Guessing && pip install -r requirements.txt && python -m pytest -q
+```
+
+```bash
+python data/build_subset.py
+```
+
+```bash
+python analysis/b0_attention_plot.py
+```
+
 **Model:** `Qwen/Qwen2.5-1.5B-Instruct` (fallback: `meta-llama/Llama-3.2-3B-Instruct`). Read the layer and head counts from `model.config.num_hidden_layers` and `model.config.num_attention_heads`; don't hard-code them.
 
 **Data:** FinQA (Chen et al., 2021), from the official GitHub repo (`dataset/train.json`, `dev.json`, `test.json`). Each example has the text before the table (`pre_text`), the `table`, the text after it (`post_text`), and a `qa` block with the question, the gold `program` (calculation steps) and the executed answer. Check the exact field names when you first load it.
@@ -181,7 +199,7 @@ Both stages read and write these exact formats. If one changes, update this tabl
 | File | Writer | One row/record = | Fields |
 |---|---|---|---|
 | `data/finqa_subset.jsonl` | A | question | `id, report_key, split, question, context_text, gold_answer, gold_program` |
-| `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token span of the report, half-open: `ids[ctx_start:ctx_end]`) |
+| `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token span of the report, half-open: `ids[ctx_start:ctx_end]`), `n_new_tokens, hit_max_tokens` |
 | `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, tok_start, tok_end, label` (token indices **within the answer**) |
 | `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id` |
 | `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[L×H], hf_gen[L×H], label, id` |
@@ -206,7 +224,8 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 **A3. Generate** → `python gen/generate.py --setting greedy` (repeat for each setting)
 - Fixed seed, `max_new_tokens` from config. Save `ctx_start`/`ctx_end`.
-- 🔁 **Run greedy on 50 questions first and send them to B by Nov 12.**
+- Only the parameters in the setting apply; everything else is off (no top-k, top-p or repetition penalty), so the model's own default sampling settings don't leak in.
+- 🔁 **Run greedy on 50 questions first and send them to B by Nov 12** (`--limit 50`; a later run without `--limit` continues with the rest).
 - ✅ Done when every setting has 1,000 answers.
 
 **A4. Label** → `python labels/label.py --setting greedy`
@@ -266,10 +285,10 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 | Dates | Person A (Stage 1) | Person B (Stage 2) | Checkpoint |
 |---|---|---|---|
-| Nov 2–8 | A1, A2 | B0, B1 on hand-made prompts | Meeting with Niranjan (bring B0 plot + A1 stats) |
+| Nov 2–8 | A1, A2 | B0, B1 on hand-made prompts | Meeting with the professor (bring B0 plot + A1 stats) |
 | Nov 9–15 | A3, A4 · **50 greedy examples to B by Nov 12** | B1, B2 on the first batch | **A5 hand-check Nov 12–14** |
 | Nov 16–22 | A6, A7 | B2 on all settings, B3 | Stage 1 finished = safe floor |
-| Nov 23–29 | Stage 1 error analysis | B4 (Thanksgiving week: lighter) | Main results table frozen |
+| Nov 23–29 | Stage 1 error analysis | B4 (Thanksgiving week) | Main results table frozen |
 | Nov 30–Dec 6 | R1 prep, report sections | B5, R1, report sections | Poster draft by Dec 6 |
 | Dec 7–8 | Rehearse | Rehearse | Each explains the other's half |
 | **Dec 9 / Dec 11** | | | **Poster / report** |

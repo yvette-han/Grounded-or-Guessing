@@ -1,6 +1,10 @@
 import pytest
 
-from common.prompt import build_context, build_prompt, encode, table_to_text, tokens_in_span
+import re
+
+from common.prompt import (
+    build_context, build_prompt, encode, encode_answer, table_to_text, tokens_in_span,
+)
 
 TABLE = [["revenue", "2009", "4,215"], ["cost of sales", "2009", "( 12 )"]]
 PRE = ["the company 's revenue was $ 4215 million in 2009 .", ".", "  "]
@@ -105,3 +109,36 @@ def test_encode_with_real_model_tokenizer():
         tokenize=True, add_generation_prompt=True, return_dict=False,
     )
     assert ids == list(direct)
+
+
+class NewlineMergingTokenizer:
+    """One token per character, except a run of newlines is one token (like Qwen's)."""
+
+    def __call__(self, text, add_special_tokens=False, return_offsets_mapping=False):
+        spans = [m.span() for m in re.finditer(r"\n+|.", text, re.S)]
+        out = {"input_ids": [text[s:e] for s, e in spans]}
+        if return_offsets_mapping:
+            out["offset_mapping"] = spans
+        return out
+
+
+def test_encode_answer(toy_tokenizer):
+    context = build_context(PRE, TABLE, POST)
+    enc = encode(toy_tokenizer, QUESTION, context)
+    answer = "revenue was 4,215 in 2009 ."
+    full = encode_answer(toy_tokenizer, enc["text"], answer, enc["input_ids"])
+    n = full["answer_start"]
+    assert n == len(enc["input_ids"])
+    assert full["input_ids"][:n] == enc["input_ids"]
+    assert full["answer_char_start"] == len(enc["text"])
+    assert toy_tokenizer.decode(full["input_ids"][n:]) == answer
+    assert all(s >= len(enc["text"]) for s, _ in full["offsets"][n:])
+    # Same result when the prompt ids are not passed in.
+    assert encode_answer(toy_tokenizer, enc["text"], answer) == full
+
+
+def test_encode_answer_detects_changed_prompt_tokens():
+    tok = NewlineMergingTokenizer()
+    assert encode_answer(tok, "abc\n", "xyz")["answer_start"] == 4
+    with pytest.raises(ValueError):
+        encode_answer(tok, "abc\n", "\nxyz")  # "\n" + "\n" becomes one token

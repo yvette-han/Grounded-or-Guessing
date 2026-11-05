@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off.
 
-_Last updated: Nov 5, after the A2 and B0 code._
+_Last updated: Nov 5, after the A3 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -22,6 +22,10 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **A2 → A4 (not decided yet):** each number has two spans, the whole mention (`$4.2 billion`) and just the digits (`4.2`); A4 must pick which one becomes `tok_start`/`tok_end`
 - [ ] **B0 → B1 (not decided yet):** which attention row stands for a number token: the row of the number's own first digit (B0 default, README wording) or the row of the token before it, which predicts that digit (`--row predicting`)
 - [ ] **B0:** the plot shows the 4 heads with the most attention on the report from that token (`--heads` picks others); the example is the first val question and the first answer number found in the report unless `--id` / `--number` are given
+- [ ] **A3:** decoding parameters a setting doesn't name are switched off (top-k 0, top-p 1, temperature 1, repetition penalty 1) instead of taking Qwen's defaults (temperature 0.7, top-p 0.8, top-k 20, repetition penalty 1.05)
+- [ ] **A3:** batches of 8 with left padding, one seed per batch from (seed, setting, first id): sampled answers depend on the batch size, and fp16 batching can change a greedy answer slightly compared with batch size 1
+- [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
+- [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens`, `hit_max_tokens` (README §7 updated); `answer_text` is the decoded tokens up to the stop token, not stripped
 
 ## 2. AI-written code we must be able to explain
 
@@ -32,6 +36,8 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `data/build_subset.py` (A): explain it; sanity-check the counts it prints on the Colab run
 - [ ] `common/numbers.py` (both): explain it; check every expected value in `tests/test_numbers.py` by hand. README A2 asks for hand-made strings, so also add a few of your own, especially styles you expect from the model's answers
 - [ ] `analysis/b0_attention_plot.py` (B): explain it; check the hand-worked lookback values in `tests/test_b0.py`
+- [ ] `gen/generate.py` (A): explain it; check `tests/test_generate.py`, especially the decoding arguments each setting turns into
+- [ ] `encode_answer` in `common/prompt.py` (both): prompt + answer as one string for teacher forcing (A7, B1); check its tests in `tests/test_prompt.py`
 
 ## 3. Analysis and writing, by step
 
@@ -42,7 +48,8 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 | Step | What's ours | Status |
 |---|---|---|
 | A1 | Run `data/build_subset.py` with the Qwen tokenizer and fill the stats line in `LOG.md` (a run, not analysis) | 🟢 ready |
-| B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to Niranjan: what the heads attend to | 🟢 ready to run |
+| A3 | Run `gen/generate.py` for every setting on Colab, `--setting greedy --limit 50` first for B (a run, not analysis) | 🟢 ready to run |
+| B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to the professor: what the heads attend to | 🟢 ready to run |
 | A5 | Hand-label the same 50 numbers each without seeing the auto labels; compute agreement; if under ~90%, decide how to change §6.3 | ⏳ needs A3, A4 |
 | A6 | RQ0: what decoding does to accuracy and fabrication rate, and why | ⏳ needs A3, A4 |
 | A6 | Stage 1 error analysis (Nov 23–29) | ⏳ needs A6 results |

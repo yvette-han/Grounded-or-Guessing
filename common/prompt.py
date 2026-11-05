@@ -109,3 +109,33 @@ def encode(tokenizer, question, context, chat_template=True):
         "ctx_end": in_context[-1] + 1,
         "ctx_chars": (char_start, char_end),
     }
+
+
+def encode_answer(tokenizer, text, answer, prompt_ids=None):
+    """Tokenize model text + answer as one string, for teacher forcing (A7, B1).
+
+    text        the model input string (`encode(...)["text"]`, or the
+                `prompt` field of gen/answers_*.jsonl)
+    prompt_ids  its token ids, if already known
+
+    Returns a dict with
+      input_ids, offsets  tokens of text + answer and their character spans
+      answer_start        index of the first answer token (= number of prompt tokens)
+      answer_char_start   index of the answer's first character (= len(text))
+
+    Raises ValueError if appending the answer changes the prompt's tokens
+    (for example an answer that starts with a newline merging with the
+    prompt's last newline); then the answer tokens cannot be lined up.
+    """
+    if prompt_ids is None:
+        prompt_ids = tokenizer(text, add_special_tokens=False)["input_ids"]
+    full = tokenizer(text + answer, add_special_tokens=False, return_offsets_mapping=True)
+    n = len(prompt_ids)
+    if list(full["input_ids"][:n]) != list(prompt_ids):
+        raise ValueError("the prompt's tokens change when the answer is appended")
+    return {
+        "input_ids": full["input_ids"],
+        "offsets": full["offset_mapping"],
+        "answer_start": n,
+        "answer_char_start": len(text),
+    }
