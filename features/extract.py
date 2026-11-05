@@ -1,4 +1,4 @@
-"""B1: attention features for every labeled number (README 8, steps B1-B2).
+"""B1-B2: attention features for every labeled number (README 8, steps B1 and B2).
 
 Run on a GPU (Colab) from the repo root, after A4:
     python features/extract.py --limit 20       # B1 check: first 20 answers of each setting
@@ -11,11 +11,14 @@ the attention rows of the number tokens are kept (all layers and heads), and
 the rest is dropped. Per number, averaged over its digit tokens
 (tok_start..tok_end from A4), per layer and head:
   lookback  attention on the report / (on the report + on earlier answer tokens)
-            (definitions in features/attention.py)
-High-frequency energy (B2) will be added to the same pass.
+  hf_ctx    high-frequency energy of the attention over the report, per cutoff
+  hf_gen    the same over the earlier answer tokens
+(definitions in features/attention.py; cutoffs from hf_cutoffs in config.yaml)
 
-Output: features/{setting}.npz with arrays
-    lookback [numbers, layers, heads], label, id, row
+Output: features/{setting}.npz (compressed) with arrays
+    lookback [numbers, layers, heads]                  float32
+    hf_ctx, hf_gen [numbers, cutoffs, layers, heads]   float16, to keep the file small
+    hf_cutoffs [cutoffs], label, id, row
 and the scalars row_mode, n_layers, n_heads. `row` is the line in
 labels/numbers_{setting}.jsonl, the same join key as baseline/confidence_{setting}.npz.
 """
@@ -32,7 +35,7 @@ sys.path.insert(0, str(ROOT))  # so `common` and `features` import when run as a
 
 from common.io import group_records, read_jsonl  # noqa: E402
 from common.prompt import encode_answer  # noqa: E402
-from features.attention import ROW_MODES, attention_row, number_lookback  # noqa: E402
+from features.attention import ROW_MODES, attention_row, number_hf, number_lookback  # noqa: E402
 
 
 # Pure functions (tested in tests/test_features.py) -------------------------
@@ -50,16 +53,24 @@ def rows_needed(numbers_positions, mode):
     return rows, [[where[attention_row(t, mode)] for t in pos] for pos in numbers_positions]
 
 
-def answer_features(rows_att, index_per_number, positions_per_number, ctx, answer_start):
+def answer_features(rows_att, index_per_number, positions_per_number, ctx, answer_start, cutoffs):
     """rows_att [layers, heads, n_rows, seq] -> one dict of features per number."""
-    return [{"lookback": number_lookback(rows_att[:, :, idx], pos, ctx, answer_start)}
-            for idx, pos in zip(index_per_number, positions_per_number)]
+    feats = []
+    for idx, pos in zip(index_per_number, positions_per_number):
+        rows = rows_att[:, :, idx]
+        hf_ctx, hf_gen = number_hf(rows, pos, ctx, answer_start, cutoffs)
+        feats.append({"lookback": number_lookback(rows, pos, ctx, answer_start),
+                      "hf_ctx": hf_ctx, "hf_gen": hf_gen})
+    return feats
 
 
-def save_npz(path, rows, row_mode, n_layers, n_heads):
-    np.savez(
+def save_npz(path, rows, row_mode, n_layers, n_heads, cutoffs):
+    np.savez_compressed(
         path,
         lookback=np.stack([r["lookback"] for r in rows]).astype(np.float32),
+        hf_ctx=np.stack([r["hf_ctx"] for r in rows]).astype(np.float16),
+        hf_gen=np.stack([r["hf_gen"] for r in rows]).astype(np.float16),
+        hf_cutoffs=np.array(cutoffs, dtype=np.float32),
         label=np.array([r["label"] for r in rows], dtype=str),
         id=np.array([r["id"] for r in rows], dtype=str),
         row=np.array([r["row"] for r in rows], dtype=np.int64),
@@ -71,7 +82,7 @@ def save_npz(path, rows, row_mode, n_layers, n_heads):
 
 # Model run -----------------------------------------------------------------
 
-def run_setting(setting, model, tokenizer, args, device):
+def run_setting(setting, model, tokenizer, args, device, cutoffs):
     import torch
     from tqdm import tqdm
 
@@ -107,7 +118,8 @@ def run_setting(setting, model, tokenizer, args, device):
         row_sum_min, row_sum_max = min(row_sum_min, sums.min()), max(row_sum_max, sums.max())
 
         ctx = slice(a["ctx_start"], a["ctx_end"])
-        for (row, r), feats in zip(recs, answer_features(rows_att, index, positions, ctx, answer_start)):
+        feats_per_number = answer_features(rows_att, index, positions, ctx, answer_start, cutoffs)
+        for (row, r), feats in zip(recs, feats_per_number):
             out_rows.append({"id": qid, "row": row, "label": r["label"], **feats})
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
@@ -116,7 +128,7 @@ def run_setting(setting, model, tokenizer, args, device):
     if not out_rows:
         print(f"{setting}: no numbers to save")
         return
-    save_npz(path, out_rows, args.row, n_layers, n_heads)
+    save_npz(path, out_rows, args.row, n_layers, n_heads, cutoffs)
 
     lb = np.stack([r["lookback"] for r in out_rows])
     nan_numbers = int(np.isnan(lb).all(axis=(1, 2)).sum())
@@ -124,6 +136,10 @@ def run_setting(setting, model, tokenizer, args, device):
     print(f"  attention row sums: {row_sum_min:.3f} to {row_sum_max:.3f} (should be ~1)")
     print(f"  lookback: {np.nanmin(lb):.3f} to {np.nanmax(lb):.3f} (should be within 0-1); "
           f"numbers without a lookback (no answer token before them): {nan_numbers}")
+    for name in ("hf_ctx", "hf_gen"):
+        v = np.stack([r[name] for r in out_rows])
+        print(f"  {name} (cutoffs {cutoffs}): {np.nanmin(v):.3f} to {np.nanmax(v):.3f}, "
+              f"NaN values: {int(np.isnan(v).sum())}")
     if skipped:
         print(f"  skipped {len(skipped)} answers, e.g. {skipped[:3]}")
 
@@ -161,7 +177,7 @@ def main():
     print(f"{cfg['model']}: {model.config.num_hidden_layers} layers, "
           f"{model.config.num_attention_heads} heads, on {device}; row mode {args.row}")
     for s in settings:
-        run_setting(s, model, tokenizer, args, device)
+        run_setting(s, model, tokenizer, args, device, cfg["hf_cutoffs"])
 
 
 if __name__ == "__main__":

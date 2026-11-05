@@ -205,7 +205,7 @@ Both stages read and write these exact formats. If one changes, update this tabl
 | `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token span of the report, half-open: `ids[ctx_start:ctx_end]`), `n_new_tokens, hit_max_tokens` |
 | `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, char_start, char_end, tok_start, tok_end, label` (token indices **within the answer**, half-open, covering the digits; `char_*` = the whole mention in `answer_text`) |
 | `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id, row` (`row` = line index in `labels/numbers_{setting}.jsonl`, the join key) |
-| `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[L×H], hf_gen[L×H], label, id, row` (same `row` as the confidence file) |
+| `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[C×L×H], hf_gen[C×L×H], hf_cutoffs, label, id, row` (C = one per `hf_cutoffs` value, stored as float16; same `row` as the confidence file). Not in git: kept in our shared Drive folder |
 
 Token indices come from the **same tokenizer and the same prompt string**. Always tokenize with `common/prompt.py`.
 
@@ -265,6 +265,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 **B2. Features** (per head, per number token, averaged over the number's tokens)
 - **Lookback ratio** = mean attention on context tokens ÷ (mean on context + mean on previously generated tokens).
 - **High-frequency energy:** take the attention over context positions, divide by its sum (so report length and total mass don't matter), apply `numpy.fft.rfft`, zero the coefficients below the cutoff, invert, take the L2 norm. Do the same for attention over generated tokens. Compute for each cutoff in `hf_cutoffs`.
+- In code (`features/attention.py`), frequencies are `numpy.fft.rfftfreq` units: cycles per token, 0 to 0.5. So cutoffs 0.25 / 0.35 / 0.45 keep the top 50% / 30% / 10% of the frequency range. Same pass as B1: `features/extract.py`.
 - ✅ Done when `features/{setting}.npz` exists for every setting.
 
 **B3. Detectors** → `python detector/train_eval.py`

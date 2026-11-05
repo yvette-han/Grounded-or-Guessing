@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves, in this order. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, after the B1 code. Steps for B2–B5 get added here when their code exists._
+_Last updated: Nov 5, after the B2 code. Steps for B3–B5 get added here when their code exists._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -176,7 +176,7 @@ After step 4 has labeled the settings:
 
 ---
 
-## 8. B1: attention features (Nov 9–22)
+## 8. B1–B2: attention features (Nov 9–22)
 
 Needs the labels from step 4. First the README B1 check on 20 answers per setting:
 
@@ -185,6 +185,7 @@ Needs the labels from step 4. First the README B1 check on 20 answers per settin
 ```
 
 - Check each setting's lines: `attention row sums` about 1, and `lookback` between 0 and 1. Note the result in `LOG.md` (README B1 is done when this looks sane).
+- `hf_ctx` and `hf_gen` are printed too: values should be between 0 and 1. NaN values in `hf_gen` should only come from numbers at the very start of an answer.
 - Then the full run (every setting that has labels; uses more GPU memory than A3 because it keeps all attention maps for one answer at a time):
 
 ```python
@@ -192,7 +193,7 @@ Needs the labels from step 4. First the README B1 check on 20 answers per settin
 ```
 
 - To try the other row choice: `--row predicting --out-dir features/predicting` (keeps both versions).
-- **Commit:** `features/*.npz` (about 15 MB per setting).
+- **Don't commit** `features/*.npz` (git ignores them): at about 5 MB per 1,000 numbers they are too big for GitHub. They stay in the Drive folder; share that folder with your teammate so both of you can run B3. Commit only the `LOG.md` notes.
 
 ---
 

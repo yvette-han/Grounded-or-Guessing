@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off. How to do each run by hand is in `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5, after the B1 code._
+_Last updated: Nov 5, after the B2 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -39,6 +39,9 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **A7 → B1, B3:** confidence and feature files carry `row` (line in `labels/numbers_{setting}.jsonl`) so B3 can join them (README §7 updated for both)
 - [ ] **B1:** "generated tokens" (README 6.4) = answer tokens before the number token. With `--row predicting` that includes the row's own token, as in Lookback Lens (B0 now uses the same definition)
 - [ ] **B1:** a number's lookback = mean of the per-token ratios over its digit tokens; a token with no answer token before it is skipped, and a number with none left is NaN (B3 must drop those)
+- [ ] **B2:** "normalized frequency" for `hf_cutoffs` = numpy's `rfftfreq` units (cycles per token, 0 to 0.5), so 0.25 / 0.35 / 0.45 keep the top 50% / 30% / 10% of the range. If the paper (Qi et al.) normalizes so the top is 1, the same cutoffs would keep 75% / 65% / 55%
+- [ ] **B2:** `hf_ctx` averages over all the number's tokens (the README 6.4 skip rule is for the lookback ratio); `hf_gen` skips tokens with no answer token before them, and a one-token answer span gives 0 (a single value has no high frequencies)
+- [ ] **B2:** HF features are stored as float16 and `features/*.npz` stays out of git (about 5 MB per 1,000 numbers); they live in the shared Drive folder and can be rebuilt from the code and answers
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens`, `hit_max_tokens` (README §7 updated); `answer_text` is the decoded tokens up to the stop token, not stripped
 
@@ -56,7 +59,7 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `labels/agreement.py` (both): explain it; check the hand-worked kappa and rates in `tests/test_agreement.py`
 - [ ] `analysis/stage1.py` and `analysis/stage1.ipynb` (A): explain them; check the hand-worked example in `tests/test_stage1.py`
 - [ ] `baseline/confidence.py` (A): explain it, especially why the logits at position *t* score token *t + 1*; check `tests/test_confidence.py` by hand
-- [ ] `features/attention.py` and `features/extract.py` (B): explain them; check the hand-worked lookback values in `tests/test_features.py`
+- [ ] `features/attention.py` and `features/extract.py` (B): explain them; check the hand-worked lookback and high-frequency values in `tests/test_features.py`
 - [ ] `common/io.py` (both): the shared file helpers
 - [ ] `gen/generate.py` (A): explain it; check `tests/test_generate.py`, especially the decoding arguments each setting turns into
 - [ ] `encode_answer` in `common/prompt.py` (both): prompt + answer as one string for teacher forcing (A7, B1); check its tests in `tests/test_prompt.py`
@@ -77,7 +80,7 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 | A6 | RQ0: what decoding does to accuracy and fabrication rate, and why. Write it in the "Our reading" cell of `analysis/stage1.ipynb` | ⏳ needs the A3 and A4 runs, then `python analysis/stage1.py` |
 | A6 | Stage 1 error analysis (Nov 23–29) | ⏳ needs A6 results |
 | A7 | Run `baseline/confidence.py` on Colab (a run, not analysis) | ⏳ needs the A4 run |
-| B1 | Run `features/extract.py --limit 20` and check row sums ~1 and lookback within 0–1 (README B1 done), then the full run (a run, not analysis) | ⏳ needs the A4 run |
+| B1–B2 | Run `features/extract.py --limit 20` and check row sums ~1 and lookback within 0–1 (README B1 done), then the full run for every setting (README B2 done) (a run, not analysis) | ⏳ needs the A4 run |
 | B3 | Read the results table: which detectors beat the confidence baseline, given the confidence intervals | ⏳ needs A7, B2 |
 | B4 | **RQ2 (main contribution):** do detectors flag correct computed numbers, and does that support the hypothesis? | ⏳ needs B3 |
 | B4 | RQ3: which layers and heads carry the signal, and what that means | ⏳ needs B3 |

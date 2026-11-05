@@ -9,7 +9,7 @@ position t:
     row mode "predicting"  row t - 1: the row that predicts token t (Lookback Lens);
                            its own token t - 1 is one of the generated tokens
 A token with no answer token before it (t == answer_start) has no lookback
-ratio and is skipped (README 6.4).
+ratio and no hf_gen and is skipped for those (README 6.4); hf_ctx still uses it.
 """
 
 import numpy as np
@@ -49,3 +49,43 @@ def number_lookback(rows, positions, ctx, answer_start):
     if not per_token:
         return np.full(rows.shape[:2], np.nan, dtype=np.float32)
     return np.mean(per_token, axis=0).astype(np.float32)
+
+
+def hf_energy(att, cutoffs):
+    """High-frequency energy of attention over a span of positions (README B2).
+
+    att: [..., n] attention weights over n consecutive positions.
+    1. divide by their sum (so span length and total mass don't matter)
+    2. numpy.fft.rfft
+    3. zero every coefficient whose frequency is below the cutoff; frequencies
+       are numpy.fft.rfftfreq(n): cycles per token, from 0 to 0.5
+    4. inverse FFT, L2 norm
+    Returns [len(cutoffs), ...].
+    """
+    n = att.shape[-1]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        x = att / att.sum(-1, keepdims=True)
+    spectrum = np.fft.rfft(x, axis=-1)
+    freqs = np.fft.rfftfreq(n)
+    energies = []
+    for cutoff in cutoffs:
+        high = np.where(freqs >= cutoff, spectrum, 0)
+        energies.append(np.linalg.norm(np.fft.irfft(high, n=n, axis=-1), axis=-1))
+    return np.stack(energies)
+
+
+def number_hf(rows, positions, ctx, answer_start, cutoffs):
+    """High-frequency energy for one number, averaged over its tokens.
+
+    rows, positions as in number_lookback. Returns (hf_ctx, hf_gen), each
+    [len(cutoffs), layers, heads]:
+      hf_ctx  over the report; every token counts
+      hf_gen  over the answer tokens before each token; a token with none is
+              skipped, and all NaN if no token has any
+    """
+    shape = (len(cutoffs),) + rows.shape[:2]
+    hf_ctx = hf_energy(rows[:, :, :, ctx], cutoffs).mean(-1)  # [C, L, H, tokens] -> [C, L, H]
+    per_token = [hf_energy(rows[:, :, k, answer_start:t], cutoffs)
+                 for k, t in enumerate(positions) if t > answer_start]
+    hf_gen = np.mean(per_token, axis=0) if per_token else np.full(shape, np.nan)
+    return hf_ctx.astype(np.float32), hf_gen.astype(np.float32)
