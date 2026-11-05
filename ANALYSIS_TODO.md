@@ -2,7 +2,20 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5._
+_Last updated: Nov 5, with Yvette's tasks for this week._
+
+## This week: Yvette (Thu Nov 5 – Sun Nov 8)
+
+Goal: the B0 plot and the A1 stats for the meeting with professor. The runs are in `MANUAL_STEPS.md`, B-0 to B-2. The items below point to sections 1–3; tick them there.
+
+1. **The B0 plot** (section 3, row B0): after the run, write a few sentences in your own words on what the heads attend to when the model writes the number. Put them in your `LOG.md` run notes and bring them to the meeting.
+2. **Be able to explain** (section 2): `analysis/b0_attention_plot.py` and `features/attention.py`, line by line. Check the hand-worked values in `tests/test_b0.py` and `tests/test_features.py`.
+3. **Start these reviews** (section 1, before Nov 12):
+   - **B0, B1:** the row choice (`number` or `predicting`). You decide it on Nov 12 (B-4); this week's B0 runs are a first look.
+   - **B0:** which heads and which example the plot shows.
+   - **B1:** how "generated tokens" are defined, and the per-number averaging.
+   - **B2:** the frequency units. Check how Qi et al. (2026) normalize frequency.
+4. **The A1 stats** (section 3, row A1): only if you run A1 yourself because Eduardo hasn't yet.
 
 ## 1. Choices made in AI-written code, to review
 
