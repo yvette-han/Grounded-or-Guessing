@@ -206,6 +206,8 @@ Both stages read and write these exact formats. If one changes, update this tabl
 | `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, char_start, char_end, tok_start, tok_end, label` (token indices **within the answer**, half-open, covering the digits; `char_*` = the whole mention in `answer_text`) |
 | `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id, row` (`row` = line index in `labels/numbers_{setting}.jsonl`, the join key) |
 | `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[C×L×H], hf_gen[C×L×H], hf_cutoffs, label, id, row` (C = one per `hf_cutoffs` value, stored as float16; same `row` as the confidence file). Not in git: kept in our shared Drive folder |
+| `detector/results.csv` | B | detector | `detector, auroc, auroc_ci_low, auroc_ci_high, f1, f1_ci_low, f1_ci_high, threshold, val_auroc, C, hf_cutoff, n_features, n_train, n_val, n_test, n_test_fabricated` |
+| `detector/test_scores.csv` | B | test number (every label) | `setting, row, id, report, label`, then per detector its score and `{detector}_flagged` (score ≥ val-tuned threshold) |
 
 Token indices come from the **same tokenizer and the same prompt string**. Always tokenize with `common/prompt.py`.
 
@@ -273,6 +275,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 - Compare five detectors: lookback only, HF only, lookback + HF, confidence baseline (from A7), random.
 - Metrics on **test**: AUROC (main), F1 at the val-tuned threshold. Add 95% confidence intervals by bootstrap over test **reports**.
 - ✅ Done when `results.csv` has one row per detector.
+- Numbers with a NaN feature are dropped for every detector, so all five see the same numbers. The confidence baseline is a logistic regression on the three A7 scores, tuned like the others. `test_scores.csv` keeps every test number's scores, including `wrong_calc` and `question`, for B4 and B5.
 
 **B4. Analysis** → `analysis/stage2.ipynb`
 - **RQ2:** AUROC for copied-vs-fabricated and for computed-vs-fabricated, separately. What fraction of correct computed numbers get flagged?

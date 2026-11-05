@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves, in this order. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, after the B2 code. Steps for B3–B5 get added here when their code exists._
+_Last updated: Nov 5, after the B3 code. Steps for B4–B5 get added here when their code exists._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -194,6 +194,22 @@ Needs the labels from step 4. First the README B1 check on 20 answers per settin
 
 - To try the other row choice: `--row predicting --out-dir features/predicting` (keeps both versions).
 - **Don't commit** `features/*.npz` (git ignores them): at about 5 MB per 1,000 numbers they are too big for GitHub. They stay in the Drive folder; share that folder with your teammate so both of you can run B3. Commit only the `LOG.md` notes.
+
+---
+
+## 9. B3: detectors (Nov 16–22)
+
+After steps 7 (A7) and 8 (B1–B2) for every setting. No GPU needed, but run it in the same Drive folder so it finds `features/`:
+
+```python
+!python detector/train_eval.py
+```
+
+- Check the first line: which settings were used and how many numbers were dropped for a NaN feature (by label).
+- Check the train/val/test counts and that the test split has fabricated numbers.
+- If you also made `features/predicting/` in step 8: `!python detector/train_eval.py --features-dir features/predicting --out-dir detector/predicting`.
+- Note in `LOG.md` the chosen C and cutoff per detector (they're in `results.csv`).
+- **Commit:** `detector/results.csv`, `detector/test_scores.csv` (and `detector/predicting/` if made).
 
 ---
 
