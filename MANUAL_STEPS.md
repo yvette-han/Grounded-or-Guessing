@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves, in this order. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, after the B4 code. Steps for B5 get added here when its code exists._
+_Last updated: Nov 5, after the B5 code. Every step with code is now here; R1–R3 (TAT-QA, poster, report) are ours._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -226,6 +226,21 @@ or open `analysis/stage2.ipynb` and run all cells. It refits detectors per layer
 - Check the RQ2 table has a row per detector and the bridge has every setting.
 - Write the three **"Our reading"** cells (RQ2, RQ3, bridge) in our own words.
 - **Commit:** `analysis/figures/stage2_*` and `analysis/stage2.ipynb`.
+
+---
+
+## 11. B5: error analysis (Nov 30–Dec 6, both of us)
+
+After step 9 (B3). No GPU needed. Open `analysis/errors.ipynb` and run all cells, or:
+
+```python
+!python analysis/errors.py
+```
+
+- By default it uses the detector with the best val AUROC and a random 10 + 10 examples. To look at the most confident errors too, set `PICK = "extreme"` in the notebook (or `--pick extreme`).
+- Read each example in `analysis/figures/b5_examples.md` together: the marked number, the labels of the other numbers in that answer, and the report lines with that value.
+- Write the three **"Our reading"** cells (wrong_calc, false positives, false negatives) in our own words.
+- **Commit:** `analysis/figures/b5_*` and `analysis/errors.ipynb`.
 
 ---
 

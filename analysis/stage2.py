@@ -57,6 +57,7 @@ def read_test_scores(path):
     with open(path, newline="") as f:
         rows = list(csv.DictReader(f))
     out = {k: np.array([r[k] for r in rows]) for k in ("setting", "id", "report", "label")}
+    out["row"] = np.array([int(r["row"]) for r in rows])
     for det in DETECTORS:
         out[det] = np.array([float(r[det]) for r in rows])
         out[f"{det}_flagged"] = np.array([int(r[f"{det}_flagged"]) for r in rows])

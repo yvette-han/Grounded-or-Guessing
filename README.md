@@ -285,6 +285,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 **B5. Error analysis (both)**
 - 10 false positives (correct numbers flagged), 10 false negatives (fabrications missed), and where `wrong_calc` numbers fall on the detector's score. Write what we think explains each pattern, in our own words.
+- `analysis/errors.ipynb` (or `python analysis/errors.py`) picks the examples and writes `analysis/figures/b5_examples.md/.csv` and `b5_scores_by_label.csv/.png`. Each example shows the question, gold answer and steps, the answer with the number marked, the labels of the answer's other numbers, and the report lines with that value. Our explanations go in the notebook.
 
 ### Both
 
