@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off.
 
-_Last updated: Nov 5, after the A2 code._
+_Last updated: Nov 5, after the A2 and B0 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -20,6 +20,8 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **A2:** extra skip rules beyond README 6.3: the day after a month name (`december 31`), ordinals (`3rd`), digits inside words (`Q4`, `page_49`); list markers also include `1)` and `(1)`
 - [ ] **A2:** `(12)` = −12 also turns FinQA footnote markers like `( 1 )` in reports into −1
 - [ ] **A2 → A4 (not decided yet):** each number has two spans, the whole mention (`$4.2 billion`) and just the digits (`4.2`); A4 must pick which one becomes `tok_start`/`tok_end`
+- [ ] **B0 → B1 (not decided yet):** which attention row stands for a number token: the row of the number's own first digit (B0 default, README wording) or the row of the token before it, which predicts that digit (`--row predicting`)
+- [ ] **B0:** the plot shows the 4 heads with the most attention on the report from that token (`--heads` picks others); the example is the first val question and the first answer number found in the report unless `--id` / `--number` are given
 
 ## 2. AI-written code we must be able to explain
 
@@ -29,6 +31,7 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `common/splits.py` (both): explain it; check the expected values in `tests/test_splits.py` by hand
 - [ ] `data/build_subset.py` (A): explain it; sanity-check the counts it prints on the Colab run
 - [ ] `common/numbers.py` (both): explain it; check every expected value in `tests/test_numbers.py` by hand. README A2 asks for hand-made strings, so also add a few of your own, especially styles you expect from the model's answers
+- [ ] `analysis/b0_attention_plot.py` (B): explain it; check the hand-worked lookback values in `tests/test_b0.py`
 
 ## 3. Analysis and writing, by step
 
@@ -39,7 +42,7 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 | Step | What's ours | Status |
 |---|---|---|
 | A1 | Run `data/build_subset.py` with the Qwen tokenizer and fill the stats line in `LOG.md` (a run, not analysis) | 🟢 ready |
-| B0 | Explain the meeting plot to Niranjan: what the heads attend to | ⏳ needs plot code |
+| B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to Niranjan: what the heads attend to | 🟢 ready to run |
 | A5 | Hand-label the same 50 numbers each without seeing the auto labels; compute agreement; if under ~90%, decide how to change §6.3 | ⏳ needs A3, A4 |
 | A6 | RQ0: what decoding does to accuracy and fabrication rate, and why | ⏳ needs A3, A4 |
 | A6 | Stage 1 error analysis (Nov 23–29) | ⏳ needs A6 results |

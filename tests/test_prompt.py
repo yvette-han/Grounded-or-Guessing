@@ -1,6 +1,6 @@
 import pytest
 
-from common.prompt import build_context, build_prompt, encode, table_to_text
+from common.prompt import build_context, build_prompt, encode, table_to_text, tokens_in_span
 
 TABLE = [["revenue", "2009", "4,215"], ["cost of sales", "2009", "( 12 )"]]
 PRE = ["the company 's revenue was $ 4215 million in 2009 .", ".", "  "]
@@ -43,12 +43,21 @@ def test_build_prompt_matches_readme():
     assert build_prompt(" Q? ", "CTX") == expected
 
 
+def test_tokens_in_span():
+    offsets = [(0, 3), (3, 4), (4, 4), (4, 9), (9, 12)]  # (4, 4) is an empty special token
+    assert tokens_in_span(offsets, 3, 9) == [1, 3]
+    assert tokens_in_span(offsets, 2, 4) == [0, 1]     # partial overlap counts
+    assert tokens_in_span(offsets, 12, 15) == []
+
+
 @pytest.mark.parametrize("chat_template", [True, False])
 def test_encode_context_span(toy_tokenizer, chat_template):
     context = build_context(PRE, TABLE, POST)
     enc = encode(toy_tokenizer, QUESTION, context, chat_template)
     ids, s, e = enc["input_ids"], enc["ctx_start"], enc["ctx_end"]
     assert 0 < s < e < len(ids)
+    c0, c1 = enc["ctx_chars"]
+    assert enc["text"][c0:c1] == context
 
     # The context tokens decode to the report (plus at most a straddling newline).
     assert toy_tokenizer.decode(ids[s:e]).strip() == context

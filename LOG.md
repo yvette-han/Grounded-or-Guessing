@@ -14,3 +14,5 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 5: A2 `common/numbers.py`: on top of README 6.3 it skips the day after a month name (`december 31`), ordinals (`3rd`), digits inside words (`Q4`), and list markers `1.`, `1)`, `(1)` at a line start.
 - Nov 5: A2 matching: relative tolerance; `12%` equals `12` and `0.12`; a scale-word number vs a bare number tries ones/thousands/millions/billions; sign ignored by default.
 - Nov 5: A2 check: 99.57% (18,658 / 18,738) of the numeric arguments in FinQA's gold programs are found in their report by `extract_numbers` + `find_match`. The 80 misses are years and days (skipped by rule) and constants not in the report (`1000000`, `3`).
+- Nov 5: B0 `analysis/b0_attention_plot.py` generates its own greedy answer (A3 hasn't run), then does one teacher-forced pass over prompt + answer tokenized as one string. Default row: the number's first digit token; `--row predicting` uses the token before it.
+- Nov 5: `common/prompt.py` gained `tokens_in_span` (character span → token indices, for A4 and B1) and `encode` now also returns `ctx_chars`.

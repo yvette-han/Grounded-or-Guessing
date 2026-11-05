@@ -67,6 +67,14 @@ def to_model_text(prompt, tokenizer, chat_template=True):
     )
 
 
+def tokens_in_span(offsets, char_start, char_end):
+    """Indices of the tokens that overlap the characters [char_start, char_end).
+
+    `offsets` is a fast tokenizer's offset_mapping: one (start, end) per token.
+    """
+    return [i for i, (s, e) in enumerate(offsets) if e > s and s < char_end and e > char_start]
+
+
 def encode(tokenizer, question, context, chat_template=True):
     """Tokenize one prompt and locate the report inside it.
 
@@ -78,6 +86,7 @@ def encode(tokenizer, question, context, chat_template=True):
                  are the context tokens of README 6.4. A token that straddles
                  the edge of the report (for example "." merged with the
                  following newlines) counts as context.
+      ctx_chars  (start, end) character span of the report in `text`
     """
     prompt = build_prompt(question, context)
     text = to_model_text(prompt, tokenizer, chat_template)
@@ -90,10 +99,7 @@ def encode(tokenizer, question, context, chat_template=True):
 
     enc = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
     ids, offsets = enc["input_ids"], enc["offset_mapping"]
-    in_context = [
-        i for i, (s, e) in enumerate(offsets)
-        if e > s and s < char_end and e > char_start
-    ]
+    in_context = tokens_in_span(offsets, char_start, char_end)
     if not in_context:
         raise ValueError("no tokens found inside the report")
     return {
@@ -101,4 +107,5 @@ def encode(tokenizer, question, context, chat_template=True):
         "input_ids": ids,
         "ctx_start": in_context[0],
         "ctx_end": in_context[-1] + 1,
+        "ctx_chars": (char_start, char_end),
     }
