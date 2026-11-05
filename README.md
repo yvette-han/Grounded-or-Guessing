@@ -41,7 +41,7 @@ A language model reads part of a company's financial report and answers a questi
 
 | | Person A: **Stage 1** | Person B: **Stage 2** |
 |---|---|---|
-| Name | _fill in_ | _fill in_ |
+| Name | Eduardo | Yvette |
 | Owns | Data, generation, decoding settings, labeling, confidence baseline, Stage 1 results | Attention extraction, features, detectors, layer/head analysis |
 | Folders | `data/`, `gen/`, `labels/`, `baseline/` | `features/`, `detector/`, `analysis/` |
 | Presents at poster | Dataset, labeling, decoding results | Attention method, detector results, analysis |

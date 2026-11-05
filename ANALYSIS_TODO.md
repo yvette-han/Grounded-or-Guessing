@@ -6,7 +6,7 @@ _Last updated: Nov 5, after splitting the manual work between Person A and Perso
 
 ## 1. Choices made in AI-written code, to review
 
-Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decided, it's our decision. **Who reviews:** items starting A1–A7 are Person A's, B0–B5 Person B's, R1 both.
+Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decided, it's our decision. **Who reviews:** items starting A1–A7 are Person A's (Eduardo), B0–B5 Person B's (Yvette), R1 both.
 
 - [ ] **A1:** pool FinQA train+dev+test and re-split by report (243 of FinQA's 278 test reports are also in its train file)
 - [ ] **A1:** drop the 154 yes/no questions
@@ -62,7 +62,7 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 
 ## 2. AI-written code we must be able to explain
 
-README §3: each of us can explain every file in our folders line by line, and each function is checked on an example where we already know the answer. **(A)** = Person A's, **(B)** = Person B's, **(both)** = both; before Dec 9 each must also be able to explain the other's.
+README §3: each of us can explain every file in our folders line by line, and each function is checked on an example where we already know the answer. **(A)** = Person A's (Eduardo), **(B)** = Person B's (Yvette), **(both)** = both; before Dec 9 each must also be able to explain the other's.
 
 - [ ] `common/prompt.py` (both): explain it; check the expected strings in `tests/test_prompt.py` by hand
 - [ ] `common/splits.py` (both): explain it; check the expected values in `tests/test_splits.py` by hand
@@ -87,7 +87,7 @@ README §3: each of us can explain every file in our folders line by line, and e
 
 ⏳ waiting on an earlier step · 🟢 ready to start · ✅ done
 
-Claude can make the plots and tables for these; reading them and drawing conclusions is ours. Who does what, and in which order, is in `MANUAL_STEPS.md`.
+Claude can make the plots and tables for these; reading them and drawing conclusions is ours. Who does what, and in which order, is in `MANUAL_STEPS.md`. Person A = Eduardo, Person B = Yvette.
 
 | Step | What's ours | Who | Status |
 |---|---|---|---|

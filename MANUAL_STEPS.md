@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, split between Person A and Person B so both can work at the same time. Every step with code is here; the poster and report (R2, R3) are ours._
+_Last updated: Nov 5, split between Person A (Eduardo) and Person B (Yvette) so both can work at the same time. Every step with code is here; the poster and report (R2, R3) are ours._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -14,7 +14,7 @@ In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Eve
 
 Two people, two Colab GPUs, working at the same time. The GPU work is split **by decoding setting**: each person runs the whole chain (generate → label → confidence → features) for their own settings.
 
-| | Person A (Stage 1 owner) | Person B (Stage 2 owner) |
+| | Person A: Eduardo (Stage 1 owner) | Person B: Yvette (Stage 2 owner) |
 |---|---|---|
 | Decoding settings | `greedy`, `beam5` (beam search is about 2x slower) | `temp07`, `temp12`, `topp09` |
 | Runs and writes up | A1, A5 (with B), A6, Stage 1 error analysis | B0, B1 check, B3, B4 |
@@ -47,7 +47,7 @@ Running a script doesn't change who owns it: each of us still explains our own f
 
 **Each person has their own clone and their own branch.** Never run two Colab sessions in the same clone folder.
 
-- Yvette works on the branch `yvette`. The teammate makes their own: on GitHub, open the branch menu, type a name (e.g. their first name) and choose "Create branch … from main". Yvette must first add them under the repo's **Settings → Collaborators**.
+- Yvette (Person B) works on the branch `yvette`. Eduardo (Person A) makes their own branch, e.g. `eduardo`: on GitHub, open the branch menu, type the name and choose "Create branch … from main". Yvette must first add Eduardo under the repo's **Settings → Collaborators**.
 - **Small files go through git:** subset, answers, labels, confidence scores, results, figures, notebooks. After each step: push to your branch, then on GitHub open a **pull request into `main`** and merge it (or ask Claude to merge). Before each session: pull `main` (step 0). We write different files (each setting has its own file names), so merges don't conflict.
 - **`LOG.md`:** add your run notes under your own heading at the bottom (`## Run notes: Person A` or `## Run notes: Person B`), never in the other's, so merges stay clean. Decisions we make together go above those headings.
 - **Big files go in a shared Drive folder:** feature files (`features/*.npz`, ~5 MB per 1,000 numbers) are too big for git. Person B creates a Drive folder `GoG-shared` and shares it with Person A as Editor. Person A opens "Shared with me", right-clicks it → **Organize → Add shortcut → My Drive**. Then both see it at `/content/drive/MyDrive/GoG-shared`, and all feature runs write into `GoG-shared/features/`.
@@ -62,7 +62,7 @@ SHARED = "/content/drive/MyDrive/GoG-shared"
 
 ## Person A checklist
 
-Settings: **`greedy`, `beam5`**. Details of each check are in the reference section ([step N](#reference-step-details)).
+**Eduardo.** Settings: **`greedy`, `beam5`**. Details of each check are in the reference section ([step N](#reference-step-details)).
 
 **A-0. Setup (once, then the session cell every time).** Do [step 0](#0-colab-setup-each-new-session), with your token. Set `SHARED` as above (after B shares the folder).
 
@@ -145,7 +145,7 @@ Push `data/tatqa_subset.jsonl` and the `tatqa/` files; hand-label the 30 TAT-QA 
 
 ## Person B checklist
 
-Settings: **`temp07`, `temp12`, `topp09`**. Details of each check are in the reference section ([step N](#reference-step-details)).
+**Yvette.** Settings: **`temp07`, `temp12`, `topp09`**. Details of each check are in the reference section ([step N](#reference-step-details)).
 
 **B-0. Setup (once, then the session cell every time).** Do [step 0](#0-colab-setup-each-new-session), with your own token and clone. Create the shared Drive folder `GoG-shared`, share it with A as Editor (see [How we share files](#how-we-share-files)), and set `SHARED`.
 
@@ -254,7 +254,7 @@ drive.mount("/content/drive")
 %cd /content/drive/MyDrive
 ```
 
-3. **First time only**, clone the repo with a GitHub token. Make the token on GitHub → Settings → Developer settings: a **fine-grained token** with "Contents: read and write" for this repo if you own it (Yvette), or a **classic token** with the `repo` scope if you're a collaborator. Save it in Colab's 🔑 Secrets panel (left sidebar) as `GITHUB_TOKEN`, with "Notebook access" switched on:
+3. **First time only**, clone the repo with a GitHub token. Make the token on GitHub → Settings → Developer settings: a **fine-grained token** with "Contents: read and write" for this repo if you own it (Yvette), or a **classic token** with the `repo` scope if you're a collaborator (Eduardo). Save it in Colab's 🔑 Secrets panel (left sidebar) as `GITHUB_TOKEN`, with "Notebook access" switched on:
 
 ```python
 from google.colab import userdata

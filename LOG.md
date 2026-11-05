@@ -37,11 +37,12 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 5: R1 code. `common/tatqa.py` converts TAT-QA arithmetic questions to the A1 format (table, then paragraphs; split test; `gold_scale` extra). Derivations are evaluated to `gold_steps`; with brackets, `%` and accounting `(n)` readings, they reproduce the answer for 6,941 of 6,959 (the other 18 contain words). TAT-QA pinned to commit `870accc`. `data/build_tatqa.py` samples `tatqa_n_questions` (500).
 - Nov 5: R1 `detector/transfer.py`: B3's fitting split into `fit_detectors` / `score_detector` / `test_metrics` (B3 output unchanged); detectors fit on FinQA as in B3 and scored on every TAT-QA number; CIs bootstrap over TAT-QA tables. TAT-QA outputs live in `tatqa/`.
 - Nov 5: Manual work split between Person A (settings greedy, beam5; A steps) and Person B (temp07, temp12, topp09; B steps) so both GPUs run in parallel; see `MANUAL_STEPS.md`. Labeling waits for the A5 decision; feature files go to the shared Drive folder `GoG-shared`.
+- Nov 5: Roles: Person A (Stage 1) = Eduardo, Person B (Stage 2) = Yvette.
 
 ## Run notes: Person A
 
-_Person A adds run notes and counts here (one line each, dated)._
+_Person A (Eduardo) adds run notes and counts here (one line each, dated)._
 
 ## Run notes: Person B
 
-_Person B adds run notes and counts here (one line each, dated)._
+_Person B (Yvette) adds run notes and counts here (one line each, dated)._
