@@ -2,11 +2,11 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, split between Person A (Eduardo) and Person B (Yvette) so both can work at the same time. Every step with code is here; the poster and report (R2, R3) are ours._
+_Last updated: Nov 5, split between Person A (Eduardo) and Person B (Yvette) so both can work at the same time; Yvette's plan for this week added. Every step with code is here; the poster and report (R2, R3) are ours._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
-**Contents:** [Who does what](#who-does-what) · [How we share files](#how-we-share-files) · [Person A checklist](#person-a-checklist) · [Person B checklist](#person-b-checklist) · [Reference: step details](#reference-step-details)
+**Contents:** [Who does what](#who-does-what) · [How we share files](#how-we-share-files) · [Person A checklist](#person-a-checklist) · [Person B checklist](#person-b-checklist) ([this week](#this-week-thu-nov-5--sun-nov-8)) · [Reference: step details](#reference-step-details)
 
 ---
 
@@ -146,6 +146,61 @@ Push `data/tatqa_subset.jsonl` and the `tatqa/` files; hand-label the 30 TAT-QA 
 ## Person B checklist
 
 **Yvette.** Settings: **`temp07`, `temp12`, `topp09`**. Details of each check are in the reference section ([step N](#reference-step-details)).
+
+### This week (Thu Nov 5 – Sun Nov 8)
+
+Goal: the B0 plot and the A1 stats for the meeting with professor (README §9), and everything set up so B-3 can start on Mon Nov 9.
+
+**Thu Nov 5 – Fri Nov 6: set up (B-0)**
+
+1. GitHub → the repo → **Settings → Collaborators** → add Eduardo, so Eduardo can make their branch and push.
+2. Make your token: GitHub → Settings → Developer settings → **Fine-grained tokens**, access to this repo only, "Contents: read and write". Save it in Colab's 🔑 Secrets panel as `GITHUB_TOKEN` with "Notebook access" on.
+3. Google Drive: create the folder `GoG-shared` and share it with Eduardo as Editor.
+4. Colab with a T4 GPU: do [step 0](#0-colab-setup-each-new-session) (clone once, then the session cell; your branch is `yvette`), then set `SHARED`. All tests should pass, including the one that downloads the Qwen tokenizer; that also shows Colab can reach Hugging Face.
+
+**Fri Nov 6: get the subset**
+
+- If Eduardo has already merged A-1: `!git pull origin main`.
+- If not yet, run it yourself. It's the same file whoever runs it (fixed seed), and the meeting needs its stats:
+
+```python
+!python data/build_subset.py
+```
+
+  Check `gold programs whose last step differs from FinQA's answer: 0`. Fill the `A1 stats (fill in ...)` line in `LOG.md` with the printed counts, push `data/finqa_subset.jsonl` and `LOG.md`, merge into `main`, and tell Eduardo to skip A-1.
+
+**Sat Nov 7: the B0 plot (B-1)**
+
+```python
+!python analysis/b0_attention_plot.py
+```
+
+- Check `attention rows sum to` about 1.
+- It prints the answer's numbers, each marked "in report" or "not in report". For a comparison, also plot one marked "not in report" (`--number <its index>`) and try `--row predicting` once.
+- Each run overwrites `analysis/figures/b0_attention.png` and `b0_lookback.png`, so rename the ones to keep before the next run, e.g.:
+
+```python
+!mv analysis/figures/b0_attention.png analysis/figures/b0_attention_in_report.png
+!mv analysis/figures/b0_lookback.png analysis/figures/b0_lookback_in_report.png
+```
+
+- Push the PNGs you keep.
+
+**Sun Nov 8, or before the meeting: prepare, in your own words**
+
+- A few sentences on what the plot shows: which report tokens the heads look at when the model writes the number. These have to be yours (README §3); keep them under your run notes in `LOG.md` or in your meeting notes.
+- Be able to explain `analysis/b0_attention_plot.py` and `features/attention.py` line by line (`ANALYSIS_TODO.md` section 2).
+- Bring the B0 plot(s) and the A1 stats from `LOG.md`.
+
+**Reviews to do before Nov 12** (`ANALYSIS_TODO.md` section 1, your items):
+
+- The row choice (`number` or `predicting`): you decide it in B-4 on Nov 12; the B0 runs above are a first look.
+- B1: how "generated tokens" is defined, and the per-number averaging.
+- B2: the frequency units. Check how Qi et al. (2026) normalize frequency before features are computed at scale (from Nov 14).
+
+**If you have GPU time left:** start B-3 early with `!python gen/generate.py --setting temp07`. Generation doesn't depend on the label rules, and stopping is fine because it resumes.
+
+Next week: B-3 (generate your settings) from Mon Nov 9, then B-4 and B-5 on Thu Nov 12, once Eduardo has pushed the first 50 greedy answers.
 
 **B-0. Setup (once, then the session cell every time).** Do [step 0](#0-colab-setup-each-new-session), with your own token and clone. Create the shared Drive folder `GoG-shared`, share it with A as Editor (see [How we share files](#how-we-share-files)), and set `SHARED`.
 
