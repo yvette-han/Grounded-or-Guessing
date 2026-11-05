@@ -5,7 +5,7 @@ CSE 354 Final Project · Poster **Dec 9** (NCS atrium) · Report **Dec 11**
 
 A language model reads part of a company's financial report and answers a question with numbers. Some numbers are **copied** from the report, some are **computed** from it (correctly or not), and some are **made up**. We test whether the model's own attention can tell these apart.
 
-**Status (Nov 5):** the code for every step (A1–A7, B0–B5, R1) is written and tested (`python -m pytest -q`); nothing has run on real data yet. Next: the Colab runs in [`MANUAL_STEPS.md`](MANUAL_STEPS.md), starting with A1 and the 50 greedy answers due Nov 12.
+**Status (Nov 5):** the code for every step (A1–A7, B0–B5, R1) is written and passes its tests (`python -m pytest -q`). Nothing has run on real data yet. Next: the Colab runs in [`MANUAL_STEPS.md`](MANUAL_STEPS.md), starting with A1 and the 50 greedy answers due Nov 12.
 
 ---
 
@@ -48,9 +48,9 @@ A language model reads part of a company's financial report and answers a questi
 | Folders | `data/`, `gen/`, `labels/`, `baseline/`, `analysis/stage1.*` | `features/`, `detector/`, `analysis/b0_attention_plot.py`, `analysis/stage2.*`, `analysis/errors.*` |
 | Presents at poster | Dataset, labeling, decoding results | Attention method, detector results, analysis |
 
-**Both:** `config.yaml`, `common/`, `tests/`, the shared definitions in §6, the label hand-check, the report and the poster. **Each person must be able to explain the other person's half.**
+**Both:** `config.yaml`, `common/`, `tests/`, the shared definitions in §6, the label hand-check, the report and the poster. **Each person must be able to explain the other's half.**
 
-**GPU runs** are split by decoding setting so both of us can run at the same time: Eduardo (A) runs `greedy` and `beam5`, Yvette (B) runs `temp07`, `temp12` and `topp09`, each through generation, labeling, confidence and features. Step-by-step checklists: `MANUAL_STEPS.md`.
+**GPU runs are split by decoding setting** so we can run at the same time: Eduardo runs `greedy` and `beam5`; Yvette runs `temp07`, `temp12` and `topp09`. Each runs generation, labeling, confidence and features for their own settings. Checklists: `MANUAL_STEPS.md`.
 
 ---
 
@@ -61,51 +61,42 @@ Professor's rule: AI use is **allowed for the coding**, but *"the analysis and t
 What that means for us:
 
 - ✅ **Fine:** AI writes or debugs code, explains a library, writes plotting boilerplate, suggests a regex.
-- ✅ **Required:** test every AI-written function on a small example where you already know the answer before you trust it (e.g. the number parser on 20 hand-written strings).
+- ✅ **Required:** before trusting an AI-written function, test it on a small example where you already know the answer (e.g. the number parser on 20 hand-written strings).
 - ✅ **Required:** each of us can explain every file in our folders line by line. If you can't explain it, rewrite it until you can.
 - ❌ **Not fine:** AI writes the analysis, interprets the results, or chooses the conclusions in the report or poster. We write those ourselves from our own results.
-- 📝 **Keep `LOG.md`:** one line per decision or dead end ("Nov 14: switched tolerance to 1% because 'about 12%' was being labeled fabricated"). This is also what we show professor at meetings.
-- 🧭 **`MANUAL_STEPS.md`** says, step by step, what we run and do by hand (Colab runs, hand-check, saving results).
-- 📋 **`ANALYSIS_TODO.md`** tracks the analysis that is ours to do, the choices in AI-written code we still need to review, and the AI-written code we need to be able to explain.
+- 📝 **`LOG.md`:** one dated line per decision or dead end ("Nov 14: switched tolerance to 1% because 'about 12%' was being labeled fabricated"). We also show it to professor at meetings.
+- 🧭 **`MANUAL_STEPS.md`:** what each of us runs and does by hand, step by step.
+- 📋 **`ANALYSIS_TODO.md`:** the analysis that is ours to do, the choices in AI-written code to review, and the files we must be able to explain.
 
 ---
 
 ## 4. Setup
 
-**Compute:** Google Colab with a GPU (T4 is enough for a 1.5B model). Use the same notebook runtime type for both of us.
+**Compute:** Google Colab with a GPU (a T4 is enough for a 1.5B model). Both of us use the same runtime type.
 
 ```bash
 git clone https://github.com/yvette-han/Grounded-or-Guessing && cd Grounded-or-Guessing
 pip install -r requirements.txt
 ```
 
-**Running on Colab:** To run it, open Colab with a GPU runtime and run these in one session. Use `!` before shell lines and `%cd` to change folders.
+**On Colab:** open Colab with a GPU runtime and run these in one session. Put `!` before shell lines and use `%cd` to change folders.
 
 ```bash
 git clone -b main https://github.com/yvette-han/Grounded-or-Guessing
-```
-
-```bash
 cd Grounded-or-Guessing && pip install -r requirements.txt && python -m pytest -q
-```
-
-```bash
 python data/build_subset.py
-```
-
-```bash
 python analysis/b0_attention_plot.py
 ```
 
-For every other step (who runs which settings, in which order, and how we share files), follow the checklists in [`MANUAL_STEPS.md`](MANUAL_STEPS.md).
+For everything else (who runs which settings, in which order, and how we share files), follow [`MANUAL_STEPS.md`](MANUAL_STEPS.md).
 
 **Model:** `Qwen/Qwen2.5-1.5B-Instruct` (fallback: `meta-llama/Llama-3.2-3B-Instruct`). Read the layer and head counts from `model.config.num_hidden_layers` and `model.config.num_attention_heads`; don't hard-code them.
 
-**Data:** FinQA (Chen et al., 2021), from the official GitHub repo (`dataset/train.json`, `dev.json`, `test.json`). Each example has the text before the table (`pre_text`), the `table`, the text after it (`post_text`), and a `qa` block with the question, the gold `program` (calculation steps) and the executed answer. Check the exact field names when you first load it.
+**Data:** FinQA (Chen et al., 2021), from the official GitHub repo (`dataset/train.json`, `dev.json`, `test.json`). Each example has the text before the table (`pre_text`), the `table`, the text after it (`post_text`), and a `qa` block with the question, the gold `program` (calculation steps) and the executed answer.
 
-**Data (R1 stretch):** TAT-QA (Zhu et al., 2021), from its official GitHub repo; `data/build_tatqa.py` downloads it. Both datasets are pinned to one commit and downloaded into `data/raw/` (not in git).
+**Data for R1 (stretch):** TAT-QA (Zhu et al., 2021), from its official GitHub repo. Both datasets are pinned to one commit and downloaded into `data/raw/`, which is not in git.
 
-**`config.yaml`** (one shared file; every script reads from it):
+**`config.yaml`** (one shared file; every script reads it):
 
 ```yaml
 model: Qwen/Qwen2.5-1.5B-Instruct
@@ -160,7 +151,7 @@ tatqa/                  R1: gen/, labels/, baseline/ for TAT-QA (same scripts, f
 tests/                  unit tests for every module: python -m pytest -q
 ```
 
-`common/` is shared code. Change it only after telling the other person, because both stages depend on it.
+`common/` is shared code. Tell the other person before changing it: both stages depend on it.
 
 ---
 
@@ -168,7 +159,7 @@ tests/                  unit tests for every module: python -m pytest -q
 
 ### 6.1 Prompt template
 
-The prompt asks the model to **show its work**, so each answer contains copied input numbers *and* a computed or fabricated result. Without this, almost every number would be a single final answer and there would be no "copied" class.
+The prompt asks the model to **show its work**, so each answer contains copied input numbers *and* a computed or fabricated result. Without this, almost every number would be a single final answer, and there would be no "copied" class.
 
 ```
 You are a financial analyst. Use only the report below.
@@ -185,13 +176,13 @@ List the numbers from the report that you use, then give the final answer.
 Answer:
 ```
 
-Tables become text one row per line, cells joined with ` | ` (e.g. `revenue | 2009 | 4,215`). Each `pre_text`/`post_text` sentence goes on its own line; FinQA's lines that are only `.` are dropped.
-
-With `chat_template: true`, this text is the user turn of the model's chat template and the answer starts right after the assistant header. `common/prompt.py` (`encode`) builds the exact model input and the report's token span.
+- Tables become text one row per line, cells joined with ` | ` (e.g. `revenue | 2009 | 4,215`).
+- Each `pre_text`/`post_text` sentence goes on its own line; FinQA's lines that are only `.` are dropped.
+- With `chat_template: true`, this text is the user turn of the model's chat template, and the answer starts right after the assistant header. `common/prompt.py` (`encode`) builds the exact model input and finds the report's token span.
 
 ### 6.2 Train/val/test split: by report
 
-FinQA ids look like `ADI/2009/page_49.pdf-1`. The **report key** is company + year (`ADI/2009`). All questions from one report go in the same split. This prevents the detector from memorizing a report it will be tested on. The split is computed once in `common/splits.py` and saved in `finqa_subset.jsonl`.
+FinQA ids look like `ADI/2009/page_49.pdf-1`. The **report key** is company + year (`ADI/2009`). All questions from one report go in the same split, so the detector can't memorize a report it will be tested on. `common/splits.py` computes the split once, and it is saved in `finqa_subset.jsonl`.
 
 ### 6.3 Number labels (check in this order)
 
@@ -200,22 +191,26 @@ FinQA ids look like `ADI/2009/page_49.pdf-1`. The **report key** is company + ye
 | 1 | **copied** | The value appears in the report (within `label_tolerance` after normalization) |
 | 2 | **computed** | Not in the report, but matches the gold answer or an intermediate step of the gold `program` |
 | 3 | **question** | Not in the report or the gold program, but appears in the question (added Nov 5, see `LOG.md`) |
-| 4 | **wrong_calc** | Not in the report and not correct, but every input number the answer listed is **copied**. The model looked in the right place and did the math wrong. In code: every number before it in the answer is copied, computed or question, and at least one is copied |
+| 4 | **wrong_calc** | Not correct, but the inputs were right: the model looked in the right place and did the math wrong. In code: every number before it in the answer is copied, computed or question, and at least one is copied |
 | 5 | **fabricated** | Anything else |
 
 The order matters: a gold answer that happens to equal a report number is **copied**.
 
-**Normalization** (in `common/numbers.py`): handle `%`, `$`, commas, negatives and parentheses `(12)` = −12, and scale words ("4.2 billion" = 4,200 million). Compare `12%` with `0.12` as equal. **Skip** years (1990–2030 written without a decimal point) and list markers like `1.` at the start of a line. `common/numbers.py` also skips the day in dates (`december 31`), ordinals (`3rd`) and digits inside words (`Q4`); see `LOG.md` for its matching rules.
+**Normalization** (`common/numbers.py`):
+
+- Handle `%`, `$`, commas, negatives, parentheses (`(12)` = −12) and scale words ("4.2 billion" = 4,200 million).
+- `12%` equals `0.12`.
+- **Skip** years (1990–2030 written without a decimal point), list markers like `1.` at the start of a line, the day in dates (`december 31`), ordinals (`3rd`) and digits inside words (`Q4`). Matching rules: see `LOG.md`.
 
 ### 6.4 "Context" for attention features
 
 - **Context tokens** = the report text only, between `### Report` and `### Question`. The instruction and the question count as neither context nor generated text.
-- **Generated tokens** = answer tokens before the current token. In code (`features/attention.py`) the current token is the number token *t*; with `--row predicting` the row read is *t − 1*, whose own token is then one of the generated tokens (as in Lookback Lens).
+- **Generated tokens** = answer tokens before the current number token *t*. With `--row predicting`, we read row *t − 1*, and its own token counts as generated (as in Lookback Lens). Code: `features/attention.py`.
 - If a number token has **no** generated tokens before it, skip it for the lookback ratio (it would be undefined).
 
 ### 6.5 Positive class for detection
 
-Main task: **fabricated = 1**, copied + computed = 0. `wrong_calc` is analyzed separately (§8, step B5); it and `question` are left out of the main training set.
+Main task: **fabricated = 1**, copied + computed = 0. `wrong_calc` and `question` are left out of the main training set; `wrong_calc` is analyzed in §8, step B5.
 
 ---
 
@@ -225,101 +220,102 @@ Both stages read and write these exact formats. If one changes, update this tabl
 
 | File | Writer | One row/record = | Fields |
 |---|---|---|---|
-| `data/finqa_subset.jsonl` | A | question | `id, report_key, split, question, context_text, gold_answer, gold_program, gold_steps` (value of each program step, `null` where it can't be computed) |
-| `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token span of the report, half-open: `ids[ctx_start:ctx_end]`), `n_new_tokens, hit_max_tokens` |
-| `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, char_start, char_end, tok_start, tok_end, label` (token indices **within the answer**, half-open, covering the digits; `char_*` = the whole mention in `answer_text`) |
-| `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id, row` (`row` = line index in `labels/numbers_{setting}.jsonl`, the join key) |
-| `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[C×L×H], hf_gen[C×L×H], hf_cutoffs, label, id, row` (C = one per `hf_cutoffs` value, stored as float16; same `row` as the confidence file). Not in git: kept in our shared Drive folder |
+| `data/finqa_subset.jsonl` | A | question | `id, report_key, split, question, context_text, gold_answer, gold_program, gold_steps` (each program step's value; `null` if it can't be computed) |
+| `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end, n_new_tokens, hit_max_tokens` (`ctx_*`: the report's token span, half-open: `ids[ctx_start:ctx_end]`) |
+| `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, char_start, char_end, tok_start, tok_end, label` (`tok_*`: the digits' tokens **within the answer**, half-open; `char_*`: the whole mention in `answer_text`) |
+| `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id, row` (`row`: line in `labels/numbers_{setting}.jsonl`, the join key) |
+| `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[C×L×H], hf_gen[C×L×H], hf_cutoffs, label, id, row` (C = one per `hf_cutoffs` value, float16; same `row` as the confidence file). Kept in our shared Drive folder, not git |
 | `detector/results.csv` | B | detector | `detector, auroc, auroc_ci_low, auroc_ci_high, f1, f1_ci_low, f1_ci_high, threshold, val_auroc, C, hf_cutoff, n_features, n_train, n_val, n_test, n_test_fabricated` |
 | `detector/test_scores.csv` | B | test number (every label) | `setting, row, id, report, label`, then per detector its score and `{detector}_flagged` (score ≥ val-tuned threshold) |
 | `data/tatqa_subset.jsonl` | R1 | TAT-QA question | the `finqa_subset.jsonl` fields (`gold_program` = TAT-QA's derivation, `split` = test) plus `gold_scale` |
 | `detector/transfer_results.csv` | R1 | detector | `detector, finqa_test_auroc, tatqa_auroc (+ CI), tatqa_f1 (+ CI), threshold, C, hf_cutoff, n_tatqa, n_tatqa_fabricated` |
 | `detector/tatqa_scores.csv` | R1 | TAT-QA number (every label) | same columns as `test_scores.csv` |
 
-Token indices come from the **same tokenizer and the same prompt string**. Always tokenize with `common/prompt.py`.
+All token indices come from the **same tokenizer and the same prompt string**. Always tokenize with `common/prompt.py`.
 
 ---
 
 ## 8. Pipeline: step by step
 
-Each step lists what to run, what it produces, and how to know it's done. Steps marked 🔁 feed the other person, so ship a small version early.
+What to run, what it produces, and when it's done. 🔁 marks a step the other person needs, so ship a small version early.
 
 ### Stage 1 (Person A: Eduardo)
 
 **A1. Build the subset** → `python data/build_subset.py`
 - Load FinQA, convert tables to text, drop examples whose prompt exceeds `max_context_tokens`, sample `n_questions`, assign splits by report.
-- ✅ Done when `finqa_subset.jsonl` exists, and `LOG.md` records the count, the average context length and the split sizes.
+- ✅ Done when `finqa_subset.jsonl` exists and `LOG.md` has the count, the average context length and the split sizes.
 
 **A2. Number parser** → `common/numbers.py` + `tests/test_numbers.py`
 - Write 30 hand-made test strings first (`"$4.2 billion"`, `"(12.5)"`, `"12%"`, `"in 2009"`…), then the parser.
 - ✅ Done when all tests pass.
 
 **A3. Generate** → `python gen/generate.py --setting greedy` (repeat for each setting)
-- Fixed seed, `max_new_tokens` from config. Save `ctx_start`/`ctx_end`.
-- Only the parameters in the setting apply; everything else is off (no top-k, top-p or repetition penalty), so the model's own default sampling settings don't leak in.
+- Fixed seed; `max_new_tokens` from config; save `ctx_start`/`ctx_end`.
+- Only the parameters in the setting apply. Everything else is off (no top-k, top-p or repetition penalty), so the model's default sampling settings don't leak in.
 - 🔁 **Run greedy on 50 questions first and send them to B by Nov 12** (`--limit 50`; a later run without `--limit` continues with the rest).
 - ✅ Done when every setting has 1,000 answers.
 
 **A4. Label** → `python labels/label.py --setting greedy`
+- Apply §6.3 in order, and print the count of each label per setting.
 - `--handcheck 50` also writes `labels/handcheck.csv` for A5 (auto labels kept apart in `handcheck_key.csv`).
-- Apply §6.3 in order. Print the count of each label per setting.
-- ✅ Done when label counts are in `LOG.md`.
+- ✅ Done when the label counts are in `LOG.md`.
 
 **A5. Hand-check labels (both, Nov 12–14)** → `labels/handcheck.csv`
-- Each person labels the same 50 numbers by hand without looking at the auto label; compare. Report the agreement rate.
-- Sheet: `python labels/label.py --setting greedy --handcheck 50`. Each fills `label_A` or `label_B` in their own copy, then `python labels/agreement.py --sheet-a A.csv --sheet-b B.csv` prints the agreement rates and writes `labels/handcheck_disagreements.csv`.
+- Each person labels the same 50 numbers by hand without seeing the auto labels; then compare and report the agreement rate.
+- Each fills `label_A` or `label_B` in their own copy; `python labels/agreement.py --sheet-a A.csv --sheet-b B.csv` prints the agreement rates and writes `labels/handcheck_disagreements.csv`.
 - If agreement is under ~90%, fix the rules in §6.3 **before** anything else runs.
 
 **A6. Stage 1 results (RQ0)** → `analysis/stage1.ipynb`
-- Per setting: numeric accuracy vs gold, fabrication rate, distinct answers across settings, answer length. One table + one bar chart.
-- The notebook calls `analysis/stage1.py` (also runnable as `python analysis/stage1.py`), which writes `analysis/figures/stage1_table.csv`, `stage1_table.md` and `stage1_bars.png`. Measure definitions are at the top of that file.
+- Per setting: numeric accuracy vs gold, fabrication rate, distinct answers across settings, answer length. One table and one bar chart.
+- The notebook calls `analysis/stage1.py`, which writes `analysis/figures/stage1_table.csv`, `stage1_table.md` and `stage1_bars.png`. Definitions are at the top of that file.
 
 **A7. Confidence baseline** → `python baseline/confidence.py`
-- Scores each number's digit tokens from A4, under the model's own distribution (temperature 1, no top-k/top-p) for every setting.
-- Teacher-forced pass (no attention needed): for each number span, the mean and min log-probability and the mean entropy of the next-token distribution.
+- One teacher-forced pass (no attention needed). For each number's digit tokens: the mean and min log-probability and the mean entropy of the next-token distribution.
+- Scored under the model's own distribution (temperature 1, no top-k/top-p) for every setting.
 - ✅ Done when `confidence_{setting}.npz` exists for all settings.
 
 ### Stage 2 (Person B: Yvette)
 
 **B0. Meeting plot (before the Nov 2–11 meeting)** → `python analysis/b0_attention_plot.py`
-- One FinQA example: load the model with `attn_implementation="eager"`, run one forward pass with `output_attentions=True`, plot one number token's attention over the report tokens for a few heads.
+- One FinQA example: load the model with `attn_implementation="eager"`, run one forward pass with `output_attentions=True`, and plot one number token's attention over the report tokens for a few heads.
 
 **B1. Attention extraction** → `features/extract.py`
-- **Teacher forcing:** one forward pass over `prompt + answer_text` gives the attention from every answer token. No generation needed here.
-- Load in float16, batch size 1. Immediately keep only the **rows for number tokens** and discard the rest.
-- Start with `output_attentions=True`. If you run out of GPU memory on long reports, switch to forward hooks on each attention layer that compute the features and drop the weights.
-- ✅ Done when features for the first 20 examples look sane: attention rows sum to ~1, and lookback values lie between 0 and 1.
-- `python features/extract.py --limit 20` runs that check and prints both. The default row is each number token's own row; `--row predicting` uses the row before it.
+- **Teacher forcing:** one forward pass over `prompt + answer_text` gives the attention from every answer token. No generation needed.
+- Load in float16, batch size 1. Keep only the **rows for number tokens** and discard the rest right away.
+- Start with `output_attentions=True`. If long reports run out of GPU memory, switch to forward hooks on each attention layer that compute the features and drop the weights.
+- ✅ Done when the features for the first 20 examples look sane: attention rows sum to ~1, and lookback values lie between 0 and 1. `python features/extract.py --limit 20` prints both.
 
 **B2. Features** (per head, per number token, averaged over the number's tokens)
 - **Lookback ratio** = mean attention on context tokens ÷ (mean on context + mean on previously generated tokens).
-- **High-frequency energy:** take the attention over context positions, divide by its sum (so report length and total mass don't matter), apply `numpy.fft.rfft`, zero the coefficients below the cutoff, invert, take the L2 norm. Do the same for attention over generated tokens. Compute for each cutoff in `hf_cutoffs`.
-- In code (`features/attention.py`), frequencies are `numpy.fft.rfftfreq` units: cycles per token, 0 to 0.5. So cutoffs 0.25 / 0.35 / 0.45 keep the top 50% / 30% / 10% of the frequency range. Same pass as B1: `features/extract.py`.
+- **High-frequency energy:** take the attention over context positions, divide by its sum (so report length and total mass don't matter), apply `numpy.fft.rfft`, zero the coefficients below the cutoff, invert, and take the L2 norm. Do the same for the attention over generated tokens, for each cutoff in `hf_cutoffs`.
+- Frequencies are in `numpy.fft.rfftfreq` units (cycles per token, 0 to 0.5), so cutoffs 0.25 / 0.35 / 0.45 keep the top 50% / 30% / 10% of the range. Computed in the same pass as B1.
 - ✅ Done when `features/{setting}.npz` exists for every setting.
 
 **B3. Detectors** → `python detector/train_eval.py`
-- Pool all settings, using the same report split. Standardize features (fit on train only). Logistic regression with L2; tune `C` and the HF cutoff on **val**.
+- Pool all settings, with the same report split. Standardize the features (fit on train only). Logistic regression with L2; tune `C` and the HF cutoff on **val**.
 - Compare five detectors: lookback only, HF only, lookback + HF, confidence baseline (from A7), random.
-- Metrics on **test**: AUROC (main), F1 at the val-tuned threshold. Add 95% confidence intervals by bootstrap over test **reports**.
+- Metrics on **test**: AUROC (main) and F1 at the val-tuned threshold, with 95% confidence intervals by bootstrap over test **reports**.
+- Numbers with a NaN feature are dropped for every detector, so all five see the same numbers. `test_scores.csv` keeps every test number's scores, including `wrong_calc` and `question`, for B4 and B5.
 - ✅ Done when `results.csv` has one row per detector.
-- Numbers with a NaN feature are dropped for every detector, so all five see the same numbers. The confidence baseline is a logistic regression on the three A7 scores, tuned like the others. `test_scores.csv` keeps every test number's scores, including `wrong_calc` and `question`, for B4 and B5.
 
 **B4. Analysis** → `analysis/stage2.ipynb`
 - **RQ2:** AUROC for copied-vs-fabricated and for computed-vs-fabricated, separately. What fraction of correct computed numbers get flagged?
 - **RQ3:** AUROC per layer; rank heads by coefficient size; does a top-100-head detector keep most of the AUROC?
 - **Bridge:** mean lookback ratio per decoding setting. Does it fall as temperature rises?
-- The notebook calls `analysis/stage2.py` (also `python analysis/stage2.py`), which writes `analysis/figures/stage2_rq2.csv/.md`, `stage2_layers.csv/.png`, `stage2_heads.csv/.png`, `stage2_topk.csv` and `stage2_bridge.csv/.png`. Definitions are at the top of that file; all CIs are bootstrap over reports.
+- The notebook calls `analysis/stage2.py`, which writes the `analysis/figures/stage2_*` tables and figures. Definitions are at the top of that file.
 
 **B5. Error analysis (both)**
 - 10 false positives (correct numbers flagged), 10 false negatives (fabrications missed), and where `wrong_calc` numbers fall on the detector's score. Write what we think explains each pattern, in our own words.
-- `analysis/errors.ipynb` (or `python analysis/errors.py`) picks the examples and writes `analysis/figures/b5_examples.md/.csv` and `b5_scores_by_label.csv/.png`. Each example shows the question, gold answer and steps, the answer with the number marked, the labels of the answer's other numbers, and the report lines with that value. Our explanations go in the notebook.
+- `analysis/errors.ipynb` (or `python analysis/errors.py`) picks the examples and writes `analysis/figures/b5_*`. Each example shows the question, the gold answer and steps, the answer with the number marked, the labels of the answer's other numbers, and the report lines with that value.
 
 ### Both
 
 **R1. Stretch:** TAT-QA in the same format; train on FinQA, test on TAT-QA.
-- `python data/build_tatqa.py` → `data/tatqa_subset.jsonl`: TAT-QA's arithmetic questions (table first, then paragraphs), `tatqa_n_questions` sampled, all as test. `gold_steps` come from evaluating each derivation (`common/tatqa.py`).
-- Then the same A3, A4, A7 and B1–B2 scripts with `--subset data/tatqa_subset.jsonl` and `tatqa/...` folders, and `python detector/transfer.py`: detectors fit on FinQA exactly as in B3, scored on TAT-QA. Steps in `MANUAL_STEPS.md`, step 12.
+- `python data/build_tatqa.py` → `data/tatqa_subset.jsonl`: TAT-QA's arithmetic questions (table first, then paragraphs), `tatqa_n_questions` sampled, all as test. `common/tatqa.py` evaluates each derivation into `gold_steps`.
+- Then the A3, A4, A7 and B1–B2 scripts with `--subset data/tatqa_subset.jsonl` and `tatqa/...` folders, and `python detector/transfer.py`, which fits the detectors on FinQA exactly as in B3 and scores TAT-QA. Steps: `MANUAL_STEPS.md`, section "R1 (optional)".
+
 **R2. Poster:** dataset + labeling (A), decoding chart (A), attention diagram (B), AUROC table (B), head/layer heatmap (B).
+
 **R3. Report:** each person writes their own sections; we both edit the full draft.
 
 ---
@@ -338,7 +334,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 **Syncs:** 15 minutes twice a week. Update `LOG.md` and the results table before each one.
 
-The GPU runs are split by decoding setting (§2), so both of us run generation, labeling, confidence and features in parallel. The detailed day-by-day plan with the hand-offs is in [`MANUAL_STEPS.md`](MANUAL_STEPS.md#timeline).
+Both of us run GPU steps in parallel (§2). The day-by-day plan with hand-offs is in [`MANUAL_STEPS.md`](MANUAL_STEPS.md#timeline).
 
 ---
 
