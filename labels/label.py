@@ -121,7 +121,8 @@ def handcheck_rows(records, answers, questions, n, seed):
 
 
 def write_csv(path, rows):
-    with open(path, "w", newline="") as f:
+    # utf-8-sig so Excel shows the ⟦ ⟧ marks correctly; Google Sheets reads it too
+    with open(path, "w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)

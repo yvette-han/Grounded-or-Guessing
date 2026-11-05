@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off.
 
-_Last updated: Nov 5, after the A4 code._
+_Last updated: Nov 5, after the A5 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -29,6 +29,7 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **A4:** `wrong_calc` in code: every number before it in the answer is copied, computed or question, and at least one is copied. A number after a `wrong_calc` or `fabricated` one is `fabricated`
 - [ ] **A4:** `copied` is checked against every number in the report, so a wrong value can be labeled `copied` by coincidence. In the smoke test with fake answers, 3 of 14 deliberately wrong values matched a report number within 1% (`3.473` vs `3.5%`). Watch for this in the hand-check
 - [ ] **A4:** the hand-check sheet is 50 numbers drawn at random from one setting (not balanced by label); answers whose tokens don't line up with the prompt are skipped and counted
+- [ ] **A5 (not decided yet):** README A5 says "if agreement is under ~90%" but not which agreement. `labels/agreement.py` prints four: A vs B (with Cohen's kappa), A vs auto, B vs auto, and auto vs the rows where A = B. Decide which one the ~90% applies to
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens`, `hit_max_tokens` (README §7 updated); `answer_text` is the decoded tokens up to the stop token, not stripped
 
@@ -43,6 +44,7 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `analysis/b0_attention_plot.py` (B): explain it; check the hand-worked lookback values in `tests/test_b0.py`
 - [ ] `common/program.py` (A): explain it; check `tests/test_program.py` by hand
 - [ ] `labels/label.py` (A): explain it; check every expected label in `tests/test_label.py` by hand against README 6.3
+- [ ] `labels/agreement.py` (both): explain it; check the hand-worked kappa and rates in `tests/test_agreement.py`
 - [ ] `gen/generate.py` (A): explain it; check `tests/test_generate.py`, especially the decoding arguments each setting turns into
 - [ ] `encode_answer` in `common/prompt.py` (both): prompt + answer as one string for teacher forcing (A7, B1); check its tests in `tests/test_prompt.py`
 
@@ -58,7 +60,7 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 | A3 | Run `gen/generate.py` for every setting on Colab, `--setting greedy --limit 50` first for B (a run, not analysis) | 🟢 ready to run |
 | B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to the professor: what the heads attend to | 🟢 ready to run |
 | A4 | Run `labels/label.py` for every setting and put the label counts in `LOG.md` (a run, not analysis) | ⏳ needs the A3 run |
-| A5 | Hand-label the same 50 numbers each without seeing the auto labels (sheet: `labels/label.py --setting greedy --handcheck 50`); compute agreement; if under ~90%, decide how to change §6.3 | ⏳ needs the A3 greedy run |
+| A5 | Hand-label the same 50 numbers each without seeing the auto labels (sheet: `labels/label.py --setting greedy --handcheck 50`); run `labels/agreement.py`; go through `handcheck_disagreements.csv` together; if under ~90%, decide how to change §6.3 | ⏳ needs the A3 greedy run |
 | A6 | RQ0: what decoding does to accuracy and fabrication rate, and why | ⏳ needs A3, A4 |
 | A6 | Stage 1 error analysis (Nov 23–29) | ⏳ needs A6 results |
 | B3 | Read the results table: which detectors beat the confidence baseline, given the confidence intervals | ⏳ needs A7, B2 |

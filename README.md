@@ -236,6 +236,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 **A5. Hand-check labels (both, Nov 12–14)** → `labels/handcheck.csv`
 - Each person labels the same 50 numbers by hand without looking at the auto label; compare. Report the agreement rate.
+- Sheet: `python labels/label.py --setting greedy --handcheck 50`. Each fills `label_A` or `label_B` in their own copy, then `python labels/agreement.py --sheet-a A.csv --sheet-b B.csv` prints the agreement rates and writes `labels/handcheck_disagreements.csv`.
 - If agreement is under ~90%, fix the rules in §6.3 **before** anything else runs.
 
 **A6. Stage 1 results (RQ0)** → `analysis/stage1.ipynb`
