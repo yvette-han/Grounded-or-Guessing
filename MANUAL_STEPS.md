@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves, in this order. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, after the B3 code. Steps for B4–B5 get added here when their code exists._
+_Last updated: Nov 5, after the B4 code. Steps for B5 get added here when its code exists._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -210,6 +210,22 @@ After steps 7 (A7) and 8 (B1–B2) for every setting. No GPU needed, but run it 
 - If you also made `features/predicting/` in step 8: `!python detector/train_eval.py --features-dir features/predicting --out-dir detector/predicting`.
 - Note in `LOG.md` the chosen C and cutoff per detector (they're in `results.csv`).
 - **Commit:** `detector/results.csv`, `detector/test_scores.csv` (and `detector/predicting/` if made).
+
+---
+
+## 10. B4: Stage 2 analysis (Nov 23–29)
+
+After step 9 (B3). No GPU needed; run it in the Drive folder so it finds `features/`:
+
+```python
+!python analysis/stage2.py
+```
+
+or open `analysis/stage2.ipynb` and run all cells. It refits detectors per layer and per top-k heads, so it takes a few minutes.
+
+- Check the RQ2 table has a row per detector and the bridge has every setting.
+- Write the three **"Our reading"** cells (RQ2, RQ3, bridge) in our own words.
+- **Commit:** `analysis/figures/stage2_*` and `analysis/stage2.ipynb`.
 
 ---
 

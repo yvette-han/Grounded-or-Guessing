@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off. How to do each run by hand is in `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5, after the B3 code._
+_Last updated: Nov 5, after the B4 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -47,6 +47,9 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **B3:** C is picked from 0.001, 0.01, 0.1, 1, 10 by val AUROC; no class weighting; `hf` and `lookback_hf` each pick their own cutoff by val AUROC
 - [ ] **B3:** F1 threshold = the one with the best F1 on val; CIs = 1,000 bootstrap resamples of test reports (resamples with only one class are skipped)
 - [ ] **B3:** settings are pooled with each (setting, number) as its own example, so one question can appear up to five times; all its copies share a report and so a split
+- [ ] **B4 RQ2:** each pairwise AUROC uses only test numbers with those two labels; "flagged" = score at or above the detector's val-tuned threshold from B3; "correct computed numbers" = numbers labeled `computed`
+- [ ] **B4 RQ3:** per-layer AUROC = a detector trained on that layer's heads only (12 features for lookback, 36 for lookback_hf), C tuned on val. Head importance = absolute standardized coefficient in the full detector refit on train with B3's C and cutoff, summed over a head's 3 features for lookback_hf. Heads are ranked on train only; top-k = 10, 25, 50, 100, 200 and all
+- [ ] **B4 bridge:** a number's lookback = mean over all layers and heads; then the mean over numbers per setting, all splits, numbers without a lookback left out. Shown per label too, because the settings differ in how many numbers of each label they produce
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens`, `hit_max_tokens` (README §7 updated); `answer_text` is the decoded tokens up to the stop token, not stripped
 
@@ -67,6 +70,7 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `features/attention.py` and `features/extract.py` (B): explain them; check the hand-worked lookback and high-frequency values in `tests/test_features.py`
 - [ ] `common/io.py` (both): the shared file helpers
 - [ ] `detector/train_eval.py` (B): explain it; check the hand-worked F1 and threshold cases in `tests/test_detector.py`
+- [ ] `analysis/stage2.py` and `analysis/stage2.ipynb` (B): explain them; check the hand-worked cases in `tests/test_stage2.py`
 - [ ] `gen/generate.py` (A): explain it; check `tests/test_generate.py`, especially the decoding arguments each setting turns into
 - [ ] `encode_answer` in `common/prompt.py` (both): prompt + answer as one string for teacher forcing (A7, B1); check its tests in `tests/test_prompt.py`
 
@@ -88,9 +92,9 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 | A7 | Run `baseline/confidence.py` on Colab (a run, not analysis) | ⏳ needs the A4 run |
 | B1–B2 | Run `features/extract.py --limit 20` and check row sums ~1 and lookback within 0–1 (README B1 done), then the full run for every setting (README B2 done) (a run, not analysis) | ⏳ needs the A4 run |
 | B3 | Read the results table (`detector/results.csv`): which detectors beat the confidence baseline, given the confidence intervals | ⏳ needs the A7 and B2 runs, then `python detector/train_eval.py` |
-| B4 | **RQ2 (main contribution):** do detectors flag correct computed numbers, and does that support the hypothesis? | ⏳ needs B3 |
-| B4 | RQ3: which layers and heads carry the signal, and what that means | ⏳ needs B3 |
-| B4 | Bridge: does the lookback ratio fall as temperature rises, and what that says | ⏳ needs B2 |
+| B4 | **RQ2 (main contribution):** do detectors flag correct computed numbers, and does that support the hypothesis? Write it in the RQ2 "Our reading" cell of `analysis/stage2.ipynb` | ⏳ needs the B3 run, then `python analysis/stage2.py` |
+| B4 | RQ3: which layers and heads carry the signal, does a top-100-head detector keep most of the AUROC, and what that means (RQ3 cell) | ⏳ needs the B3 run |
+| B4 | Bridge: does the lookback ratio fall as temperature rises, and what that says (bridge cell) | ⏳ needs the B2 run |
 | B5 | 10 false positives, 10 false negatives, where `wrong_calc` falls: explain each pattern in our own words | ⏳ needs B3 |
 | R1 | Stretch: interpret the FinQA → TAT-QA transfer | ⏳ needs B3 + TAT-QA |
 | R2 | Poster text and takeaways | ⏳ |

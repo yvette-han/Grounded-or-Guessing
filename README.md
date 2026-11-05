@@ -281,6 +281,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 - **RQ2:** AUROC for copied-vs-fabricated and for computed-vs-fabricated, separately. What fraction of correct computed numbers get flagged?
 - **RQ3:** AUROC per layer; rank heads by coefficient size; does a top-100-head detector keep most of the AUROC?
 - **Bridge:** mean lookback ratio per decoding setting. Does it fall as temperature rises?
+- The notebook calls `analysis/stage2.py` (also `python analysis/stage2.py`), which writes `analysis/figures/stage2_rq2.csv/.md`, `stage2_layers.csv/.png`, `stage2_heads.csv/.png`, `stage2_topk.csv` and `stage2_bridge.csv/.png`. Definitions are at the top of that file; all CIs are bootstrap over reports.
 
 **B5. Error analysis (both)**
 - 10 false positives (correct numbers flagged), 10 false negatives (fabrications missed), and where `wrong_calc` numbers fall on the detector's score. Write what we think explains each pattern, in our own words.
