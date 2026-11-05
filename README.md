@@ -241,6 +241,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 **A6. Stage 1 results (RQ0)** → `analysis/stage1.ipynb`
 - Per setting: numeric accuracy vs gold, fabrication rate, distinct answers across settings, answer length. One table + one bar chart.
+- The notebook calls `analysis/stage1.py` (also runnable as `python analysis/stage1.py`), which writes `analysis/figures/stage1_table.csv`, `stage1_table.md` and `stage1_bars.png`. Measure definitions are at the top of that file.
 
 **A7. Confidence baseline** → `python baseline/confidence.py`
 - Teacher-forced pass (no attention needed): for each number span, the mean and min log-probability and the mean entropy of the next-token distribution.
