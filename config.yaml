@@ -1,0 +1,14 @@
+model: Qwen/Qwen2.5-1.5B-Instruct
+seed: 354
+n_questions: 1000
+max_context_tokens: 1500
+max_new_tokens: 128
+split: {train: 0.70, val: 0.15, test: 0.15}     # split BY REPORT, see README §6.2
+decoding:
+  greedy:  {do_sample: false}
+  beam5:   {do_sample: false, num_beams: 5}
+  temp07:  {do_sample: true, temperature: 0.7}
+  temp12:  {do_sample: true, temperature: 1.2}
+  topp09:  {do_sample: true, temperature: 1.0, top_p: 0.9}
+label_tolerance: 0.01        # relative; 4.2 matches 4.21
+hf_cutoffs: [0.25, 0.35, 0.45]   # normalized frequency; tune on val
