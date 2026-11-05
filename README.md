@@ -204,8 +204,8 @@ Both stages read and write these exact formats. If one changes, update this tabl
 | `data/finqa_subset.jsonl` | A | question | `id, report_key, split, question, context_text, gold_answer, gold_program, gold_steps` (value of each program step, `null` where it can't be computed) |
 | `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token span of the report, half-open: `ids[ctx_start:ctx_end]`), `n_new_tokens, hit_max_tokens` |
 | `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, char_start, char_end, tok_start, tok_end, label` (token indices **within the answer**, half-open, covering the digits; `char_*` = the whole mention in `answer_text`) |
-| `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id` |
-| `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[L×H], hf_gen[L×H], label, id` |
+| `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id, row` (`row` = line index in `labels/numbers_{setting}.jsonl`, the join key) |
+| `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[L×H], hf_gen[L×H], label, id, row` (same `row` as the confidence file) |
 
 Token indices come from the **same tokenizer and the same prompt string**. Always tokenize with `common/prompt.py`.
 
@@ -246,6 +246,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 - The notebook calls `analysis/stage1.py` (also runnable as `python analysis/stage1.py`), which writes `analysis/figures/stage1_table.csv`, `stage1_table.md` and `stage1_bars.png`. Measure definitions are at the top of that file.
 
 **A7. Confidence baseline** → `python baseline/confidence.py`
+- Scores each number's digit tokens from A4, under the model's own distribution (temperature 1, no top-k/top-p) for every setting.
 - Teacher-forced pass (no attention needed): for each number span, the mean and min log-probability and the mean entropy of the next-token distribution.
 - ✅ Done when `confidence_{setting}.npz` exists for all settings.
 

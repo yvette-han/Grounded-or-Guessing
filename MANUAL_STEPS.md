@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves, in this order. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, after the A6 code. Steps for A7 and B1–B5 get added here when their code exists._
+_Last updated: Nov 5, after the A7 code. Steps for B1–B5 get added here when their code exists._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -159,6 +159,20 @@ or open `analysis/stage1.ipynb` (in Colab: File → Open notebook → Google Dri
 
 - Write the **"Our reading"** cell of the notebook in our own words: what decoding does to accuracy and fabrication, and why.
 - **Commit:** `analysis/figures/stage1_table.csv`, `stage1_table.md`, `stage1_bars.png`, `analysis/stage1.ipynb`.
+
+---
+
+## 7. A7: confidence baseline (Nov 16–22)
+
+After step 4 has labeled the settings:
+
+```python
+!python baseline/confidence.py
+```
+
+- It scores every setting that has a labels file (or name them: `--setting greedy temp12`). One teacher-forced pass per answer.
+- Check each setting's line: the number count matches its labels file, `NaNs: 0`, and no skipped answers.
+- **Commit:** `baseline/confidence_*.npz`.
 
 ---
 
