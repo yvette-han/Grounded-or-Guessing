@@ -53,6 +53,8 @@ CASES = [
     ("notes:\n2) cost was 7.5", [(7.5, N)]),
     ("(1) revenue of 4", [(4, N)]),
     ("december 31 , 2009", []),
+    ("dec . 29 2012", []),           # FinQA's spaced abbreviation
+    ("dec. 29, 2012", []),
     ("Q4 and the 3rd quarter", []),
 ]
 

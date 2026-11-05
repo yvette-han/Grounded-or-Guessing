@@ -11,9 +11,10 @@ Steps:
      max_context_tokens (counted on the full model input).
   5. Sample n_questions with the config seed.
   6. Assign train/val/test by report (common/splits.py).
+  7. Execute each gold program (common/program.py) and keep every step's value.
 
 Output: data/finqa_subset.jsonl, one question per line, fields
-    id, report_key, split, question, context_text, gold_answer, gold_program
+    id, report_key, split, question, context_text, gold_answer, gold_program, gold_steps
 """
 
 import argparse
@@ -30,6 +31,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
+from common.program import run_program  # noqa: E402
 from common.prompt import build_context, encode  # noqa: E402
 from common.splits import assign_splits, report_key  # noqa: E402
 
@@ -106,6 +108,7 @@ def main():
             "context_text": context,
             "gold_answer": float(e["qa"]["exe_ans"]),
             "gold_program": e["qa"]["program"],
+            "gold_steps": run_program(e["qa"]["program"], e["table"]),
             "_prompt_tokens": n_prompt,
             "_context_tokens": enc["ctx_end"] - enc["ctx_start"],
         })
@@ -121,8 +124,12 @@ def main():
         r["split"] = splits[r["id"]]
     sample.sort(key=lambda r: r["id"])
 
+    off = [r["id"] for r in sample if r["gold_steps"][-1] is None
+           or abs(r["gold_steps"][-1] - r["gold_answer"]) > 1e-4 * max(1.0, abs(r["gold_answer"]))]
+    print(f"gold programs whose last step differs from FinQA's answer: {len(off)} {off[:5]}")
+
     fields = ["id", "report_key", "split", "question", "context_text",
-              "gold_answer", "gold_program"]
+              "gold_answer", "gold_program", "gold_steps"]
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as f:
         for r in sample:

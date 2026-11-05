@@ -173,8 +173,9 @@ FinQA ids look like `ADI/2009/page_49.pdf-1`. The **report key** is company + ye
 |---|---|---|
 | 1 | **copied** | The value appears in the report (within `label_tolerance` after normalization) |
 | 2 | **computed** | Not in the report, but matches the gold answer or an intermediate step of the gold `program` |
-| 3 | **wrong_calc** | Not in the report and not correct, but every input number the answer listed is **copied**. The model looked in the right place and did the math wrong |
-| 4 | **fabricated** | Anything else |
+| 3 | **question** | Not in the report or the gold program, but appears in the question (added Nov 5, see `LOG.md`) |
+| 4 | **wrong_calc** | Not in the report and not correct, but every input number the answer listed is **copied**. The model looked in the right place and did the math wrong. In code: every number before it in the answer is copied, computed or question, and at least one is copied |
+| 5 | **fabricated** | Anything else |
 
 The order matters: a gold answer that happens to equal a report number is **copied**.
 
@@ -188,7 +189,7 @@ The order matters: a gold answer that happens to equal a report number is **copi
 
 ### 6.5 Positive class for detection
 
-Main task: **fabricated = 1**, copied + computed = 0. `wrong_calc` is analyzed separately (§8, step B5) and left out of the main training set.
+Main task: **fabricated = 1**, copied + computed = 0. `wrong_calc` is analyzed separately (§8, step B5); it and `question` are left out of the main training set.
 
 ---
 
@@ -198,9 +199,9 @@ Both stages read and write these exact formats. If one changes, update this tabl
 
 | File | Writer | One row/record = | Fields |
 |---|---|---|---|
-| `data/finqa_subset.jsonl` | A | question | `id, report_key, split, question, context_text, gold_answer, gold_program` |
+| `data/finqa_subset.jsonl` | A | question | `id, report_key, split, question, context_text, gold_answer, gold_program, gold_steps` (value of each program step, `null` where it can't be computed) |
 | `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token span of the report, half-open: `ids[ctx_start:ctx_end]`), `n_new_tokens, hit_max_tokens` |
-| `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, tok_start, tok_end, label` (token indices **within the answer**) |
+| `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, char_start, char_end, tok_start, tok_end, label` (token indices **within the answer**, half-open, covering the digits; `char_*` = the whole mention in `answer_text`) |
 | `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id` |
 | `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[L×H], hf_gen[L×H], label, id` |
 
@@ -229,6 +230,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 - ✅ Done when every setting has 1,000 answers.
 
 **A4. Label** → `python labels/label.py --setting greedy`
+- `--handcheck 50` also writes `labels/handcheck.csv` for A5 (auto labels kept apart in `handcheck_key.csv`).
 - Apply §6.3 in order. Print the count of each label per setting.
 - ✅ Done when label counts are in `LOG.md`.
 

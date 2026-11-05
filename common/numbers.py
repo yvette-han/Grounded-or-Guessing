@@ -52,8 +52,9 @@ _SCALES = {
 }
 _PERCENT = re.compile(r"\s?(?:%|percent\b|per cent\b)", re.IGNORECASE)
 _CLOSE = re.compile(r"\s*\)")
+# A month name just before a day: "december 31", "dec. 31", and FinQA's spaced "dec . 31".
 _MONTH_BEFORE = re.compile(
-    r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\Z", re.IGNORECASE
+    r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s?\.)?\s+\Z", re.IGNORECASE
 )
 
 

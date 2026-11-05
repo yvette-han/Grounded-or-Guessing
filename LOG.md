@@ -19,3 +19,8 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 5: A3 `gen/generate.py`: transformers fills any decoding parameter we leave unset from the model's own generation config (Qwen: temperature 0.7, top-p 0.8, top-k 20, repetition penalty 1.05), so A3 replaces it and switches off everything a setting doesn't name.
 - Nov 5: A3 runs batches of 8 (left padding) with one seed per batch from (seed, setting, first id), in a fixed shuffled question order; it resumes from an existing output file. Added `n_new_tokens`, `hit_max_tokens` to the answers file.
 - Nov 5: `common/prompt.py` gained `encode_answer` (prompt + answer as one string, checks the prompt's tokens don't change); B0 now uses it.
+- Nov 5: A1 now stores `gold_steps`: each gold program step's value, from `common/program.py`, which follows FinQA's own executor. Its last step equals FinQA's `exe_ans` on all 8,127 numeric questions.
+- Nov 5: A2 fix: FinQA writes dates as `dec . 29`; the day is now skipped there too.
+- Nov 5: A4 adds a label `question` (number only in the question, ~10% of FinQA questions contain numbers) between computed and wrong_calc; left out of main training. `wrong_calc` = every earlier number in the answer is copied/computed/question and at least one is copied.
+- Nov 5: A4 token span = the number's digits (`tok_start`/`tok_end`, from the first answer token); whole mention kept as `char_start`/`char_end`. `--handcheck 50` samples 50 random numbers from one setting and never overwrites an existing sheet.
+- Nov 5: A4 smoke test on fake answers: 3 of 14 deliberately wrong values matched some report number within 1% and came out `copied` (e.g. `3.473` vs `3.5%`). Check how often this happens on real answers in A5.
