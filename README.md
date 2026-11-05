@@ -62,7 +62,7 @@ What that means for us:
 - ✅ **Required:** test every AI-written function on a small example where you already know the answer before you trust it (e.g. the number parser on 20 hand-written strings).
 - ✅ **Required:** each of us can explain every file in our folders line by line. If you can't explain it, rewrite it until you can.
 - ❌ **Not fine:** AI writes the analysis, interprets the results, or chooses the conclusions in the report or poster. We write those ourselves from our own results.
-- 📝 **Keep `LOG.md`:** one line per decision or dead end ("Nov 14: switched tolerance to 1% because 'about 12%' was being labeled fabricated"). This is also what we show the professor at meetings.
+- 📝 **Keep `LOG.md`:** one line per decision or dead end ("Nov 14: switched tolerance to 1% because 'about 12%' was being labeled fabricated"). This is also what we show professor at meetings.
 - 🧭 **`MANUAL_STEPS.md`** says, step by step, what we run and do by hand (Colab runs, hand-check, saving results).
 - 📋 **`ANALYSIS_TODO.md`** tracks the analysis that is ours to do, the choices in AI-written code we still need to review, and the AI-written code we need to be able to explain.
 
@@ -308,7 +308,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 | Dates | Person A (Stage 1) | Person B (Stage 2) | Checkpoint |
 |---|---|---|---|
-| Nov 2–8 | A1, A2 | B0, B1 on hand-made prompts | Meeting with the professor (bring B0 plot + A1 stats) |
+| Nov 2–8 | A1, A2 | B0, B1 on hand-made prompts | Meeting with professor (bring B0 plot + A1 stats) |
 | Nov 9–15 | A3, A4 · **50 greedy examples to B by Nov 12** | B1, B2 on the first batch | **A5 hand-check Nov 12–14** |
 | Nov 16–22 | A6, A7 | B2 on all settings, B3 | Stage 1 finished = safe floor |
 | Nov 23–29 | Stage 1 error analysis | B4 (Thanksgiving week) | Main results table frozen |

@@ -93,7 +93,7 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 |---|---|---|---|
 | A1 | Run `data/build_subset.py` with the Qwen tokenizer and fill the stats line in `LOG.md` (a run, not analysis) | A | 🟢 ready |
 | A3 | Run `gen/generate.py` for every setting on Colab, `--setting greedy --limit 50` first for B (a run, not analysis) | A: greedy, beam5 · B: temp07, temp12, topp09 | 🟢 ready to run |
-| B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to the professor: what the heads attend to | B | 🟢 ready to run |
+| B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to professor: what the heads attend to | B | 🟢 ready to run |
 | A4 | Run `labels/label.py` for every setting and put the label counts in `LOG.md` (a run, not analysis) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs the A3 run |
 | A5 | Hand-label the same 50 numbers each without seeing the auto labels (sheet: `labels/label.py --setting greedy --handcheck 50`); run `labels/agreement.py`; go through `handcheck_disagreements.csv` together; if under ~90%, decide how to change §6.3 | both | ⏳ needs the A3 greedy run |
 | A6 | RQ0: what decoding does to accuracy and fabrication rate, and why. Write it in the "Our reading" cell of `analysis/stage1.ipynb` | A | ⏳ needs the A3 and A4 runs, then `python analysis/stage1.py` |

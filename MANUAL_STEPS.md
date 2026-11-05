@@ -155,7 +155,7 @@ Settings: **`temp07`, `temp12`, `topp09`**. Details of each check are in the ref
 !python analysis/b0_attention_plot.py
 ```
 
-- Check `attention rows sum to` ~1. Push the two PNGs and prepare to explain them to the professor.
+- Check `attention rows sum to` ~1. Push the two PNGs and prepare to explain them to professor.
 
 **B-2. Reviews (any time, in between runs).** In `ANALYSIS_TODO.md`: every section 1 item starting with B0–B5, and every section 2 file marked (B) or (both).
 
