@@ -5,6 +5,8 @@ CSE 354 Final Project · Poster **Dec 9** (NCS atrium) · Report **Dec 11**
 
 A language model reads part of a company's financial report and answers a question with numbers. Some numbers are **copied** from the report, some are **computed** from it (correctly or not), and some are **made up**. We test whether the model's own attention can tell these apart.
 
+**Status (Nov 5):** the code for every step (A1–A7, B0–B5, R1) is written and tested (`python -m pytest -q`); nothing has run on real data yet. Next: the Colab runs in [`MANUAL_STEPS.md`](MANUAL_STEPS.md), starting with A1 and the 50 greedy answers due Nov 12.
+
 ---
 
 ## Contents
@@ -43,12 +45,12 @@ A language model reads part of a company's financial report and answers a questi
 |---|---|---|
 | Name | Eduardo | Yvette |
 | Owns | Data, generation, decoding settings, labeling, confidence baseline, Stage 1 results | Attention extraction, features, detectors, layer/head analysis |
-| Folders | `data/`, `gen/`, `labels/`, `baseline/` | `features/`, `detector/`, `analysis/` |
+| Folders | `data/`, `gen/`, `labels/`, `baseline/`, `analysis/stage1.*` | `features/`, `detector/`, `analysis/b0_attention_plot.py`, `analysis/stage2.*`, `analysis/errors.*` |
 | Presents at poster | Dataset, labeling, decoding results | Attention method, detector results, analysis |
 
-**Both:** `config.yaml`, the shared definitions in §6, the label hand-check, the report and the poster. **Each person must be able to explain the other person's half.**
+**Both:** `config.yaml`, `common/`, `tests/`, the shared definitions in §6, the label hand-check, the report and the poster. **Each person must be able to explain the other person's half.**
 
-**GPU runs** are split by decoding setting so both of us can run at the same time: A runs `greedy` and `beam5`, B runs `temp07`, `temp12` and `topp09`, each through generation, labeling, confidence and features. Step-by-step checklists: `MANUAL_STEPS.md`.
+**GPU runs** are split by decoding setting so both of us can run at the same time: Eduardo (A) runs `greedy` and `beam5`, Yvette (B) runs `temp07`, `temp12` and `topp09`, each through generation, labeling, confidence and features. Step-by-step checklists: `MANUAL_STEPS.md`.
 
 ---
 
@@ -73,8 +75,8 @@ What that means for us:
 **Compute:** Google Colab with a GPU (T4 is enough for a 1.5B model). Use the same notebook runtime type for both of us.
 
 ```bash
-git clone <repo-url> && cd grounded-or-guessing
-pip install torch transformers accelerate datasets numpy scipy scikit-learn pandas matplotlib pyyaml tqdm
+git clone https://github.com/yvette-han/Grounded-or-Guessing && cd Grounded-or-Guessing
+pip install -r requirements.txt
 ```
 
 **Running on Colab:** To run it, open Colab with a GPU runtime and run these in one session. Use `!` before shell lines and `%cd` to change folders.
@@ -95,9 +97,13 @@ python data/build_subset.py
 python analysis/b0_attention_plot.py
 ```
 
+For every other step (who runs which settings, in which order, and how we share files), follow the checklists in [`MANUAL_STEPS.md`](MANUAL_STEPS.md).
+
 **Model:** `Qwen/Qwen2.5-1.5B-Instruct` (fallback: `meta-llama/Llama-3.2-3B-Instruct`). Read the layer and head counts from `model.config.num_hidden_layers` and `model.config.num_attention_heads`; don't hard-code them.
 
 **Data:** FinQA (Chen et al., 2021), from the official GitHub repo (`dataset/train.json`, `dev.json`, `test.json`). Each example has the text before the table (`pre_text`), the `table`, the text after it (`post_text`), and a `qa` block with the question, the gold `program` (calculation steps) and the executed answer. Check the exact field names when you first load it.
+
+**Data (R1 stretch):** TAT-QA (Zhu et al., 2021), from its official GitHub repo; `data/build_tatqa.py` downloads it. Both datasets are pinned to one commit and downloaded into `data/raw/` (not in git).
 
 **`config.yaml`** (one shared file; every script reads from it):
 
@@ -125,19 +131,33 @@ tatqa_n_questions: 500     # R1 stretch: TAT-QA test questions (data/build_tatqa
 ## 5. Repo layout
 
 ```
-config.yaml
-LOG.md                  decisions and dead ends, dated
+config.yaml             shared settings; every script reads it
+requirements.txt        pip install -r requirements.txt
+LOG.md                  decisions and dead ends, dated; run notes per person at the bottom
 ANALYSIS_TODO.md        analysis, reviews and explanations that are ours to do (§3)
-MANUAL_STEPS.md         how to do the manual steps, in order
+MANUAL_STEPS.md         who runs what, in which order: Colab checklists for A and B
+CLAUDE.md               notes for Claude (AI-use rule, keeping the trackers current)
+common/                 both: prompt.py     prompt + token spans (§6.1, §6.4)
+                              numbers.py    find and compare numbers (§6.3)
+                              splits.py     split by report (§6.2)
+                              program.py    run FinQA gold programs
+                              tatqa.py      TAT-QA conversion (R1)
+                              io.py         file helpers
 data/                   A: build_subset.py  → finqa_subset.jsonl
+                        R1: build_tatqa.py  → tatqa_subset.jsonl
 gen/                    A: generate.py      → answers_{setting}.jsonl
 labels/                 A: label.py         → numbers_{setting}.jsonl, handcheck.csv
+                           agreement.py     → hand-check agreement (A5)
 baseline/               A: confidence.py    → confidence_{setting}.npz
-features/               B: extract.py       → {setting}.npz
-detector/               B: train_eval.py    → results.csv
-analysis/               B (+A): notebooks and figures for the poster
-common/                 both: numbers.py (parse/normalize), prompt.py, splits.py, metrics.py
-tatqa/                  R1: gen/, labels/, baseline/, features/ for TAT-QA (same scripts, folder flags)
+features/               B: attention.py     lookback and HF energy
+                           extract.py       → {setting}.npz (kept in our shared Drive folder)
+detector/               B: train_eval.py    → results.csv, test_scores.csv
+                        R1: transfer.py     → transfer_results.csv, tatqa_scores.csv
+analysis/               A: stage1.py + stage1.ipynb (A6)
+                        B: b0_attention_plot.py (B0), stage2.py + stage2.ipynb (B4), errors.py + errors.ipynb (B5)
+                           figures/ for the poster and report; notes/ for our B5 write-ups
+tatqa/                  R1: gen/, labels/, baseline/ for TAT-QA (same scripts, folder flags)
+tests/                  unit tests for every module: python -m pytest -q
 ```
 
 `common/` is shared code. Change it only after telling the other person, because both stages depend on it.
@@ -224,7 +244,7 @@ Token indices come from the **same tokenizer and the same prompt string**. Alway
 
 Each step lists what to run, what it produces, and how to know it's done. Steps marked 🔁 feed the other person, so ship a small version early.
 
-### Stage 1 (Person A)
+### Stage 1 (Person A: Eduardo)
 
 **A1. Build the subset** → `python data/build_subset.py`
 - Load FinQA, convert tables to text, drop examples whose prompt exceeds `max_context_tokens`, sample `n_questions`, assign splits by report.
@@ -259,9 +279,9 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 - Teacher-forced pass (no attention needed): for each number span, the mean and min log-probability and the mean entropy of the next-token distribution.
 - ✅ Done when `confidence_{setting}.npz` exists for all settings.
 
-### Stage 2 (Person B)
+### Stage 2 (Person B: Yvette)
 
-**B0. Meeting plot (before the Nov 2–11 meeting)**
+**B0. Meeting plot (before the Nov 2–11 meeting)** → `python analysis/b0_attention_plot.py`
 - One FinQA example: load the model with `attn_implementation="eager"`, run one forward pass with `output_attentions=True`, plot one number token's attention over the report tokens for a few heads.
 
 **B1. Attention extraction** → `features/extract.py`
@@ -306,7 +326,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 
 ## 9. Timeline
 
-| Dates | Person A (Stage 1) | Person B (Stage 2) | Checkpoint |
+| Dates | Eduardo (A, Stage 1) | Yvette (B, Stage 2) | Checkpoint |
 |---|---|---|---|
 | Nov 2–8 | A1, A2 | B0, B1 on hand-made prompts | Meeting with professor (bring B0 plot + A1 stats) |
 | Nov 9–15 | A3, A4 · **50 greedy examples to B by Nov 12** | B1, B2 on the first batch | **A5 hand-check Nov 12–14** |
@@ -317,6 +337,8 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 | **Dec 9 / Dec 11** | | | **Poster / report** |
 
 **Syncs:** 15 minutes twice a week. Update `LOG.md` and the results table before each one.
+
+The GPU runs are split by decoding setting (§2), so both of us run generation, labeling, confidence and features in parallel. The detailed day-by-day plan with the hand-offs is in [`MANUAL_STEPS.md`](MANUAL_STEPS.md#timeline).
 
 ---
 
