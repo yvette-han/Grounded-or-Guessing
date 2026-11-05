@@ -52,7 +52,7 @@ A language model reads part of a company's financial report and answers a questi
 
 ## 3. AI use policy
 
-The professor's rule (Lecture 1): AI use is **allowed for the coding**, but *"the analysis and the knowledge that you produce must be your own."*
+Professor's rule: AI use is **allowed for the coding**, but *"the analysis and the knowledge that you produce must be your own."*
 
 What that means for us:
 
