@@ -167,30 +167,36 @@ def fit_logreg(X_train, y_train, X_val, y_val, Cs, seed=0):
     return best
 
 
-def run(data, Cs=C_GRID, n_boot=1000, seed=0):
-    """Train, tune and test every detector.
+def split_masks(data):
+    """(y, train, val, test) where train/val/test keep only numbers in the task (y >= 0)."""
+    y = targets(data["label"])
+    split = data["split"]
+    return y, (split == "train") & (y >= 0), (split == "val") & (y >= 0), (split == "test") & (y >= 0)
 
-    Returns (results rows, test score columns, mask of the test numbers): each
-    column has one value per test number, in data order, for every label.
+
+def score_detector(det, fit, data, seed=0):
+    """Scores of one fitted detector on every number of `data`."""
+    if det == "random":
+        return np.random.default_rng(seed).uniform(size=len(data["label"]))
+    return fit["model"].predict_proba(features_for(data, det, fit["cutoff_index"]))[:, 1]
+
+
+def fit_detectors(data, Cs=C_GRID, seed=0):
+    """Fit every detector on the train split and tune it on val.
+
+    Returns {detector: {model, cutoff_index, hf_cutoff, C, val_auroc, threshold, n_features}};
+    the threshold is the one with the best F1 on val.
     """
     from sklearn.metrics import roc_auc_score
 
-    y = targets(data["label"])
-    split = data["split"]
-    train, val = (split == "train") & (y >= 0), (split == "val") & (y >= 0)
-    test_all = split == "test"
-    test = test_all & (y >= 0)
-    for name, m in (("train", train), ("val", val), ("test", test)):
+    y, train, val, _ = split_masks(data)
+    for name, m in (("train", train), ("val", val)):
         if len(np.unique(y[m])) < 2:
             raise ValueError(f"the {name} split needs both fabricated and copied/computed numbers")
-    groups = data["report"][test]
-
-    results, columns = [], {}
+    fitted = {}
     for det in DETECTORS:
         if det == "random":
-            scores = np.random.default_rng(seed).uniform(size=len(y))
-            val_auc, C, cut = float(roc_auc_score(y[val], scores[val])), None, None
-            n_features = 0
+            fit = {"model": None, "cutoff_index": None, "C": None, "n_features": 0}
         else:
             cut_options = range(len(data["hf_cutoffs"])) if det in ("hf", "lookback_hf") else [None]
             best = None
@@ -198,27 +204,54 @@ def run(data, Cs=C_GRID, n_boot=1000, seed=0):
                 X = features_for(data, det, ci)
                 val_auc, C, model = fit_logreg(X[train], y[train], X[val], y[val], Cs, seed)
                 if best is None or val_auc > best[0]:
-                    best = (val_auc, C, ci, model, X)
-            val_auc, C, ci, model, X = best
-            scores = model.predict_proba(X)[:, 1]
-            cut = None if ci is None else round(float(data["hf_cutoffs"][ci]), 6)  # stored as float32
-            n_features = X.shape[1]
+                    best = (val_auc, C, ci, model, X.shape[1])
+            _, C, ci, model, n_features = best
+            fit = {"model": model, "cutoff_index": ci, "C": C, "n_features": n_features}
+        fit["hf_cutoff"] = (None if fit["cutoff_index"] is None
+                            else round(float(data["hf_cutoffs"][fit["cutoff_index"]]), 6))  # stored as float32
+        scores = score_detector(det, fit, data, seed)
+        fit["val_auroc"] = float(roc_auc_score(y[val], scores[val]))
+        fit["threshold"], _ = best_f1_threshold(y[val], scores[val])
+        fitted[det] = fit
+    return fitted
 
-        threshold, _ = best_f1_threshold(y[val], scores[val])
-        auc = float(roc_auc_score(y[test], scores[test]))
-        f1 = f1_at(y[test], scores[test], threshold)
-        auc_lo, auc_hi = bootstrap_ci(y[test], scores[test], groups, roc_auc_score, n_boot, seed)
-        f1_lo, f1_hi = bootstrap_ci(y[test], scores[test], groups,
-                                    lambda yy, ss: f1_at(yy, ss, threshold), n_boot, seed)
+
+def test_metrics(y, scores, groups, threshold, n_boot=1000, seed=0):
+    """AUROC and F1 at the threshold, each with a CI over groups (reports)."""
+    from sklearn.metrics import roc_auc_score
+
+    auc_lo, auc_hi = bootstrap_ci(y, scores, groups, roc_auc_score, n_boot, seed)
+    f1_lo, f1_hi = bootstrap_ci(y, scores, groups, lambda yy, ss: f1_at(yy, ss, threshold), n_boot, seed)
+    return {"auroc": float(roc_auc_score(y, scores)), "auroc_ci_low": auc_lo, "auroc_ci_high": auc_hi,
+            "f1": f1_at(y, scores, threshold), "f1_ci_low": f1_lo, "f1_ci_high": f1_hi}
+
+
+def run(data, Cs=C_GRID, n_boot=1000, seed=0):
+    """Train, tune and test every detector.
+
+    Returns (results rows, test score columns, mask of the test numbers): each
+    column has one value per test number, in data order, for every label.
+    """
+    y, train, val, test = split_masks(data)
+    test_all = data["split"] == "test"
+    if len(np.unique(y[test])) < 2:
+        raise ValueError("the test split needs both fabricated and copied/computed numbers")
+    groups = data["report"][test]
+
+    fitted = fit_detectors(data, Cs, seed)
+    results, columns = [], {}
+    for det in DETECTORS:
+        fit = fitted[det]
+        scores = score_detector(det, fit, data, seed)
         results.append({
-            "detector": det, "auroc": auc, "auroc_ci_low": auc_lo, "auroc_ci_high": auc_hi,
-            "f1": f1, "f1_ci_low": f1_lo, "f1_ci_high": f1_hi, "threshold": threshold,
-            "val_auroc": val_auc, "C": C, "hf_cutoff": cut, "n_features": n_features,
+            "detector": det, **test_metrics(y[test], scores[test], groups, fit["threshold"], n_boot, seed),
+            "threshold": fit["threshold"], "val_auroc": fit["val_auroc"], "C": fit["C"],
+            "hf_cutoff": fit["hf_cutoff"], "n_features": fit["n_features"],
             "n_train": int(train.sum()), "n_val": int(val.sum()), "n_test": int(test.sum()),
             "n_test_fabricated": int((y[test] == 1).sum()),
         })
         columns[det] = scores[test_all]
-        columns[f"{det}_flagged"] = (scores[test_all] >= threshold).astype(int)
+        columns[f"{det}_flagged"] = (scores[test_all] >= fit["threshold"]).astype(int)
     return results, columns, test_all
 
 

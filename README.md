@@ -115,6 +115,7 @@ decoding:
 label_tolerance: 0.01        # relative; 4.2 matches 4.21
 hf_cutoffs: [0.25, 0.35, 0.45]   # normalized frequency; tune on val
 chat_template: true          # send the 6.1 prompt as the user turn of the model's chat template
+tatqa_n_questions: 500     # R1 stretch: TAT-QA test questions (data/build_tatqa.py)
 ```
 
 ---
@@ -134,6 +135,7 @@ features/               B: extract.py       → {setting}.npz
 detector/               B: train_eval.py    → results.csv
 analysis/               B (+A): notebooks and figures for the poster
 common/                 both: numbers.py (parse/normalize), prompt.py, splits.py, metrics.py
+tatqa/                  R1: gen/, labels/, baseline/, features/ for TAT-QA (same scripts, folder flags)
 ```
 
 `common/` is shared code. Change it only after telling the other person, because both stages depend on it.
@@ -208,6 +210,9 @@ Both stages read and write these exact formats. If one changes, update this tabl
 | `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[C×L×H], hf_gen[C×L×H], hf_cutoffs, label, id, row` (C = one per `hf_cutoffs` value, stored as float16; same `row` as the confidence file). Not in git: kept in our shared Drive folder |
 | `detector/results.csv` | B | detector | `detector, auroc, auroc_ci_low, auroc_ci_high, f1, f1_ci_low, f1_ci_high, threshold, val_auroc, C, hf_cutoff, n_features, n_train, n_val, n_test, n_test_fabricated` |
 | `detector/test_scores.csv` | B | test number (every label) | `setting, row, id, report, label`, then per detector its score and `{detector}_flagged` (score ≥ val-tuned threshold) |
+| `data/tatqa_subset.jsonl` | R1 | TAT-QA question | the `finqa_subset.jsonl` fields (`gold_program` = TAT-QA's derivation, `split` = test) plus `gold_scale` |
+| `detector/transfer_results.csv` | R1 | detector | `detector, finqa_test_auroc, tatqa_auroc (+ CI), tatqa_f1 (+ CI), threshold, C, hf_cutoff, n_tatqa, n_tatqa_fabricated` |
+| `detector/tatqa_scores.csv` | R1 | TAT-QA number (every label) | same columns as `test_scores.csv` |
 
 Token indices come from the **same tokenizer and the same prompt string**. Always tokenize with `common/prompt.py`.
 
@@ -290,6 +295,8 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 ### Both
 
 **R1. Stretch:** TAT-QA in the same format; train on FinQA, test on TAT-QA.
+- `python data/build_tatqa.py` → `data/tatqa_subset.jsonl`: TAT-QA's arithmetic questions (table first, then paragraphs), `tatqa_n_questions` sampled, all as test. `gold_steps` come from evaluating each derivation (`common/tatqa.py`).
+- Then the same A3, A4, A7 and B1–B2 scripts with `--subset data/tatqa_subset.jsonl` and `tatqa/...` folders, and `python detector/transfer.py`: detectors fit on FinQA exactly as in B3, scored on TAT-QA. Steps in `MANUAL_STEPS.md`, step 12.
 **R2. Poster:** dataset + labeling (A), decoding chart (A), attention diagram (B), AUROC table (B), head/layer heatmap (B).
 **R3. Report:** each person writes their own sections; we both edit the full draft.
 

@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves, in this order. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, after the B5 code. Every step with code is now here; R1–R3 (TAT-QA, poster, report) are ours._
+_Last updated: Nov 5, after the R1 code. Every step with code is now here; R2–R3 (poster, report) are ours._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -241,6 +241,36 @@ After step 9 (B3). No GPU needed. Open `analysis/errors.ipynb` and run all cells
 - Read each example in `analysis/figures/b5_examples.md` together: the marked number, the labels of the other numbers in that answer, and the report lines with that value.
 - Write the three **"Our reading"** cells (wrong_calc, false positives, false negatives) in our own words.
 - **Commit:** `analysis/figures/b5_*` and `analysis/errors.ipynb`.
+
+---
+
+## 12. R1 (optional stretch): FinQA → TAT-QA transfer (Nov 30–Dec 6)
+
+Only if time allows, after the FinQA runs of steps 7–9. TAT-QA outputs go into `tatqa/` so nothing of FinQA is overwritten. Use the same `--row` for features as for FinQA.
+
+```python
+!python data/build_tatqa.py
+```
+
+```python
+!python gen/generate.py --setting greedy --subset data/tatqa_subset.jsonl --out-dir tatqa/gen
+!python gen/generate.py --setting temp12 --subset data/tatqa_subset.jsonl --out-dir tatqa/gen
+```
+
+(greedy alone may have too few fabricated numbers; add more settings if time allows.)
+
+```python
+!python labels/label.py --setting greedy --subset data/tatqa_subset.jsonl --answers-dir tatqa/gen --out-dir tatqa/labels --handcheck 30
+!python labels/label.py --setting temp12 --subset data/tatqa_subset.jsonl --answers-dir tatqa/gen --out-dir tatqa/labels
+!python baseline/confidence.py --answers-dir tatqa/gen --labels-dir tatqa/labels --out-dir tatqa/baseline
+!python features/extract.py --answers-dir tatqa/gen --labels-dir tatqa/labels --out-dir tatqa/features
+!python detector/transfer.py
+```
+
+- `build_tatqa.py` prints how many derivations don't reproduce their answer (expect about 0.3%). Record its counts in `LOG.md`.
+- Hand-check `tatqa/labels/handcheck.csv` the same way as step 5 (compare with `labels/agreement.py --sheet-a ... --sheet-b ... --key tatqa/labels/handcheck_key.csv --out tatqa/labels/handcheck_disagreements.csv`), because TAT-QA's answers and derivations differ from FinQA's.
+- `transfer.py` refuses features made with a different `--row` or different HF cutoffs than FinQA's.
+- **Commit:** `data/tatqa_subset.jsonl`, `tatqa/gen/`, `tatqa/labels/`, `tatqa/baseline/`, `detector/transfer_results.csv`, `detector/tatqa_scores.csv` (`tatqa/features/` stays in Drive).
 
 ---
 

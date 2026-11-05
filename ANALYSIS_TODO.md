@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off. How to do each run by hand is in `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5, after the B5 code._
+_Last updated: Nov 5, after the R1 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -53,6 +53,10 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **B5:** the detector analyzed is, by default, the learned one with the best **val** AUROC (`--detector` / `DETECTOR` picks another)
 - [ ] **B5:** the 10 + 10 examples are a seeded random sample of the test errors (representative); `--pick extreme` / `PICK = "extreme"` takes the most confident errors instead
 - [ ] **B5:** false positive = a `copied` or `computed` number that is flagged (a flagged `question` number isn't counted); false negative = a `fabricated` number that isn't flagged
+- [ ] **R1:** only TAT-QA's `arithmetic` questions with a numeric answer (from its train, dev and test_gold files, all treated as test); `tatqa_n_questions` = 500 sampled after the same length filter as A1
+- [ ] **R1:** TAT-QA context = the table first, then the paragraphs in order (FinQA is text, table, text)
+- [ ] **R1:** `gold_answer` is TAT-QA's answer as written (scale not applied; a percent answer like -22.22 is already x100). `gold_steps` = every operation's value in the derivation; `%` and a lone `(n)` are read whichever way reproduces the answer. 18 of 6,959 derivations (0.3%) contain words and keep only the gold answer
+- [ ] **R1:** the transfer uses FinQA's C, cutoff and F1 threshold unchanged, and pools whichever TAT-QA settings were run
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens`, `hit_max_tokens` (README §7 updated); `answer_text` is the decoded tokens up to the stop token, not stripped
 
@@ -75,6 +79,7 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `detector/train_eval.py` (B): explain it; check the hand-worked F1 and threshold cases in `tests/test_detector.py`
 - [ ] `analysis/stage2.py` and `analysis/stage2.ipynb` (B): explain them; check the hand-worked cases in `tests/test_stage2.py`
 - [ ] `analysis/errors.py` and `analysis/errors.ipynb` (B, both use): explain them; check the hand-worked cases in `tests/test_errors.py`
+- [ ] `common/tatqa.py`, `data/build_tatqa.py`, `detector/transfer.py` (R1): explain them; check `tests/test_tatqa.py` and `tests/test_transfer.py`. `detector/train_eval.py` was split into `fit_detectors` / `score_detector` / `test_metrics` for this (same results)
 - [ ] `gen/generate.py` (A): explain it; check `tests/test_generate.py`, especially the decoding arguments each setting turns into
 - [ ] `encode_answer` in `common/prompt.py` (both): prompt + answer as one string for teacher forcing (A7, B1); check its tests in `tests/test_prompt.py`
 
@@ -100,7 +105,7 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 | B4 | RQ3: which layers and heads carry the signal, does a top-100-head detector keep most of the AUROC, and what that means (RQ3 cell) | ⏳ needs the B3 run |
 | B4 | Bridge: does the lookback ratio fall as temperature rises, and what that says (bridge cell) | ⏳ needs the B2 run |
 | B5 | 10 false positives, 10 false negatives, where `wrong_calc` falls: explain each pattern in our own words, in the "Our reading" cells of `analysis/errors.ipynb` (both of us) | ⏳ needs the B3 run |
-| R1 | Stretch: interpret the FinQA → TAT-QA transfer | ⏳ needs B3 + TAT-QA |
+| R1 | Stretch: hand-check ~30 TAT-QA labels (its answers and derivations differ from FinQA's), then interpret the FinQA → TAT-QA transfer (`detector/transfer_results.csv`) | ⏳ optional; needs the B3 inputs and the R1 runs (`MANUAL_STEPS.md` step 12) |
 | R2 | Poster text and takeaways | ⏳ |
 | R3 | Report: each writes their own sections, both edit the draft | ⏳ |
 | Dec 7–8 | Rehearse: each explains the other's half | ⏳ |
