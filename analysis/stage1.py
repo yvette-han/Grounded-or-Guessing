@@ -23,7 +23,6 @@ CIs: 95% bootstrap over reports (company/year), as in README B3.
 
 import argparse
 import csv
-import json
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -34,6 +33,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from common.io import read_jsonl  # noqa: E402
 from common.numbers import extract_numbers, find_match, same_value  # noqa: E402
 from labels.label import LABELS  # noqa: E402
 
@@ -138,24 +138,19 @@ def setting_metrics(setting, answers, records, questions, ids, tol, greedy_final
 
 # Loading and output --------------------------------------------------------
 
-def _read_jsonl(path):
-    with open(path) as f:
-        return [json.loads(line) for line in f if line.strip()]
-
-
 def build_table(cfg, subset, answers_dir, labels_dir, seed=0):
     """(rows, info) for every setting in the config that has an answers file."""
     tol = cfg["label_tolerance"]
-    questions = {r["id"]: r for r in _read_jsonl(subset)}
+    questions = {r["id"]: r for r in read_jsonl(subset)}
     answers, records, missing = {}, {}, []
     for s in cfg["decoding"]:
         path = Path(answers_dir) / f"answers_{s}.jsonl"
         if not path.exists():
             missing.append(s)
             continue
-        answers[s] = {r["id"]: r for r in _read_jsonl(path)}
+        answers[s] = {r["id"]: r for r in read_jsonl(path)}
         lpath = Path(labels_dir) / f"numbers_{s}.jsonl"
-        records[s] = _read_jsonl(lpath) if lpath.exists() else None
+        records[s] = read_jsonl(lpath) if lpath.exists() else None
     if not answers:
         raise FileNotFoundError(f"no answers_*.jsonl in {answers_dir}")
 

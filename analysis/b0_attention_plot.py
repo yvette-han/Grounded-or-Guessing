@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
 from common.numbers import extract_numbers, find_match, same_value  # noqa: E402
 from common.prompt import encode, encode_answer, tokens_in_span  # noqa: E402
+from features.attention import attention_row, lookback_ratio  # noqa: E402
 
 # Colors (light chart surface, one blue for the attention line, orange for marks).
 SURFACE, INK, INK_2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
@@ -49,14 +50,14 @@ def answer_numbers(answer, offsets, answer_char_start):
     return out
 
 
-def choose_number(numbers, report_numbers, n_prompt, tol, row_offset=0, index=None):
+def choose_number(numbers, report_numbers, n_prompt, tol, index=None):
     """The (Number, tokens) to plot.
 
     `index` picks one directly. Otherwise: the first number that also appears
-    in the report. Either way, the plotted row (first digit token minus
-    `row_offset`) needs at least one answer token before it (README 6.4).
+    in the report. Either way, the number's first digit token needs at least
+    one answer token before it (README 6.4).
     """
-    usable = [i for i, (_, toks) in enumerate(numbers) if toks[0] - row_offset > n_prompt]
+    usable = [i for i, (_, toks) in enumerate(numbers) if toks[0] > n_prompt]
     if index is not None:
         if index not in usable:
             raise ValueError(f"number {index} has no answer token before it, or does not exist")
@@ -65,17 +66,6 @@ def choose_number(numbers, report_numbers, n_prompt, tol, row_offset=0, index=No
         raise ValueError("no number in the answer has an answer token before it")
     in_report = [i for i in usable if find_match(numbers[i][0], report_numbers, tol) is not None]
     return numbers[(in_report or usable)[0]]
-
-
-def lookback_ratio(att_row, ctx, gen):
-    """att_row: [layers, heads, seq] attention from one token; ctx, gen: slices.
-
-    Mean attention on context tokens / (mean on context + mean on the answer
-    tokens before this one). README B2.
-    """
-    on_ctx = att_row[:, :, ctx].mean(-1)
-    on_gen = att_row[:, :, gen].mean(-1)
-    return on_ctx / (on_ctx + on_gen)
 
 
 def top_heads(ctx_att, k=4):
@@ -235,9 +225,8 @@ def main():
     for i, (n, toks) in enumerate(numbers):
         where = "in report" if find_match(n, report_numbers, tol) is not None else "not in report"
         print(f"  [{i}] {n.text!r:<22} value {n.value:<14g} {where:<14} tokens {toks[0]}-{toks[-1]}")
-    row_offset = 1 if args.row == "predicting" else 0
-    num, toks = choose_number(numbers, report_numbers, n_prompt, tol, row_offset, args.number)
-    row = toks[0] - row_offset
+    num, toks = choose_number(numbers, report_numbers, n_prompt, tol, args.number)
+    row = attention_row(toks[0], args.row)
     row_text = tokenizer.decode([ids[row]])
     print(f"\nplotting the row of token {row} {row_text!r} for {num.text!r}")
 
@@ -248,7 +237,7 @@ def main():
     print(f"attention rows sum to {att.sum(-1).min():.3f}-{att.sum(-1).max():.3f} (should be ~1)")
 
     ctx = slice(enc["ctx_start"], enc["ctx_end"])
-    lookback = lookback_ratio(att, ctx, slice(n_prompt, row))
+    lookback = lookback_ratio(att, ctx, slice(n_prompt, toks[0]))  # answer tokens before the number
     print(f"lookback ratio over all heads: min {lookback.min():.2f}, "
           f"mean {lookback.mean():.2f}, max {lookback.max():.2f}")
 
@@ -263,7 +252,7 @@ def main():
 
     heads = parse_heads(args.heads) if args.heads else top_heads(att[:, :, ctx])
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    which = "first digit" if row_offset == 0 else "token before the first digit"
+    which = "first digit" if args.row == "number" else "token before the first digit"
     plot_attention(args.out_dir / "b0_attention.png", att[:, :, ctx], heads, lookback, marks,
                    f"{ex['id']}: attention from {row_text!r} ({which} of {num.text!r} in the answer) "
                    f"over the report", snippet)

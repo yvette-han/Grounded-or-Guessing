@@ -2,7 +2,7 @@
 
 Claude writes the code. These steps need a GPU, our judgment, or our own words, so we do them ourselves, in this order. Tick items off in `ANALYSIS_TODO.md` as they're done.
 
-_Last updated: Nov 5, after the A7 code. Steps for B1–B5 get added here when their code exists._
+_Last updated: Nov 5, after the B1 code. Steps for B2–B5 get added here when their code exists._
 
 In a Colab cell, shell commands start with `!` and folder changes use `%cd`. Every block below is one Colab cell.
 
@@ -173,6 +173,26 @@ After step 4 has labeled the settings:
 - It scores every setting that has a labels file (or name them: `--setting greedy temp12`). One teacher-forced pass per answer.
 - Check each setting's line: the number count matches its labels file, `NaNs: 0`, and no skipped answers.
 - **Commit:** `baseline/confidence_*.npz`.
+
+---
+
+## 8. B1: attention features (Nov 9–22)
+
+Needs the labels from step 4. First the README B1 check on 20 answers per setting:
+
+```python
+!python features/extract.py --limit 20
+```
+
+- Check each setting's lines: `attention row sums` about 1, and `lookback` between 0 and 1. Note the result in `LOG.md` (README B1 is done when this looks sane).
+- Then the full run (every setting that has labels; uses more GPU memory than A3 because it keeps all attention maps for one answer at a time):
+
+```python
+!python features/extract.py
+```
+
+- To try the other row choice: `--row predicting --out-dir features/predicting` (keeps both versions).
+- **Commit:** `features/*.npz` (about 15 MB per setting).
 
 ---
 

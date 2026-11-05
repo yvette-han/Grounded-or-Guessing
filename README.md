@@ -186,7 +186,7 @@ The order matters: a gold answer that happens to equal a report number is **copi
 ### 6.4 "Context" for attention features
 
 - **Context tokens** = the report text only, between `### Report` and `### Question`. The instruction and the question count as neither context nor generated text.
-- **Generated tokens** = answer tokens before the current token.
+- **Generated tokens** = answer tokens before the current token. In code (`features/attention.py`) the current token is the number token *t*; with `--row predicting` the row read is *t − 1*, whose own token is then one of the generated tokens (as in Lookback Lens).
 - If a number token has **no** generated tokens before it, skip it for the lookback ratio (it would be undefined).
 
 ### 6.5 Positive class for detection
@@ -260,6 +260,7 @@ Each step lists what to run, what it produces, and how to know it's done. Steps 
 - Load in float16, batch size 1. Immediately keep only the **rows for number tokens** and discard the rest.
 - Start with `output_attentions=True`. If you run out of GPU memory on long reports, switch to forward hooks on each attention layer that compute the features and drop the weights.
 - ✅ Done when features for the first 20 examples look sane: attention rows sum to ~1, and lookback values lie between 0 and 1.
+- `python features/extract.py --limit 20` runs that check and prints both. The default row is each number token's own row; `--row predicting` uses the row before it.
 
 **B2. Features** (per head, per number token, averaged over the number's tokens)
 - **Lookback ratio** = mean attention on context tokens ÷ (mean on context + mean on previously generated tokens).

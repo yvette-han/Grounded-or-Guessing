@@ -5,9 +5,8 @@ import math
 import numpy as np
 import pytest
 
-from baseline.confidence import (
-    answer_logit_rows, group_records, next_token_stats, number_stats, save_npz,
-)
+from baseline.confidence import answer_logit_rows, next_token_stats, number_stats, save_npz
+from common.io import group_records
 
 
 def test_answer_logit_rows_align_with_answer_tokens():

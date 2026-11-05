@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off. How to do each run by hand is in `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5, after the A7 code._
+_Last updated: Nov 5, after the B1 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -20,7 +20,7 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **A2:** extra skip rules beyond README 6.3: the day after a month name (`december 31`), ordinals (`3rd`), digits inside words (`Q4`, `page_49`); list markers also include `1)` and `(1)`
 - [ ] **A2:** `(12)` = −12 also turns FinQA footnote markers like `( 1 )` in reports into −1
 - [ ] **A2 → A4:** each number has two spans, the whole mention (`$4.2 billion`) and just the digits (`4.2`). A4 uses the digits for `tok_start`/`tok_end` and keeps the mention in `char_start`/`char_end`
-- [ ] **B0 → B1 (not decided yet):** which attention row stands for a number token: the row of the number's own first digit (B0 default, README wording) or the row of the token before it, which predicts that digit (`--row predicting`)
+- [ ] **B0, B1 (not decided yet):** which attention row stands for a number token: its own row (default in both, README wording) or the row before it, which predicts it (`--row predicting`). B0 and B1 share the code in `features/attention.py`
 - [ ] **B0:** the plot shows the 4 heads with the most attention on the report from that token (`--heads` picks others); the example is the first val question and the first answer number found in the report unless `--id` / `--number` are given
 - [ ] **A3:** decoding parameters a setting doesn't name are switched off (top-k 0, top-p 1, temperature 1, repetition penalty 1) instead of taking Qwen's defaults (temperature 0.7, top-p 0.8, top-k 20, repetition penalty 1.05)
 - [ ] **A3:** batches of 8 with left padding, one seed per batch from (seed, setting, first id): sampled answers depend on the batch size, and fp16 batching can change a greedy answer slightly compared with batch size 1
@@ -37,6 +37,8 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **A7:** confidence is computed over the number's digit tokens only (not `$`, sign or scale word), the same span B1 will use
 - [ ] **A7:** confidence uses the model's own next-token distribution (temperature 1, no top-k/top-p) for every setting, not the distribution each setting actually sampled from (e.g. temperature 1.2), so scores are comparable across settings
 - [ ] **A7 → B1, B3:** confidence and feature files carry `row` (line in `labels/numbers_{setting}.jsonl`) so B3 can join them (README §7 updated for both)
+- [ ] **B1:** "generated tokens" (README 6.4) = answer tokens before the number token. With `--row predicting` that includes the row's own token, as in Lookback Lens (B0 now uses the same definition)
+- [ ] **B1:** a number's lookback = mean of the per-token ratios over its digit tokens; a token with no answer token before it is skipped, and a number with none left is NaN (B3 must drop those)
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens`, `hit_max_tokens` (README §7 updated); `answer_text` is the decoded tokens up to the stop token, not stripped
 
@@ -54,6 +56,8 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `labels/agreement.py` (both): explain it; check the hand-worked kappa and rates in `tests/test_agreement.py`
 - [ ] `analysis/stage1.py` and `analysis/stage1.ipynb` (A): explain them; check the hand-worked example in `tests/test_stage1.py`
 - [ ] `baseline/confidence.py` (A): explain it, especially why the logits at position *t* score token *t + 1*; check `tests/test_confidence.py` by hand
+- [ ] `features/attention.py` and `features/extract.py` (B): explain them; check the hand-worked lookback values in `tests/test_features.py`
+- [ ] `common/io.py` (both): the shared file helpers
 - [ ] `gen/generate.py` (A): explain it; check `tests/test_generate.py`, especially the decoding arguments each setting turns into
 - [ ] `encode_answer` in `common/prompt.py` (both): prompt + answer as one string for teacher forcing (A7, B1); check its tests in `tests/test_prompt.py`
 
@@ -73,6 +77,7 @@ Claude can make the plots and tables for these; reading them and drawing conclus
 | A6 | RQ0: what decoding does to accuracy and fabrication rate, and why. Write it in the "Our reading" cell of `analysis/stage1.ipynb` | ⏳ needs the A3 and A4 runs, then `python analysis/stage1.py` |
 | A6 | Stage 1 error analysis (Nov 23–29) | ⏳ needs A6 results |
 | A7 | Run `baseline/confidence.py` on Colab (a run, not analysis) | ⏳ needs the A4 run |
+| B1 | Run `features/extract.py --limit 20` and check row sums ~1 and lookback within 0–1 (README B1 done), then the full run (a run, not analysis) | ⏳ needs the A4 run |
 | B3 | Read the results table: which detectors beat the confidence baseline, given the confidence intervals | ⏳ needs A7, B2 |
 | B4 | **RQ2 (main contribution):** do detectors flag correct computed numbers, and does that support the hypothesis? | ⏳ needs B3 |
 | B4 | RQ3: which layers and heads carry the signal, and what that means | ⏳ needs B3 |

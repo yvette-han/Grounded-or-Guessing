@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from analysis.b0_attention_plot import (
-    answer_numbers, choose_number, lookback_ratio, parse_heads, plot_attention,
+    answer_numbers, choose_number, parse_heads, plot_attention,
     plot_lookback, top_heads,
 )
 from common.numbers import extract_numbers
@@ -13,15 +13,6 @@ from common.prompt import build_context, encode
 TABLE = [["revenue", "2009", "4,215"], ["cost of sales", "2009", "( 12 )"]]
 CONTEXT = build_context(["the company 's revenue was $ 4215 million in 2009 ."], TABLE, [])
 QUESTION = "what was the change in revenue from 2008 to 2009 ?"
-
-
-def test_lookback_ratio_by_hand():
-    att = np.zeros((1, 2, 10))
-    att[0, 0, :] = 0.1          # head 0: uniform -> context mean = answer mean -> 0.5
-    att[0, 1, 2:6] = 0.25       # head 1: everything on the context -> 1.0
-    lb = lookback_ratio(att, ctx=slice(2, 6), gen=slice(7, 10))
-    assert lb[0, 0] == pytest.approx(0.5)
-    assert lb[0, 1] == pytest.approx(1.0)
 
 
 def test_top_heads_and_parse_heads():

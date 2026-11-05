@@ -19,9 +19,7 @@ Output: baseline/confidence_{setting}.npz with arrays
 """
 
 import argparse
-import json
 import sys
-from collections import OrderedDict
 from pathlib import Path
 
 import numpy as np
@@ -30,6 +28,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
+from common.io import group_records, read_jsonl  # noqa: E402
 from common.prompt import encode_answer  # noqa: E402
 
 
@@ -67,14 +66,6 @@ def number_stats(tok_logprob, tok_entropy, spans):
     return out
 
 
-def group_records(records):
-    """id -> list of (row index, record), keeping file order."""
-    groups = OrderedDict()
-    for row, r in enumerate(records):
-        groups.setdefault(r["id"], []).append((row, r))
-    return groups
-
-
 def next_token_stats(logits, targets):
     """torch: logits [n, vocab] (row k predicts targets[k]) -> (log-prob of each
     target, entropy of each row's distribution), both float32 [n]."""
@@ -101,17 +92,12 @@ def save_npz(path, rows):
 
 # Model run -----------------------------------------------------------------
 
-def _read_jsonl(path):
-    with open(path) as f:
-        return [json.loads(line) for line in f if line.strip()]
-
-
 def run_setting(setting, model, tokenizer, answers_dir, labels_dir, out_dir, device):
     import torch
     from tqdm import tqdm
 
-    records = _read_jsonl(labels_dir / f"numbers_{setting}.jsonl")
-    answers = {r["id"]: r for r in _read_jsonl(answers_dir / f"answers_{setting}.jsonl")}
+    records = read_jsonl(labels_dir / f"numbers_{setting}.jsonl")
+    answers = {r["id"]: r for r in read_jsonl(answers_dir / f"answers_{setting}.jsonl")}
     rows, skipped = [], []
     for qid, recs in tqdm(group_records(records).items(), desc=setting, unit="answer"):
         a = answers[qid]
