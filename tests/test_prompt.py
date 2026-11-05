@@ -1,0 +1,98 @@
+import pytest
+
+from common.prompt import build_context, build_prompt, encode, table_to_text
+
+TABLE = [["revenue", "2009", "4,215"], ["cost of sales", "2009", "( 12 )"]]
+PRE = ["the company 's revenue was $ 4215 million in 2009 .", ".", "  "]
+POST = [".", "cost of sales fell ."]
+QUESTION = "what was the change in revenue from 2008 to 2009 ?"
+
+
+def test_table_to_text():
+    assert table_to_text(TABLE) == "revenue | 2009 | 4,215\ncost of sales | 2009 | ( 12 )"
+
+
+def test_table_to_text_strips_cells():
+    assert table_to_text([[" a ", "b  "]]) == "a | b"
+
+
+def test_build_context_order_and_junk_lines():
+    assert build_context(PRE, TABLE, POST) == (
+        "the company 's revenue was $ 4215 million in 2009 .\n"
+        "revenue | 2009 | 4,215\n"
+        "cost of sales | 2009 | ( 12 )\n"
+        "cost of sales fell ."
+    )
+
+
+def test_build_context_keeps_lines_with_digits():
+    # A line like "( 1 )" has no letters but is real content.
+    assert build_context(["( 1 )"], [["a"]], []) == "( 1 )\na"
+
+
+def test_build_prompt_matches_readme():
+    expected = (
+        "You are a financial analyst. Use only the report below.\n\n"
+        "### Report\n"
+        "CTX\n\n"
+        "### Question\n"
+        "Q?\n\n"
+        "List the numbers from the report that you use, then give the final answer.\n"
+        "Answer:"
+    )
+    assert build_prompt(" Q? ", "CTX") == expected
+
+
+@pytest.mark.parametrize("chat_template", [True, False])
+def test_encode_context_span(toy_tokenizer, chat_template):
+    context = build_context(PRE, TABLE, POST)
+    enc = encode(toy_tokenizer, QUESTION, context, chat_template)
+    ids, s, e = enc["input_ids"], enc["ctx_start"], enc["ctx_end"]
+    assert 0 < s < e < len(ids)
+
+    # The context tokens decode to the report (plus at most a straddling newline).
+    assert toy_tokenizer.decode(ids[s:e]).strip() == context
+    # The tokens just outside the span are the prompt around the report.
+    assert toy_tokenizer.decode(ids[:s]).endswith("### Report\n")
+    assert toy_tokenizer.decode(ids[e:]).lstrip("\n").startswith("### Question")
+
+
+def test_encode_chat_template(toy_tokenizer):
+    context = build_context(PRE, TABLE, POST)
+    with_chat = encode(toy_tokenizer, QUESTION, context, chat_template=True)
+    plain = encode(toy_tokenizer, QUESTION, context, chat_template=False)
+
+    assert with_chat["text"].startswith("<|im_start|>system")
+    assert with_chat["text"].endswith("<|im_start|>assistant\n")
+    assert plain["text"] == build_prompt(QUESTION, context)
+    # The chat template adds tokens before the report, so the span shifts but keeps its length.
+    assert with_chat["ctx_start"] > plain["ctx_start"]
+    assert (with_chat["ctx_end"] - with_chat["ctx_start"]) == (plain["ctx_end"] - plain["ctx_start"])
+    # Tokenizing the text equals what apply_chat_template itself produces.
+    direct = toy_tokenizer.apply_chat_template(
+        [{"role": "user", "content": build_prompt(QUESTION, context)}],
+        tokenize=True, add_generation_prompt=True, return_dict=False,
+    )
+    assert with_chat["input_ids"] == list(direct)
+
+
+def test_encode_with_real_model_tokenizer():
+    """Runs only where the Qwen tokenizer can be downloaded (e.g. Colab)."""
+    try:
+        import yaml
+        from transformers import AutoTokenizer
+        with open("config.yaml") as f:
+            model = yaml.safe_load(f)["model"]
+        tok = AutoTokenizer.from_pretrained(model)
+    except Exception as exc:  # offline or blocked
+        pytest.skip(f"model tokenizer not available: {exc.__class__.__name__}")
+
+    context = build_context(PRE, TABLE, POST)
+    enc = encode(tok, QUESTION, context, chat_template=True)
+    ids, s, e = enc["input_ids"], enc["ctx_start"], enc["ctx_end"]
+    assert tok.decode(ids[s:e]).strip() == context
+    direct = tok.apply_chat_template(
+        [{"role": "user", "content": build_prompt(QUESTION, context)}],
+        tokenize=True, add_generation_prompt=True, return_dict=False,
+    )
+    assert ids == list(direct)

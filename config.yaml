@@ -12,3 +12,4 @@ decoding:
   topp09:  {do_sample: true, temperature: 1.0, top_p: 0.9}
 label_tolerance: 0.01        # relative; 4.2 matches 4.21
 hf_cutoffs: [0.25, 0.35, 0.45]   # normalized frequency; tune on val
+chat_template: true          # send the 6.1 prompt as the user turn of the model's chat template

@@ -94,6 +94,7 @@ decoding:
   topp09:  {do_sample: true, temperature: 1.0, top_p: 0.9}
 label_tolerance: 0.01        # relative; 4.2 matches 4.21
 hf_cutoffs: [0.25, 0.35, 0.45]   # normalized frequency; tune on val
+chat_template: true          # send the 6.1 prompt as the user turn of the model's chat template
 ```
 
 ---
@@ -138,7 +139,9 @@ List the numbers from the report that you use, then give the final answer.
 Answer:
 ```
 
-Tables become text one row per line, cells joined with ` | ` (e.g. `revenue | 2009 | 4,215`).
+Tables become text one row per line, cells joined with ` | ` (e.g. `revenue | 2009 | 4,215`). Each `pre_text`/`post_text` sentence goes on its own line; FinQA's lines that are only `.` are dropped.
+
+With `chat_template: true`, this text is the user turn of the model's chat template and the answer starts right after the assistant header. `common/prompt.py` (`encode`) builds the exact model input and the report's token span.
 
 ### 6.2 Train/val/test split: by report
 
@@ -176,7 +179,7 @@ Both stages read and write these exact formats. If one changes, update this tabl
 | File | Writer | One row/record = | Fields |
 |---|---|---|---|
 | `data/finqa_subset.jsonl` | A | question | `id, report_key, split, question, context_text, gold_answer, gold_program` |
-| `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token indices of the report span) |
+| `gen/answers_{setting}.jsonl` | A | generated answer | `id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end` (token span of the report, half-open: `ids[ctx_start:ctx_end]`) |
 | `labels/numbers_{setting}.jsonl` | A | number in an answer | `id, setting, number_text, value, tok_start, tok_end, label` (token indices **within the answer**) |
 | `baseline/confidence_{setting}.npz` | A | number | `mean_logprob, min_logprob, mean_entropy, label, id` |
 | `features/{setting}.npz` | B | number | `lookback[L×H], hf_ctx[L×H], hf_gen[L×H], label, id` |

@@ -9,3 +9,4 @@ pandas
 matplotlib
 pyyaml
 tqdm
+pytest
