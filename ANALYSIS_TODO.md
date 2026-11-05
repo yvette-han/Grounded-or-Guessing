@@ -1,6 +1,6 @@
 # Analysis to do (ours, not AI's)
 
-README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off.
+README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off. How to do each run by hand is in `MANUAL_STEPS.md`.
 
 _Last updated: Nov 5, after the A6 code._
 

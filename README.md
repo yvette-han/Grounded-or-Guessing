@@ -61,6 +61,7 @@ What that means for us:
 - ✅ **Required:** each of us can explain every file in our folders line by line. If you can't explain it, rewrite it until you can.
 - ❌ **Not fine:** AI writes the analysis, interprets the results, or chooses the conclusions in the report or poster. We write those ourselves from our own results.
 - 📝 **Keep `LOG.md`:** one line per decision or dead end ("Nov 14: switched tolerance to 1% because 'about 12%' was being labeled fabricated"). This is also what we show the professor at meetings.
+- 🧭 **`MANUAL_STEPS.md`** says, step by step, what we run and do by hand (Colab runs, hand-check, saving results).
 - 📋 **`ANALYSIS_TODO.md`** tracks the analysis that is ours to do, the choices in AI-written code we still need to review, and the AI-written code we need to be able to explain.
 
 ---
@@ -124,6 +125,7 @@ chat_template: true          # send the 6.1 prompt as the user turn of the model
 config.yaml
 LOG.md                  decisions and dead ends, dated
 ANALYSIS_TODO.md        analysis, reviews and explanations that are ours to do (§3)
+MANUAL_STEPS.md         how to do the manual steps, in order
 data/                   A: build_subset.py  → finqa_subset.jsonl
 gen/                    A: generate.py      → answers_{setting}.jsonl
 labels/                 A: label.py         → numbers_{setting}.jsonl, handcheck.csv
