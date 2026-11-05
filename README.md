@@ -48,6 +48,8 @@ A language model reads part of a company's financial report and answers a questi
 
 **Both:** `config.yaml`, the shared definitions in §6, the label hand-check, the report and the poster. **Each person must be able to explain the other person's half.**
 
+**GPU runs** are split by decoding setting so both of us can run at the same time: A runs `greedy` and `beam5`, B runs `temp07`, `temp12` and `topp09`, each through generation, labeling, confidence and features. Step-by-step checklists: `MANUAL_STEPS.md`.
+
 ---
 
 ## 3. AI use policy

@@ -2,11 +2,11 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off. How to do each run by hand is in `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5, after the R1 code._
+_Last updated: Nov 5, after splitting the manual work between Person A and Person B._
 
 ## 1. Choices made in AI-written code, to review
 
-Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decided, it's our decision.
+Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decided, it's our decision. **Who reviews:** items starting A1–A7 are Person A's, B0–B5 Person B's, R1 both.
 
 - [ ] **A1:** pool FinQA train+dev+test and re-split by report (243 of FinQA's 278 test reports are also in its train file)
 - [ ] **A1:** drop the 154 yes/no questions
@@ -62,7 +62,7 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 
 ## 2. AI-written code we must be able to explain
 
-README §3: each of us can explain every file in our folders line by line, and each function is checked on an example where we already know the answer.
+README §3: each of us can explain every file in our folders line by line, and each function is checked on an example where we already know the answer. **(A)** = Person A's, **(B)** = Person B's, **(both)** = both; before Dec 9 each must also be able to explain the other's.
 
 - [ ] `common/prompt.py` (both): explain it; check the expected strings in `tests/test_prompt.py` by hand
 - [ ] `common/splits.py` (both): explain it; check the expected values in `tests/test_splits.py` by hand
@@ -87,25 +87,25 @@ README §3: each of us can explain every file in our folders line by line, and e
 
 ⏳ waiting on an earlier step · 🟢 ready to start · ✅ done
 
-Claude can make the plots and tables for these; reading them and drawing conclusions is ours.
+Claude can make the plots and tables for these; reading them and drawing conclusions is ours. Who does what, and in which order, is in `MANUAL_STEPS.md`.
 
-| Step | What's ours | Status |
-|---|---|---|
-| A1 | Run `data/build_subset.py` with the Qwen tokenizer and fill the stats line in `LOG.md` (a run, not analysis) | 🟢 ready |
-| A3 | Run `gen/generate.py` for every setting on Colab, `--setting greedy --limit 50` first for B (a run, not analysis) | 🟢 ready to run |
-| B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to the professor: what the heads attend to | 🟢 ready to run |
-| A4 | Run `labels/label.py` for every setting and put the label counts in `LOG.md` (a run, not analysis) | ⏳ needs the A3 run |
-| A5 | Hand-label the same 50 numbers each without seeing the auto labels (sheet: `labels/label.py --setting greedy --handcheck 50`); run `labels/agreement.py`; go through `handcheck_disagreements.csv` together; if under ~90%, decide how to change §6.3 | ⏳ needs the A3 greedy run |
-| A6 | RQ0: what decoding does to accuracy and fabrication rate, and why. Write it in the "Our reading" cell of `analysis/stage1.ipynb` | ⏳ needs the A3 and A4 runs, then `python analysis/stage1.py` |
-| A6 | Stage 1 error analysis (Nov 23–29) | ⏳ needs A6 results |
-| A7 | Run `baseline/confidence.py` on Colab (a run, not analysis) | ⏳ needs the A4 run |
-| B1–B2 | Run `features/extract.py --limit 20` and check row sums ~1 and lookback within 0–1 (README B1 done), then the full run for every setting (README B2 done) (a run, not analysis) | ⏳ needs the A4 run |
-| B3 | Read the results table (`detector/results.csv`): which detectors beat the confidence baseline, given the confidence intervals | ⏳ needs the A7 and B2 runs, then `python detector/train_eval.py` |
-| B4 | **RQ2 (main contribution):** do detectors flag correct computed numbers, and does that support the hypothesis? Write it in the RQ2 "Our reading" cell of `analysis/stage2.ipynb` | ⏳ needs the B3 run, then `python analysis/stage2.py` |
-| B4 | RQ3: which layers and heads carry the signal, does a top-100-head detector keep most of the AUROC, and what that means (RQ3 cell) | ⏳ needs the B3 run |
-| B4 | Bridge: does the lookback ratio fall as temperature rises, and what that says (bridge cell) | ⏳ needs the B2 run |
-| B5 | 10 false positives, 10 false negatives, where `wrong_calc` falls: explain each pattern in our own words, in the "Our reading" cells of `analysis/errors.ipynb` (both of us) | ⏳ needs the B3 run |
-| R1 | Stretch: hand-check ~30 TAT-QA labels (its answers and derivations differ from FinQA's), then interpret the FinQA → TAT-QA transfer (`detector/transfer_results.csv`) | ⏳ optional; needs the B3 inputs and the R1 runs (`MANUAL_STEPS.md` step 12) |
-| R2 | Poster text and takeaways | ⏳ |
-| R3 | Report: each writes their own sections, both edit the draft | ⏳ |
-| Dec 7–8 | Rehearse: each explains the other's half | ⏳ |
+| Step | What's ours | Who | Status |
+|---|---|---|---|
+| A1 | Run `data/build_subset.py` with the Qwen tokenizer and fill the stats line in `LOG.md` (a run, not analysis) | A | 🟢 ready |
+| A3 | Run `gen/generate.py` for every setting on Colab, `--setting greedy --limit 50` first for B (a run, not analysis) | A: greedy, beam5 · B: temp07, temp12, topp09 | 🟢 ready to run |
+| B0 | Run `analysis/b0_attention_plot.py` on Colab (after A1), then explain the plot to the professor: what the heads attend to | B | 🟢 ready to run |
+| A4 | Run `labels/label.py` for every setting and put the label counts in `LOG.md` (a run, not analysis) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs the A3 run |
+| A5 | Hand-label the same 50 numbers each without seeing the auto labels (sheet: `labels/label.py --setting greedy --handcheck 50`); run `labels/agreement.py`; go through `handcheck_disagreements.csv` together; if under ~90%, decide how to change §6.3 | both | ⏳ needs the A3 greedy run |
+| A6 | RQ0: what decoding does to accuracy and fabrication rate, and why. Write it in the "Our reading" cell of `analysis/stage1.ipynb` | A | ⏳ needs the A3 and A4 runs, then `python analysis/stage1.py` |
+| A6 | Stage 1 error analysis (Nov 23–29) | A | ⏳ needs A6 results |
+| A7 | Run `baseline/confidence.py` on Colab (a run, not analysis) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs the A4 run |
+| B1–B2 | Run `features/extract.py --limit 20` and check row sums ~1 and lookback within 0–1 (README B1 done), then the full run for every setting (README B2 done) (a run, not analysis) | B: the check · A, B: full runs for their settings | ⏳ needs the A4 run |
+| B3 | Read the results table (`detector/results.csv`): which detectors beat the confidence baseline, given the confidence intervals | B | ⏳ needs the A7 and B2 runs, then `python detector/train_eval.py` |
+| B4 | **RQ2 (main contribution):** do detectors flag correct computed numbers, and does that support the hypothesis? Write it in the RQ2 "Our reading" cell of `analysis/stage2.ipynb` | B | ⏳ needs the B3 run, then `python analysis/stage2.py` |
+| B4 | RQ3: which layers and heads carry the signal, does a top-100-head detector keep most of the AUROC, and what that means (RQ3 cell) | B | ⏳ needs the B3 run |
+| B4 | Bridge: does the lookback ratio fall as temperature rises, and what that says (bridge cell) | B | ⏳ needs the B2 run |
+| B5 | 10 false positives, 10 false negatives, where `wrong_calc` falls: explain each pattern in our own words, in the "Our reading" cells of `analysis/errors.ipynb` (both of us) | A: false positives, `wrong_calc` · B: false negatives | ⏳ needs the B3 run |
+| R1 | Stretch: hand-check ~30 TAT-QA labels (its answers and derivations differ from FinQA's), then interpret the FinQA → TAT-QA transfer (`detector/transfer_results.csv`) | A: TAT-QA subset, greedy · B: temp12, transfer · both: hand-check | ⏳ optional; needs the B3 inputs and the R1 runs (`MANUAL_STEPS.md` step 12) |
+| R2 | Poster text and takeaways | A: dataset, labeling, decoding chart · B: attention diagram, AUROC table, heatmap | ⏳ |
+| R3 | Report: each writes their own sections, both edit the draft | both, own sections | ⏳ |
+| Dec 7–8 | Rehearse: each explains the other's half | both | ⏳ |

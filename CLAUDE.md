@@ -6,4 +6,5 @@
   - a choice made in code → add it to section 1 and to `LOG.md`
   - a step's data, plots or tables are ready → mark its analysis row 🟢 ready
   - update the "Last updated" line
-- Keep `MANUAL_STEPS.md` current too: when new code needs a manual run, a hand check or a decision, add the step (commands, what to check, what to record in `LOG.md`, what to commit), and update its "Last updated" line.
+- Keep `MANUAL_STEPS.md` current too: when new code needs a manual run, a hand check or a decision, add the step (commands, what to check, what to record in `LOG.md`, what to commit), and update its "Last updated" line. The manual work is split between Person A and Person B (checklists at the top of `MANUAL_STEPS.md`): put a new step in the right person's checklist, keep the two able to work in parallel, and update the timeline table.
+- In `LOG.md`, add new decision lines above the `## Run notes` headings; those sections belong to Person A and Person B.
