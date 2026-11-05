@@ -77,7 +77,7 @@ pip install torch transformers accelerate datasets numpy scipy scikit-learn pand
 **Running on Colab:** To run it, open Colab with a GPU runtime and run these in one session. Use `!` before shell lines and `%cd` to change folders.
 
 ```bash
-git clone -b claude/new-session-yg0a2h https://github.com/yvette-han/Grounded-or-Guessing
+git clone -b main https://github.com/yvette-han/Grounded-or-Guessing
 ```
 
 ```bash
