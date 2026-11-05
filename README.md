@@ -160,7 +160,7 @@ FinQA ids look like `ADI/2009/page_49.pdf-1`. The **report key** is company + ye
 
 The order matters: a gold answer that happens to equal a report number is **copied**.
 
-**Normalization** (in `common/numbers.py`): handle `%`, `$`, commas, negatives and parentheses `(12)` = −12, and scale words ("4.2 billion" = 4,200 million). Compare `12%` with `0.12` as equal. **Skip** years (1990–2030 written without a decimal point) and list markers like `1.` at the start of a line.
+**Normalization** (in `common/numbers.py`): handle `%`, `$`, commas, negatives and parentheses `(12)` = −12, and scale words ("4.2 billion" = 4,200 million). Compare `12%` with `0.12` as equal. **Skip** years (1990–2030 written without a decimal point) and list markers like `1.` at the start of a line. `common/numbers.py` also skips the day in dates (`december 31`), ordinals (`3rd`) and digits inside words (`Q4`); see `LOG.md` for its matching rules.
 
 ### 6.4 "Context" for attention features
 

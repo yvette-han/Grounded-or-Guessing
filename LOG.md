@@ -11,3 +11,6 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 5: `ctx_start`/`ctx_end` are a half-open token span; a token that straddles the edge of the report (e.g. "." merged with "\n\n") counts as context.
 - Nov 5: Split assignment: shuffle reports with the seed, fill train then val then test by question count; a split can go over by one report.
 - A1 stats (fill in after running with the Qwen tokenizer): questions after length filter = ?, avg context tokens = ?, split sizes = ?
+- Nov 5: A2 `common/numbers.py`: on top of README 6.3 it skips the day after a month name (`december 31`), ordinals (`3rd`), digits inside words (`Q4`), and list markers `1.`, `1)`, `(1)` at a line start.
+- Nov 5: A2 matching: relative tolerance; `12%` equals `12` and `0.12`; a scale-word number vs a bare number tries ones/thousands/millions/billions; sign ignored by default.
+- Nov 5: A2 check: 99.57% (18,658 / 18,738) of the numeric arguments in FinQA's gold programs are found in their report by `extract_numbers` + `find_match`. The 80 misses are years and days (skipped by rule) and constants not in the report (`1000000`, `3`).

@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file tracks the work in that second group, plus the AI-written code we still need to understand. Claude updates it whenever it adds code or results; we tick items off.
 
-_Last updated: Nov 5, after the A1 code._
+_Last updated: Nov 5, after the A2 code._
 
 ## 1. Choices made in AI-written code, to review
 
@@ -14,6 +14,12 @@ Each one is also in `LOG.md`. Keep it, change it or replace it; once we've decid
 - [ ] **A1:** send the prompt through the chat template; `max_context_tokens` counts the full templated prompt
 - [ ] **A1:** split fill rule: reports shuffled, then train → val → test by question count; a split can go over by one report
 - [ ] **A1 → A3, B1:** the report's token span is half-open (`ids[ctx_start:ctx_end]`); a token straddling the report's edge counts as context
+- [ ] **A2:** a number with a scale word vs a bare number tries the bare one in ones, thousands, millions and billions (`$4.2 billion` = table `4215`). Lenient: it may call a few made-up numbers copied
+- [ ] **A2:** sign is ignored when matching by default (`a decrease of 12` = `(12)`); `ignore_sign=False` turns this off
+- [ ] **A2:** a percent matches both readings: `12%` = `0.12` and `12%` = `12`
+- [ ] **A2:** extra skip rules beyond README 6.3: the day after a month name (`december 31`), ordinals (`3rd`), digits inside words (`Q4`, `page_49`); list markers also include `1)` and `(1)`
+- [ ] **A2:** `(12)` = −12 also turns FinQA footnote markers like `( 1 )` in reports into −1
+- [ ] **A2 → A4 (not decided yet):** each number has two spans, the whole mention (`$4.2 billion`) and just the digits (`4.2`); A4 must pick which one becomes `tok_start`/`tok_end`
 
 ## 2. AI-written code we must be able to explain
 
@@ -22,6 +28,7 @@ README §3: each of us can explain every file in our folders line by line, and e
 - [ ] `common/prompt.py` (both): explain it; check the expected strings in `tests/test_prompt.py` by hand
 - [ ] `common/splits.py` (both): explain it; check the expected values in `tests/test_splits.py` by hand
 - [ ] `data/build_subset.py` (A): explain it; sanity-check the counts it prints on the Colab run
+- [ ] `common/numbers.py` (both): explain it; check every expected value in `tests/test_numbers.py` by hand. README A2 asks for hand-made strings, so also add a few of your own, especially styles you expect from the model's answers
 
 ## 3. Analysis and writing, by step
 
