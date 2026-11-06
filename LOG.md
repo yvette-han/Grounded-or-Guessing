@@ -50,6 +50,7 @@ _Person A (Eduardo) adds run notes and counts here (one line each, dated)._
 - Nov 6: A1 `python data/build_subset.py` on my laptop (CPU; only the tokenizer is needed). All 193 tests pass locally. Checks: 1,000 unique ids, no report in more than one split, no null or empty `gold_steps`; steps per program 1: 571, 2: 345, 3: 57, 4+: 27. 106 of the 1,000 questions contain a number after the skip rules (matches the ~10% noted for the `question` label).
 - Nov 6: A3 first 50 greedy answers (`gen/answers_greedy.jsonl`, 512-token budget): mean 215 new tokens, 1 of 50 cut at the limit, 9.1 numbers per answer, re-tokenization problems 0. Generation speed on the V100: ~1.3 s per answer at batch 8.
 - Nov 6: A4 on those 50 (453 numbers): copied 220 (48.6%), computed 51 (11.3%), question 0, constant 75 (16.6%), wrong_calc 20 (4.4%), fabricated 87 (19.2%). Hand-check sheet written: `labels/handcheck.csv` (50 numbers). I have not opened the key.
+- Nov 6: A3 full greedy run done (Yin lab V100, 20 min): 1,000 answers, mean 225.8 new tokens, 15 cut at 512, 10.3 numbers per answer, 2 answers with no number, re-tokenization problems 0. The first 50 are unchanged. beam5 started right after.
 
 ## Run notes: Person B
 
