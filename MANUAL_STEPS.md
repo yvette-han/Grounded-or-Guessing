@@ -2,7 +2,7 @@
 
 Claude writes the code. We run it on Colab, check the output, and write the analysis. Tick items off in `ANALYSIS_TODO.md` as you finish them.
 
-_Last updated: Nov 5._
+_Last updated: Nov 6._
 
 **Contents:** [Who does what](#who-does-what) · [Timeline](#timeline) · [Setup and sharing](#setup-and-sharing) · [Eduardo (Person A)](#eduardo-person-a) · [Yvette (Person B)](#yvette-person-b) · [Hand-check](#hand-check) · [Script options and checks](#script-options-and-checks) · [R1 (optional)](#r1-optional)
 
@@ -110,7 +110,7 @@ Your settings: `greedy`, `beam5`.
 
 **A-0 · Setup** · Nov 5–8. Do [Setup and sharing](#setup-and-sharing).
 
-**A-1 · Build the subset** · do this first; Yvette needs it. (If Yvette already ran it, skip this: it's the same file.)
+**A-1 · Build the subset** · ✅ done Nov 6 (`data/finqa_subset.jsonl` is in git; stats in `LOG.md`). Yvette: pull `main`, don't rerun. Kept for reference:
 
 ```python
 !python data/build_subset.py

@@ -10,7 +10,7 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 5: The prompt goes through the chat template as the user turn (`chat_template: true`). The `max_context_tokens` filter counts the full templated prompt.
 - Nov 5: `ctx_start`/`ctx_end` are a half-open token span; a token that straddles the report's edge (e.g. "." merged with "\n\n") counts as context.
 - Nov 5: Split rule: shuffle reports with the seed, then fill train, val, test by question count; a split can go over by one report.
-- A1 stats (fill in after running with the Qwen tokenizer): questions after length filter = ?, avg context tokens = ?, split sizes = ?
+- Nov 6: A1 run (Eduardo, local CPU, Qwen2.5-1.5B-Instruct tokenizer, chat template on): 8,281 questions / 799 reports → 8,127 numeric → 7,347 within 1,500 prompt tokens (780 dropped) → 1,000 sampled. Prompt tokens mean 995 (median 1,006, min 241, max 1,496); context tokens mean 906 (median 916, min 146, max 1,407). Splits: train 700 questions / 329 reports, val 151 / 66, test 149 / 62. Gold programs whose last step differs from FinQA's answer: 0.
 - Nov 5: A2 `common/numbers.py` also skips the day after a month name (`december 31`), ordinals (`3rd`), digits inside words (`Q4`), and list markers `1.`, `1)`, `(1)` at a line start.
 - Nov 5: A2 matching: relative tolerance; `12%` equals `12` and `0.12`; a scale-word number vs a bare number tries ones, thousands, millions and billions; sign ignored by default.
 - Nov 5: A2 check: `extract_numbers` + `find_match` find 99.57% (18,658 / 18,738) of the numeric arguments of FinQA's gold programs in their reports. The 80 misses are years and days (skipped by rule) and constants not in the report (`1000000`, `3`).
@@ -42,6 +42,8 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 ## Run notes: Person A
 
 _Person A (Eduardo) adds run notes and counts here (one line each, dated)._
+
+- Nov 6: A1 `python data/build_subset.py` on my laptop (CPU; only the tokenizer is needed). All 193 tests pass locally. Checks: 1,000 unique ids, no report in more than one split, no null or empty `gold_steps`; steps per program 1: 571, 2: 345, 3: 57, 4+: 27. 106 of the 1,000 questions contain a number after the skip rules (matches the ~10% noted for the `question` label).
 
 ## Run notes: Person B
 

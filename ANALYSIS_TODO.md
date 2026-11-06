@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5, with Yvette's tasks for this week._
+_Last updated: Nov 6 (A1 done)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -15,7 +15,7 @@ Goal: the B0 plot and the A1 stats for the meeting with professor. The runs are 
    - **B0:** which heads and which example the plot shows.
    - **B1:** how "generated tokens" are defined, and the per-number averaging.
    - **B2:** the frequency units. Check how Qi et al. (2026) normalize frequency.
-4. **The A1 stats** (section 3, row A1): only if you run A1 yourself because Eduardo hasn't yet.
+4. **The A1 stats** (section 3, row A1): done by Eduardo on Nov 6; pull `main` instead of running A1.
 
 ## 1. Choices made in AI-written code, to review
 
@@ -122,7 +122,7 @@ Claude makes the plots and tables; reading them and drawing conclusions is ours.
 
 | Step | What's ours | Who | Status |
 |---|---|---|---|
-| A1 | Run `data/build_subset.py`; fill the A1 stats line in `LOG.md` (a run) | A | 🟢 ready |
+| A1 | Run `data/build_subset.py`; fill the A1 stats line in `LOG.md` (a run) | A | ✅ done Nov 6 (`data/finqa_subset.jsonl`, stats in `LOG.md`) |
 | A3 | Run `gen/generate.py` for your settings; greedy `--limit 50` first (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | 🟢 ready to run |
 | B0 | Run `analysis/b0_attention_plot.py` (after A1); explain the plot to professor: what the heads attend to | B | 🟢 ready to run |
 | A4 | Run `labels/label.py` for your settings; label counts into `LOG.md` (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A3 |
