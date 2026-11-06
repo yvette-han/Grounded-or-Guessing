@@ -1,0 +1,453 @@
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 30, "char_end": 31, "tok_start": 7, "tok_end": 8, "label": "constant"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 162, "char_end": 163, "tok_start": 52, "tok_end": 53, "label": "constant"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 224, "char_end": 225, "tok_start": 74, "tok_end": 75, "label": "constant"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "$1", "value": 1.0, "char_start": 234, "char_end": 236, "tok_start": 78, "tok_end": 79, "label": "copied"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "4151 million", "value": 4151000000.0, "char_start": 237, "char_end": 249, "tok_start": 80, "tok_end": 84, "label": "wrong_calc"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 286, "char_end": 287, "tok_start": 101, "tok_end": 102, "label": "constant"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "$7,012 million", "value": 7012000000.0, "char_start": 296, "char_end": 310, "tok_start": 105, "tok_end": 110, "label": "copied"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "$1", "value": 1.0, "char_start": 365, "char_end": 367, "tok_start": 133, "tok_end": 134, "label": "copied"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "4151 million", "value": 4151000000.0, "char_start": 368, "char_end": 380, "tok_start": 135, "tok_end": 139, "label": "fabricated"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "$7,012 million", "value": 7012000000.0, "char_start": 383, "char_end": 397, "tok_start": 142, "tok_end": 147, "label": "copied"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "-$5,597 million", "value": -5597000000.0, "char_start": 400, "char_end": 415, "tok_start": 150, "tok_end": 155, "label": "fabricated"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 517, "char_end": 518, "tok_start": 177, "tok_end": 178, "label": "constant"}
+{"id": "PNC/2009/page_51.pdf-2", "setting": "greedy", "number_text": "-5,597 million", "value": -5597000000.0, "char_start": 585, "char_end": 599, "tok_start": 206, "tok_end": 211, "label": "fabricated"}
+{"id": "ETR/2015/page_109.pdf-1", "setting": "greedy", "number_text": "$68", "value": 68.0, "char_start": 199, "char_end": 202, "tok_start": 44, "tok_end": 46, "label": "copied"}
+{"id": "ETR/2015/page_109.pdf-1", "setting": "greedy", "number_text": "$2", "value": 2.0, "char_start": 264, "char_end": 266, "tok_start": 64, "tok_end": 65, "label": "copied"}
+{"id": "ETR/2015/page_109.pdf-1", "setting": "greedy", "number_text": "68", "value": 68.0, "char_start": 459, "char_end": 461, "tok_start": 118, "tok_end": 120, "label": "copied"}
+{"id": "ETR/2015/page_109.pdf-1", "setting": "greedy", "number_text": "2", "value": 2.0, "char_start": 464, "char_end": 465, "tok_start": 122, "tok_end": 123, "label": "constant"}
+{"id": "ETR/2015/page_109.pdf-1", "setting": "greedy", "number_text": "66", "value": 66.0, "char_start": 468, "char_end": 470, "tok_start": 125, "tok_end": 127, "label": "computed"}
+{"id": "ETR/2015/page_109.pdf-1", "setting": "greedy", "number_text": "66 million", "value": 66000000.0, "char_start": 558, "char_end": 568, "tok_start": 146, "tok_end": 148, "label": "computed"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$1,272,300", "value": 1272300.0, "char_start": 130, "char_end": 140, "tok_start": 39, "tok_end": 48, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$1,421,500", "value": 1421500.0, "char_start": 147, "char_end": 157, "tok_start": 55, "tok_end": 64, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$1,579,400", "value": 1579400.0, "char_start": 164, "char_end": 174, "tok_start": 71, "tok_end": 80, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$442,000", "value": 442000.0, "char_start": 181, "char_end": 189, "tok_start": 87, "tok_end": 94, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$1,272,300", "value": 1272300.0, "char_start": 231, "char_end": 241, "tok_start": 105, "tok_end": 114, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$1,421,500", "value": 1421500.0, "char_start": 244, "char_end": 254, "tok_start": 116, "tok_end": 125, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$1,579,400", "value": 1579400.0, "char_start": 257, "char_end": 267, "tok_start": 127, "tok_end": 136, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$442,000", "value": 442000.0, "char_start": 270, "char_end": 278, "tok_start": 138, "tok_end": 145, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$4,715,200", "value": 4715200.0, "char_start": 281, "char_end": 291, "tok_start": 147, "tok_end": 156, "label": "fabricated"}
+{"id": "ETR/2017/page_401.pdf-2", "setting": "greedy", "number_text": "$4,715,200", "value": 4715200.0, "char_start": 375, "char_end": 385, "tok_start": 181, "tok_end": 190, "label": "fabricated"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "$0.4 billion", "value": 400000000.0, "char_start": 392, "char_end": 404, "tok_start": 122, "tok_end": 125, "label": "copied"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "$0.5 billion", "value": 500000000.0, "char_start": 466, "char_end": 478, "tok_start": 149, "tok_end": 152, "label": "copied"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "2", "value": 2.0, "char_start": 625, "char_end": 626, "tok_start": 199, "tok_end": 200, "label": "constant"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "0.4", "value": 0.4, "char_start": 636, "char_end": 639, "tok_start": 205, "tok_end": 208, "label": "copied"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "0.5", "value": 0.5, "char_start": 642, "char_end": 645, "tok_start": 210, "tok_end": 213, "label": "copied"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "2", "value": 2.0, "char_start": 647, "char_end": 648, "tok_start": 214, "tok_end": 215, "label": "constant"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "0.9", "value": 0.9, "char_start": 658, "char_end": 661, "tok_start": 220, "tok_end": 223, "label": "computed"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "2", "value": 2.0, "char_start": 663, "char_end": 664, "tok_start": 224, "tok_end": 225, "label": "constant"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "0.45", "value": 0.45, "char_start": 668, "char_end": 672, "tok_start": 228, "tok_end": 232, "label": "computed"}
+{"id": "PNC/2014/page_156.pdf-2", "setting": "greedy", "number_text": "$0.45 billion", "value": 450000000.0, "char_start": 798, "char_end": 811, "tok_start": 274, "tok_end": 278, "label": "computed"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "$739,187,000", "value": 739187000.0, "char_start": 540, "char_end": 552, "tok_start": 136, "tok_end": 147, "label": "fabricated"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "$-1,461,100", "value": -1461100.0, "char_start": 622, "char_end": 633, "tok_start": 172, "tok_end": 181, "label": "fabricated"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "-1,461,100", "value": -1461100.0, "char_start": 764, "char_end": 774, "tok_start": 220, "tok_end": 229, "label": "fabricated"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "739,187,000", "value": 739187000.0, "char_start": 776, "char_end": 787, "tok_start": 230, "tok_end": 241, "label": "fabricated"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "-0.002000", "value": -0.002, "char_start": 817, "char_end": 826, "tok_start": 254, "tok_end": 262, "label": "fabricated"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 993, "char_end": 996, "tok_start": 298, "tok_end": 301, "label": "constant"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "-0.002000", "value": -0.002, "char_start": 1021, "char_end": 1030, "tok_start": 311, "tok_end": 319, "label": "fabricated"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1038, "char_end": 1041, "tok_start": 322, "tok_end": 325, "label": "constant"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "-0.2000", "value": -0.2, "char_start": 1044, "char_end": 1051, "tok_start": 327, "tok_end": 333, "label": "fabricated"}
+{"id": "AMT/2008/page_60.pdf-2", "setting": "greedy", "number_text": "0.2000%", "value": 0.2, "char_start": 1110, "char_end": 1117, "tok_start": 348, "tok_end": 354, "label": "fabricated"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 426, "char_end": 429, "tok_start": 87, "tok_end": 90, "label": "constant"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "$18,508 million", "value": 18508000000.0, "char_start": 483, "char_end": 498, "tok_start": 107, "tok_end": 113, "label": "copied"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "$3,166 million", "value": 3166000000.0, "char_start": 544, "char_end": 558, "tok_start": 128, "tok_end": 133, "label": "copied"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 709, "char_end": 712, "tok_start": 174, "tok_end": 177, "label": "constant"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "3,166", "value": 3166.0, "char_start": 752, "char_end": 757, "tok_start": 192, "tok_end": 197, "label": "copied"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "18,508", "value": 18508.0, "char_start": 759, "char_end": 765, "tok_start": 198, "tok_end": 204, "label": "copied"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 782, "char_end": 785, "tok_start": 211, "tok_end": 214, "label": "constant"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "17.14", "value": 17.14, "char_start": 818, "char_end": 823, "tok_start": 225, "tok_end": 230, "label": "wrong_calc"}
+{"id": "UNP/2012/page_55.pdf-3", "setting": "greedy", "number_text": "17.14%", "value": 17.14, "char_start": 907, "char_end": 913, "tok_start": 244, "tok_end": 249, "label": "computed"}
+{"id": "IP/2009/page_38.pdf-4", "setting": "greedy", "number_text": "$103 million", "value": 103000000.0, "char_start": 139, "char_end": 151, "tok_start": 31, "tok_end": 34, "label": "copied"}
+{"id": "IP/2009/page_38.pdf-4", "setting": "greedy", "number_text": "$108 million", "value": 108000000.0, "char_start": 158, "char_end": 170, "tok_start": 42, "tok_end": 45, "label": "copied"}
+{"id": "IP/2009/page_38.pdf-4", "setting": "greedy", "number_text": "$108 million", "value": 108000000.0, "char_start": 177, "char_end": 189, "tok_start": 53, "tok_end": 56, "label": "copied"}
+{"id": "IP/2009/page_38.pdf-4", "setting": "greedy", "number_text": "$108 million", "value": 108000000.0, "char_start": 251, "char_end": 263, "tok_start": 69, "tok_end": 72, "label": "copied"}
+{"id": "AAPL/2006/page_103.pdf-2", "setting": "greedy", "number_text": "$-1", "value": -1.0, "char_start": 143, "char_end": 146, "tok_start": 37, "tok_end": 38, "label": "copied"}
+{"id": "AAPL/2006/page_103.pdf-2", "setting": "greedy", "number_text": "(1)", "value": -1.0, "char_start": 147, "char_end": 150, "tok_start": 39, "tok_end": 40, "label": "copied"}
+{"id": "AAPL/2006/page_103.pdf-2", "setting": "greedy", "number_text": "$8", "value": 8.0, "char_start": 160, "char_end": 162, "tok_start": 50, "tok_end": 51, "label": "copied"}
+{"id": "AAPL/2006/page_103.pdf-2", "setting": "greedy", "number_text": "$12", "value": 12.0, "char_start": 172, "char_end": 175, "tok_start": 61, "tok_end": 63, "label": "copied"}
+{"id": "AAPL/2006/page_103.pdf-2", "setting": "greedy", "number_text": "$12 million", "value": 12000000.0, "char_start": 231, "char_end": 242, "tok_start": 75, "tok_end": 77, "label": "copied"}
+{"id": "AAPL/2006/page_103.pdf-2", "setting": "greedy", "number_text": "$12", "value": 12.0, "char_start": 261, "char_end": 264, "tok_start": 88, "tok_end": 90, "label": "copied"}
+{"id": "APTV/2013/page_48.pdf-1", "setting": "greedy", "number_text": "$0.25", "value": 0.25, "char_start": 270, "char_end": 275, "tok_start": 68, "tok_end": 72, "label": "copied"}
+{"id": "APTV/2013/page_48.pdf-1", "setting": "greedy", "number_text": "$0.17", "value": 0.17, "char_start": 385, "char_end": 390, "tok_start": 97, "tok_end": 101, "label": "copied"}
+{"id": "APTV/2013/page_48.pdf-1", "setting": "greedy", "number_text": "$0.25", "value": 0.25, "char_start": 485, "char_end": 490, "tok_start": 124, "tok_end": 128, "label": "copied"}
+{"id": "APTV/2013/page_48.pdf-1", "setting": "greedy", "number_text": "$0.17", "value": 0.17, "char_start": 517, "char_end": 522, "tok_start": 139, "tok_end": 143, "label": "copied"}
+{"id": "APTV/2013/page_48.pdf-1", "setting": "greedy", "number_text": "$0.08", "value": 0.08, "char_start": 550, "char_end": 555, "tok_start": 154, "tok_end": 158, "label": "computed"}
+{"id": "APTV/2013/page_48.pdf-1", "setting": "greedy", "number_text": "$0.08", "value": 0.08, "char_start": 630, "char_end": 635, "tok_start": 179, "tok_end": 183, "label": "computed"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$100.00", "value": 100.0, "char_start": 162, "char_end": 169, "tok_start": 47, "tok_end": 53, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$103.88", "value": 103.88, "char_start": 183, "char_end": 190, "tok_start": 63, "tok_end": 69, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$107.87", "value": 107.87, "char_start": 204, "char_end": 211, "tok_start": 79, "tok_end": 85, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$158.07", "value": 158.07, "char_start": 225, "char_end": 232, "tok_start": 95, "tok_end": 101, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$171.77", "value": 171.77, "char_start": 246, "char_end": 253, "tok_start": 111, "tok_end": 117, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$160.61", "value": 160.61, "char_start": 267, "char_end": 274, "tok_start": 127, "tok_end": 133, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$100.00", "value": 100.0, "char_start": 353, "char_end": 360, "tok_start": 155, "tok_end": 161, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$103.88", "value": 103.88, "char_start": 373, "char_end": 380, "tok_start": 170, "tok_end": 176, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$107.87", "value": 107.87, "char_start": 393, "char_end": 400, "tok_start": 185, "tok_end": 191, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$158.07", "value": 158.07, "char_start": 413, "char_end": 420, "tok_start": 200, "tok_end": 206, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$171.77", "value": 171.77, "char_start": 433, "char_end": 440, "tok_start": 215, "tok_end": 221, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "$160.61", "value": 160.61, "char_start": 453, "char_end": 460, "tok_start": 230, "tok_end": 236, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "100.00", "value": 100.0, "char_start": 553, "char_end": 559, "tok_start": 256, "tok_end": 262, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "103.88", "value": 103.88, "char_start": 562, "char_end": 568, "tok_start": 264, "tok_end": 270, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "107.87", "value": 107.87, "char_start": 571, "char_end": 577, "tok_start": 272, "tok_end": 278, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "158.07", "value": 158.07, "char_start": 580, "char_end": 586, "tok_start": 280, "tok_end": 286, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "171.77", "value": 171.77, "char_start": 589, "char_end": 595, "tok_start": 288, "tok_end": 294, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "160.61", "value": 160.61, "char_start": 598, "char_end": 604, "tok_start": 296, "tok_end": 302, "label": "copied"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "702.20", "value": 702.2, "char_start": 607, "char_end": 613, "tok_start": 304, "tok_end": 310, "label": "wrong_calc"}
+{"id": "UPS/2015/page_35.pdf-1", "setting": "greedy", "number_text": "702.20", "value": 702.2, "char_start": 681, "char_end": 687, "tok_start": 326, "tok_end": 332, "label": "fabricated"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "$975 million", "value": 975000000.0, "char_start": 172, "char_end": 184, "tok_start": 42, "tok_end": 45, "label": "copied"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "$975 million", "value": 975000000.0, "char_start": 226, "char_end": 238, "tok_start": 59, "tok_end": 62, "label": "copied"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 431, "char_end": 434, "tok_start": 118, "tok_end": 121, "label": "constant"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "975", "value": 975.0, "char_start": 501, "char_end": 504, "tok_start": 142, "tok_end": 145, "label": "copied"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "975", "value": 975.0, "char_start": 506, "char_end": 509, "tok_start": 146, "tok_end": 149, "label": "copied"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 526, "char_end": 529, "tok_start": 156, "tok_end": 159, "label": "constant"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 532, "char_end": 535, "tok_start": 161, "tok_end": 164, "label": "constant"}
+{"id": "MSI/2005/page_64.pdf-4", "setting": "greedy", "number_text": "100%", "value": 100.0, "char_start": 610, "char_end": 614, "tok_start": 187, "tok_end": 190, "label": "copied"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 298, "char_end": 301, "tok_start": 80, "tok_end": 83, "label": "constant"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "$85 million", "value": 85000000.0, "char_start": 388, "char_end": 399, "tok_start": 105, "tok_end": 107, "label": "copied"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "$104 million", "value": 104000000.0, "char_start": 445, "char_end": 457, "tok_start": 122, "tok_end": 125, "label": "copied"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "$104 million", "value": 104000000.0, "char_start": 513, "char_end": 525, "tok_start": 141, "tok_end": 144, "label": "copied"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "$85 million", "value": 85000000.0, "char_start": 528, "char_end": 539, "tok_start": 147, "tok_end": 149, "label": "copied"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "$19 million", "value": 19000000.0, "char_start": 542, "char_end": 553, "tok_start": 152, "tok_end": 154, "label": "wrong_calc"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "$19 million", "value": 19000000.0, "char_start": 571, "char_end": 582, "tok_start": 162, "tok_end": 164, "label": "fabricated"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "$85 million", "value": 85000000.0, "char_start": 585, "char_end": 596, "tok_start": 167, "tok_end": 169, "label": "copied"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 600, "char_end": 603, "tok_start": 173, "tok_end": 176, "label": "constant"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "22.61%", "value": 22.61, "char_start": 606, "char_end": 612, "tok_start": 178, "tok_end": 183, "label": "fabricated"}
+{"id": "CE/2014/page_16.pdf-1", "setting": "greedy", "number_text": "22.61%", "value": 22.61, "char_start": 699, "char_end": 705, "tok_start": 208, "tok_end": 213, "label": "fabricated"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "$16.91", "value": 16.91, "char_start": 104, "char_end": 110, "tok_start": 21, "tok_end": 26, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "$16.91", "value": 16.91, "char_start": 331, "char_end": 337, "tok_start": 74, "tok_end": 79, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "11,877,706", "value": 11877706.0, "char_start": 426, "char_end": 436, "tok_start": 99, "tok_end": 109, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "$16.91", "value": 16.91, "char_start": 464, "char_end": 470, "tok_start": 117, "tok_end": 122, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "$16.91", "value": 16.91, "char_start": 525, "char_end": 531, "tok_start": 135, "tok_end": 140, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "$263,702,132", "value": 263702132.0, "char_start": 736, "char_end": 748, "tok_start": 189, "tok_end": 200, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "263,702,132", "value": 263702132.0, "char_start": 844, "char_end": 855, "tok_start": 233, "tok_end": 244, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "16.91", "value": 16.91, "char_start": 857, "char_end": 862, "tok_start": 245, "tok_end": 250, "label": "copied"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "1,547,000", "value": 1547000.0, "char_start": 872, "char_end": 881, "tok_start": 254, "tok_end": 263, "label": "wrong_calc"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "1,547,000", "value": 1547000.0, "char_start": 949, "char_end": 958, "tok_start": 277, "tok_end": 286, "label": "fabricated"}
+{"id": "IPG/2013/page_22.pdf-3", "setting": "greedy", "number_text": "$16.91", "value": 16.91, "char_start": 1009, "char_end": 1015, "tok_start": 297, "tok_end": 302, "label": "copied"}
+{"id": "AMT/2007/page_98.pdf-3", "setting": "greedy", "number_text": "$59.2 million", "value": 59200000.0, "char_start": 72, "char_end": 85, "tok_start": 18, "tok_end": 22, "label": "copied"}
+{"id": "AMT/2007/page_98.pdf-3", "setting": "greedy", "number_text": "$ 59.2 million", "value": 59200000.0, "char_start": 211, "char_end": 225, "tok_start": 56, "tok_end": 60, "label": "copied"}
+{"id": "AMT/2007/page_98.pdf-3", "setting": "greedy", "number_text": "$ 23.0 million", "value": 23000000.0, "char_start": 228, "char_end": 242, "tok_start": 64, "tok_end": 68, "label": "copied"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 394, "char_end": 397, "tok_start": 94, "tok_end": 97, "label": "constant"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "$208 million", "value": 208000000.0, "char_start": 458, "char_end": 470, "tok_start": 117, "tok_end": 120, "label": "copied"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "$2270 million", "value": 2270000000.0, "char_start": 509, "char_end": 522, "tok_start": 135, "tok_end": 139, "label": "copied"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "208", "value": 208.0, "char_start": 598, "char_end": 601, "tok_start": 163, "tok_end": 166, "label": "copied"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "2270", "value": 2270.0, "char_start": 603, "char_end": 607, "tok_start": 167, "tok_end": 171, "label": "copied"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 624, "char_end": 627, "tok_start": 178, "tok_end": 181, "label": "constant"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "9.12", "value": 9.12, "char_start": 636, "char_end": 640, "tok_start": 184, "tok_end": 188, "label": "wrong_calc"}
+{"id": "AAPL/2007/page_72.pdf-1", "setting": "greedy", "number_text": "9.12%", "value": 9.12, "char_start": 780, "char_end": 785, "tok_start": 220, "tok_end": 224, "label": "computed"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 239, "char_end": 242, "tok_start": 87, "tok_end": 90, "label": "constant"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "$13,203 million", "value": 13203000000.0, "char_start": 286, "char_end": 301, "tok_start": 107, "tok_end": 113, "label": "copied"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "$12,297 million", "value": 12297000000.0, "char_start": 324, "char_end": 339, "tok_start": 126, "tok_end": 132, "label": "copied"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "13,203", "value": 13203.0, "char_start": 426, "char_end": 432, "tok_start": 160, "tok_end": 166, "label": "copied"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "12,297", "value": 12297.0, "char_start": 435, "char_end": 441, "tok_start": 168, "tok_end": 174, "label": "copied"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "12,297", "value": 12297.0, "char_start": 443, "char_end": 449, "tok_start": 175, "tok_end": 181, "label": "copied"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 466, "char_end": 469, "tok_start": 188, "tok_end": 191, "label": "constant"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "906", "value": 906.0, "char_start": 511, "char_end": 514, "tok_start": 208, "tok_end": 211, "label": "computed"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "12,297", "value": 12297.0, "char_start": 516, "char_end": 522, "tok_start": 212, "tok_end": 218, "label": "copied"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 539, "char_end": 542, "tok_start": 225, "tok_end": 228, "label": "constant"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "0.0741", "value": 0.0741, "char_start": 571, "char_end": 577, "tok_start": 240, "tok_end": 246, "label": "computed"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 585, "char_end": 588, "tok_start": 249, "tok_end": 252, "label": "constant"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "7.41", "value": 7.41, "char_start": 617, "char_end": 621, "tok_start": 264, "tok_end": 268, "label": "wrong_calc"}
+{"id": "CB/2008/page_243.pdf-3", "setting": "greedy", "number_text": "7.41%", "value": 7.41, "char_start": 694, "char_end": 699, "tok_start": 295, "tok_end": 299, "label": "computed"}
+{"id": "LMT/2010/page_36.pdf-1", "setting": "greedy", "number_text": "$1502 million", "value": 1502000000.0, "char_start": 192, "char_end": 205, "tok_start": 59, "tok_end": 63, "label": "copied"}
+{"id": "LMT/2010/page_36.pdf-1", "setting": "greedy", "number_text": "$13235 million", "value": 13235000000.0, "char_start": 228, "char_end": 242, "tok_start": 76, "tok_end": 81, "label": "copied"}
+{"id": "LMT/2010/page_36.pdf-1", "setting": "greedy", "number_text": "$1502 million", "value": 1502000000.0, "char_start": 326, "char_end": 339, "tok_start": 106, "tok_end": 110, "label": "copied"}
+{"id": "LMT/2010/page_36.pdf-1", "setting": "greedy", "number_text": "$13235 million", "value": 13235000000.0, "char_start": 342, "char_end": 356, "tok_start": 113, "tok_end": 118, "label": "copied"}
+{"id": "LMT/2010/page_36.pdf-1", "setting": "greedy", "number_text": "$14737 million", "value": 14737000000.0, "char_start": 359, "char_end": 373, "tok_start": 122, "tok_end": 127, "label": "wrong_calc"}
+{"id": "LMT/2010/page_36.pdf-1", "setting": "greedy", "number_text": "$14737 million", "value": 14737000000.0, "char_start": 444, "char_end": 458, "tok_start": 148, "tok_end": 153, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 230, "char_end": 233, "tok_start": 81, "tok_end": 84, "label": "constant"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "$7,269,900,000", "value": 7269900000.0, "char_start": 277, "char_end": 291, "tok_start": 101, "tok_end": 114, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "$5,416,300,000", "value": 5416300000.0, "char_start": 314, "char_end": 328, "tok_start": 126, "tok_end": 139, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "7,269,900,000", "value": 7269900000.0, "char_start": 418, "char_end": 431, "tok_start": 165, "tok_end": 178, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "5,416,300,000", "value": 5416300000.0, "char_start": 434, "char_end": 447, "tok_start": 180, "tok_end": 193, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "5,416,300,000", "value": 5416300000.0, "char_start": 449, "char_end": 462, "tok_start": 194, "tok_end": 207, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 479, "char_end": 482, "tok_start": 214, "tok_end": 217, "label": "constant"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "1,853,600,000", "value": 1853600000.0, "char_start": 527, "char_end": 540, "tok_start": 233, "tok_end": 246, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "5,416,300,000", "value": 5416300000.0, "char_start": 542, "char_end": 555, "tok_start": 247, "tok_end": 260, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 572, "char_end": 575, "tok_start": 267, "tok_end": 270, "label": "constant"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "0.3400", "value": 0.34, "char_start": 607, "char_end": 613, "tok_start": 281, "tok_end": 287, "label": "computed"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 621, "char_end": 624, "tok_start": 290, "tok_end": 293, "label": "constant"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "34.00", "value": 34.0, "char_start": 656, "char_end": 661, "tok_start": 304, "tok_end": 309, "label": "fabricated"}
+{"id": "STT/2009/page_73.pdf-3", "setting": "greedy", "number_text": "34.00%", "value": 34.0, "char_start": 737, "char_end": 743, "tok_start": 334, "tok_end": 339, "label": "computed"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "$13,555", "value": 13555.0, "char_start": 318, "char_end": 325, "tok_start": 87, "tok_end": 93, "label": "copied"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "$2,979", "value": 2979.0, "char_start": 358, "char_end": 364, "tok_start": 107, "tok_end": 112, "label": "copied"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 525, "char_end": 528, "tok_start": 168, "tok_end": 171, "label": "constant"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "2,979", "value": 2979.0, "char_start": 568, "char_end": 573, "tok_start": 186, "tok_end": 191, "label": "copied"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "13,555", "value": 13555.0, "char_start": 575, "char_end": 581, "tok_start": 192, "tok_end": 198, "label": "copied"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 598, "char_end": 601, "tok_start": 205, "tok_end": 208, "label": "constant"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "0.2207", "value": 0.2207, "char_start": 628, "char_end": 634, "tok_start": 218, "tok_end": 224, "label": "computed"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 642, "char_end": 645, "tok_start": 227, "tok_end": 230, "label": "constant"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "22.07", "value": 22.07, "char_start": 672, "char_end": 677, "tok_start": 240, "tok_end": 245, "label": "wrong_calc"}
+{"id": "AWK/2014/page_122.pdf-1", "setting": "greedy", "number_text": "22.07%", "value": 22.07, "char_start": 799, "char_end": 805, "tok_start": 274, "tok_end": 279, "label": "computed"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$9,896 million", "value": 9896000000.0, "char_start": 138, "char_end": 152, "tok_start": 40, "tok_end": 45, "label": "copied"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$7,510 million", "value": 7510000000.0, "char_start": 159, "char_end": 173, "tok_start": 53, "tok_end": 58, "label": "copied"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$6,180 million", "value": 6180000000.0, "char_start": 180, "char_end": 194, "tok_start": 66, "tok_end": 71, "label": "copied"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$9,896", "value": 9896.0, "char_start": 204, "char_end": 210, "tok_start": 76, "tok_end": 81, "label": "copied"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$7,510", "value": 7510.0, "char_start": 213, "char_end": 219, "tok_start": 83, "tok_end": 88, "label": "copied"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$6,180", "value": 6180.0, "char_start": 222, "char_end": 228, "tok_start": 90, "tok_end": 95, "label": "copied"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$23,586 million", "value": 23586000000.0, "char_start": 231, "char_end": 246, "tok_start": 97, "tok_end": 103, "label": "copied"}
+{"id": "AAL/2018/page_13.pdf-4", "setting": "greedy", "number_text": "$23,586 million", "value": 23586000000.0, "char_start": 313, "char_end": 328, "tok_start": 126, "tok_end": 132, "label": "copied"}
+{"id": "GS/2013/page_149.pdf-4", "setting": "greedy", "number_text": "$18,178 million", "value": 18178000000.0, "char_start": 44, "char_end": 59, "tok_start": 13, "tok_end": 19, "label": "copied"}
+{"id": "GS/2013/page_149.pdf-4", "setting": "greedy", "number_text": "$24,296 million", "value": 24296000000.0, "char_start": 105, "char_end": 120, "tok_start": 34, "tok_end": 40, "label": "copied"}
+{"id": "GS/2013/page_149.pdf-4", "setting": "greedy", "number_text": "$18,178", "value": 18178.0, "char_start": 149, "char_end": 156, "tok_start": 47, "tok_end": 53, "label": "copied"}
+{"id": "GS/2013/page_149.pdf-4", "setting": "greedy", "number_text": "$24,296", "value": 24296.0, "char_start": 168, "char_end": 175, "tok_start": 61, "tok_end": 67, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 494, "char_end": 497, "tok_start": 117, "tok_end": 120, "label": "constant"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "$86 million", "value": 86000000.0, "char_start": 607, "char_end": 618, "tok_start": 151, "tok_end": 153, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "$53 million", "value": 53000000.0, "char_start": 689, "char_end": 700, "tok_start": 178, "tok_end": 180, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "$86 million", "value": 86000000.0, "char_start": 872, "char_end": 883, "tok_start": 215, "tok_end": 217, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "$53 million", "value": 53000000.0, "char_start": 886, "char_end": 897, "tok_start": 220, "tok_end": 222, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "$33 million", "value": 33000000.0, "char_start": 900, "char_end": 911, "tok_start": 225, "tok_end": 227, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1083, "char_end": 1086, "tok_start": 261, "tok_end": 264, "label": "constant"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "$33 million", "value": 33000000.0, "char_start": 1132, "char_end": 1143, "tok_start": 273, "tok_end": 275, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "$86 million", "value": 86000000.0, "char_start": 1146, "char_end": 1157, "tok_start": 278, "tok_end": 280, "label": "copied"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1161, "char_end": 1164, "tok_start": 284, "tok_end": 287, "label": "constant"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "38.51%", "value": 38.51, "char_start": 1167, "char_end": 1173, "tok_start": 290, "tok_end": 295, "label": "computed"}
+{"id": "AES/2017/page_175.pdf-1", "setting": "greedy", "number_text": "38.51%", "value": 38.51, "char_start": 1302, "char_end": 1308, "tok_start": 326, "tok_end": 331, "label": "computed"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "$306 million", "value": 306000000.0, "char_start": 345, "char_end": 357, "tok_start": 73, "tok_end": 76, "label": "copied"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "$86 million", "value": 86000000.0, "char_start": 419, "char_end": 430, "tok_start": 90, "tok_end": 92, "label": "copied"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 652, "char_end": 655, "tok_start": 146, "tok_end": 149, "label": "constant"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "86", "value": 86.0, "char_start": 736, "char_end": 738, "tok_start": 171, "tok_end": 173, "label": "copied"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "306", "value": 306.0, "char_start": 740, "char_end": 743, "tok_start": 174, "tok_end": 177, "label": "copied"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 760, "char_end": 763, "tok_start": 184, "tok_end": 187, "label": "constant"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "28.03", "value": 28.03, "char_start": 837, "char_end": 842, "tok_start": 205, "tok_end": 210, "label": "wrong_calc"}
+{"id": "PPG/2018/page_60.pdf-2", "setting": "greedy", "number_text": "28.03%", "value": 28.03, "char_start": 968, "char_end": 974, "tok_start": 236, "tok_end": 241, "label": "fabricated"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "$385.47", "value": 385.47, "char_start": 302, "char_end": 309, "tok_start": 74, "tok_end": 80, "label": "copied"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "500", "value": 500.0, "char_start": 316, "char_end": 319, "tok_start": 85, "tok_end": 88, "label": "copied"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "$208.14", "value": 208.14, "char_start": 321, "char_end": 328, "tok_start": 90, "tok_end": 96, "label": "copied"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "$238.77", "value": 238.77, "char_start": 362, "char_end": 369, "tok_start": 106, "tok_end": 112, "label": "copied"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "385.47", "value": 385.47, "char_start": 403, "char_end": 409, "tok_start": 123, "tok_end": 129, "label": "copied"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "208.14", "value": 208.14, "char_start": 412, "char_end": 418, "tok_start": 131, "tok_end": 137, "label": "copied"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "238.77", "value": 238.77, "char_start": 421, "char_end": 427, "tok_start": 139, "tok_end": 145, "label": "copied"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "832.38", "value": 832.38, "char_start": 430, "char_end": 436, "tok_start": 147, "tok_end": 153, "label": "computed"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 510, "char_end": 511, "tok_start": 171, "tok_end": 172, "label": "constant"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "832.38", "value": 832.38, "char_start": 523, "char_end": 529, "tok_start": 177, "tok_end": 183, "label": "computed"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 531, "char_end": 532, "tok_start": 184, "tok_end": 185, "label": "constant"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "277.46", "value": 277.46, "char_start": 536, "char_end": 542, "tok_start": 188, "tok_end": 194, "label": "computed"}
+{"id": "RCL/2017/page_38.pdf-3", "setting": "greedy", "number_text": "$277.46", "value": 277.46, "char_start": 634, "char_end": 641, "tok_start": 220, "tok_end": 226, "label": "computed"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "$6.8 million", "value": 6800000.0, "char_start": 434, "char_end": 446, "tok_start": 96, "tok_end": 99, "label": "copied"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "$4.1 million", "value": 4099999.9999999995, "char_start": 519, "char_end": 531, "tok_start": 115, "tok_end": 118, "label": "copied"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 745, "char_end": 748, "tok_start": 177, "tok_end": 180, "label": "constant"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "4.1", "value": 4.1, "char_start": 788, "char_end": 791, "tok_start": 197, "tok_end": 200, "label": "copied"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "6.8", "value": 6.8, "char_start": 793, "char_end": 796, "tok_start": 201, "tok_end": 204, "label": "copied"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 813, "char_end": 816, "tok_start": 211, "tok_end": 214, "label": "constant"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "60.38", "value": 60.38, "char_start": 825, "char_end": 830, "tok_start": 217, "tok_end": 222, "label": "wrong_calc"}
+{"id": "SNA/2013/page_93.pdf-3", "setting": "greedy", "number_text": "60.38%", "value": 60.38, "char_start": 862, "char_end": 868, "tok_start": 230, "tok_end": 235, "label": "copied"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$31 million", "value": 31000000.0, "char_start": 113, "char_end": 124, "tok_start": 28, "tok_end": 30, "label": "copied"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$30 million", "value": 30000000.0, "char_start": 158, "char_end": 169, "tok_start": 45, "tok_end": 47, "label": "copied"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$31 million", "value": 31000000.0, "char_start": 210, "char_end": 221, "tok_start": 65, "tok_end": 67, "label": "copied"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$30 million", "value": 30000000.0, "char_start": 230, "char_end": 241, "tok_start": 77, "tok_end": 79, "label": "copied"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$31 million", "value": 31000000.0, "char_start": 273, "char_end": 284, "tok_start": 89, "tok_end": 91, "label": "copied"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$30 million", "value": 30000000.0, "char_start": 287, "char_end": 298, "tok_start": 94, "tok_end": 96, "label": "copied"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$61 million", "value": 61000000.0, "char_start": 301, "char_end": 312, "tok_start": 99, "tok_end": 101, "label": "computed"}
+{"id": "PNC/2014/page_110.pdf-2", "setting": "greedy", "number_text": "$61 million", "value": 61000000.0, "char_start": 391, "char_end": 402, "tok_start": 127, "tok_end": 129, "label": "computed"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 237, "char_end": 240, "tok_start": 71, "tok_end": 74, "label": "constant"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "$1731 million", "value": 1731000000.0, "char_start": 310, "char_end": 323, "tok_start": 98, "tok_end": 102, "label": "copied"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "$1639 million", "value": 1639000000.0, "char_start": 363, "char_end": 376, "tok_start": 119, "tok_end": 123, "label": "copied"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "1639", "value": 1639.0, "char_start": 469, "char_end": 473, "tok_start": 150, "tok_end": 154, "label": "copied"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "1731", "value": 1731.0, "char_start": 476, "char_end": 480, "tok_start": 156, "tok_end": 160, "label": "copied"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "1731", "value": 1731.0, "char_start": 482, "char_end": 486, "tok_start": 161, "tok_end": 165, "label": "copied"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 503, "char_end": 506, "tok_start": 172, "tok_end": 175, "label": "constant"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "-92", "value": -92.0, "char_start": 554, "char_end": 557, "tok_start": 191, "tok_end": 193, "label": "computed"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "1731", "value": 1731.0, "char_start": 559, "char_end": 563, "tok_start": 194, "tok_end": 198, "label": "copied"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 580, "char_end": 583, "tok_start": 205, "tok_end": 208, "label": "constant"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "-0.5336", "value": -0.5336, "char_start": 618, "char_end": 625, "tok_start": 219, "tok_end": 225, "label": "wrong_calc"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 633, "char_end": 636, "tok_start": 228, "tok_end": 231, "label": "constant"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "-5.34", "value": -5.34, "char_start": 671, "char_end": 676, "tok_start": 242, "tok_end": 246, "label": "fabricated"}
+{"id": "FIS/2016/page_64.pdf-3", "setting": "greedy", "number_text": "-5.34%", "value": -5.34, "char_start": 769, "char_end": 775, "tok_start": 276, "tok_end": 280, "label": "computed"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 627, "char_end": 630, "tok_start": 118, "tok_end": 121, "label": "constant"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "$8461 million", "value": 8461000000.0, "char_start": 729, "char_end": 742, "tok_start": 144, "tok_end": 148, "label": "copied"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "$6736 million", "value": 6736000000.0, "char_start": 819, "char_end": 832, "tok_start": 168, "tok_end": 172, "label": "copied"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1088, "char_end": 1091, "tok_start": 239, "tok_end": 242, "label": "constant"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "8461", "value": 8461.0, "char_start": 1132, "char_end": 1136, "tok_start": 259, "tok_end": 263, "label": "copied"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "6736", "value": 6736.0, "char_start": 1138, "char_end": 1142, "tok_start": 264, "tok_end": 268, "label": "copied"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1159, "char_end": 1162, "tok_start": 275, "tok_end": 278, "label": "constant"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "125.54", "value": 125.54, "char_start": 1171, "char_end": 1177, "tok_start": 281, "tok_end": 287, "label": "wrong_calc"}
+{"id": "GS/2015/page_74.pdf-2", "setting": "greedy", "number_text": "125.54%", "value": 125.54, "char_start": 1374, "char_end": 1381, "tok_start": 325, "tok_end": 331, "label": "fabricated"}
+{"id": "PNC/2013/page_205.pdf-1", "setting": "greedy", "number_text": "$63 million", "value": 63000000.0, "char_start": 229, "char_end": 240, "tok_start": 58, "tok_end": 60, "label": "copied"}
+{"id": "PNC/2013/page_205.pdf-1", "setting": "greedy", "number_text": "$55 million", "value": 55000000.0, "char_start": 253, "char_end": 264, "tok_start": 71, "tok_end": 73, "label": "copied"}
+{"id": "PNC/2013/page_205.pdf-1", "setting": "greedy", "number_text": "$63 million", "value": 63000000.0, "char_start": 305, "char_end": 316, "tok_start": 85, "tok_end": 87, "label": "copied"}
+{"id": "PNC/2013/page_205.pdf-1", "setting": "greedy", "number_text": "$55 million", "value": 55000000.0, "char_start": 319, "char_end": 330, "tok_start": 90, "tok_end": 92, "label": "copied"}
+{"id": "PNC/2013/page_205.pdf-1", "setting": "greedy", "number_text": "$118 million", "value": 118000000.0, "char_start": 333, "char_end": 345, "tok_start": 95, "tok_end": 98, "label": "copied"}
+{"id": "PNC/2013/page_205.pdf-1", "setting": "greedy", "number_text": "$118 million", "value": 118000000.0, "char_start": 480, "char_end": 492, "tok_start": 132, "tok_end": 135, "label": "copied"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "$10", "value": 10.0, "char_start": 175, "char_end": 178, "tok_start": 58, "tok_end": 60, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "1438 million", "value": 1438000000.0, "char_start": 179, "char_end": 191, "tok_start": 61, "tok_end": 65, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "$11", "value": 11.0, "char_start": 203, "char_end": 206, "tok_start": 76, "tok_end": 78, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "3047 million", "value": 3047000000.0, "char_start": 207, "char_end": 219, "tok_start": 79, "tok_end": 83, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "$11", "value": 11.0, "char_start": 275, "char_end": 278, "tok_start": 97, "tok_end": 99, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "3047 million", "value": 3047000000.0, "char_start": 279, "char_end": 291, "tok_start": 100, "tok_end": 104, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "$10", "value": 10.0, "char_start": 294, "char_end": 297, "tok_start": 107, "tok_end": 109, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "1438 million", "value": 1438000000.0, "char_start": 298, "char_end": 310, "tok_start": 110, "tok_end": 114, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "$1", "value": 1.0, "char_start": 313, "char_end": 315, "tok_start": 117, "tok_end": 118, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "1609 million", "value": 1609000000.0, "char_start": 316, "char_end": 328, "tok_start": 119, "tok_end": 123, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "$1", "value": 1.0, "char_start": 380, "char_end": 382, "tok_start": 142, "tok_end": 143, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "1609 million", "value": 1609000000.0, "char_start": 383, "char_end": 395, "tok_start": 144, "tok_end": 148, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "$10", "value": 10.0, "char_start": 398, "char_end": 401, "tok_start": 151, "tok_end": 153, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "1438 million", "value": 1438000000.0, "char_start": 402, "char_end": 414, "tok_start": 154, "tok_end": 158, "label": "fabricated"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "0.1145", "value": 0.1145, "char_start": 417, "char_end": 423, "tok_start": 161, "tok_end": 167, "label": "computed"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "0.1145", "value": 0.1145, "char_start": 467, "char_end": 473, "tok_start": 179, "tok_end": 185, "label": "computed"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 476, "char_end": 479, "tok_start": 187, "tok_end": 190, "label": "constant"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "11.45%", "value": 11.45, "char_start": 482, "char_end": 488, "tok_start": 192, "tok_end": 197, "label": "computed"}
+{"id": "STT/2001/page_85.pdf-2", "setting": "greedy", "number_text": "11.45%", "value": 11.45, "char_start": 580, "char_end": 586, "tok_start": 223, "tok_end": 228, "label": "computed"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "$7,126.7 million", "value": 7126700000.0, "char_start": 232, "char_end": 248, "tok_start": 53, "tok_end": 60, "label": "fabricated"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "$3,468 million", "value": 3468000000.0, "char_start": 307, "char_end": 321, "tok_start": 76, "tok_end": 81, "label": "copied"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "$7,126.7 million", "value": 7126700000.0, "char_start": 351, "char_end": 367, "tok_start": 91, "tok_end": 98, "label": "fabricated"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "$3,468 million", "value": 3468000000.0, "char_start": 370, "char_end": 384, "tok_start": 101, "tok_end": 106, "label": "copied"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "$3,658.7 million", "value": 3658700000.0, "char_start": 387, "char_end": 403, "tok_start": 109, "tok_end": 116, "label": "fabricated"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "$3,658.7 million", "value": 3658700000.0, "char_start": 441, "char_end": 457, "tok_start": 126, "tok_end": 133, "label": "fabricated"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "$7,126.7 million", "value": 7126700000.0, "char_start": 460, "char_end": 476, "tok_start": 136, "tok_end": 143, "label": "fabricated"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 480, "char_end": 483, "tok_start": 147, "tok_end": 150, "label": "constant"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "50.85%", "value": 50.85, "char_start": 486, "char_end": 492, "tok_start": 152, "tok_end": 157, "label": "fabricated"}
+{"id": "GS/2013/page_72.pdf-2", "setting": "greedy", "number_text": "50.85%", "value": 50.85, "char_start": 636, "char_end": 642, "tok_start": 189, "tok_end": 194, "label": "fabricated"}
+{"id": "ADI/2011/page_92.pdf-2", "setting": "greedy", "number_text": "$18,447", "value": 18447.0, "char_start": 188, "char_end": 195, "tok_start": 58, "tok_end": 64, "label": "copied"}
+{"id": "ADI/2011/page_92.pdf-2", "setting": "greedy", "number_text": "$286", "value": 286.0, "char_start": 296, "char_end": 300, "tok_start": 98, "tok_end": 101, "label": "copied"}
+{"id": "ADI/2011/page_92.pdf-2", "setting": "greedy", "number_text": "$18,161", "value": 18161.0, "char_start": 384, "char_end": 391, "tok_start": 136, "tok_end": 142, "label": "copied"}
+{"id": "ADI/2011/page_92.pdf-2", "setting": "greedy", "number_text": "$18,161", "value": 18161.0, "char_start": 524, "char_end": 531, "tok_start": 185, "tok_end": 191, "label": "copied"}
+{"id": "ADI/2011/page_92.pdf-2", "setting": "greedy", "number_text": "$18,447", "value": 18447.0, "char_start": 534, "char_end": 541, "tok_start": 193, "tok_end": 199, "label": "copied"}
+{"id": "ADI/2011/page_92.pdf-2", "setting": "greedy", "number_text": "-$286", "value": -286.0, "char_start": 560, "char_end": 565, "tok_start": 206, "tok_end": 209, "label": "copied"}
+{"id": "ADI/2011/page_92.pdf-2", "setting": "greedy", "number_text": "-$286", "value": -286.0, "char_start": 635, "char_end": 640, "tok_start": 228, "tok_end": 231, "label": "copied"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 180, "char_end": 183, "tok_start": 32, "tok_end": 35, "label": "constant"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "$591.6 million", "value": 591600000.0, "char_start": 236, "char_end": 250, "tok_start": 46, "tok_end": 51, "label": "copied"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "$104.3 million", "value": 104300000.0, "char_start": 269, "char_end": 283, "tok_start": 59, "tok_end": 64, "label": "copied"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 428, "char_end": 431, "tok_start": 105, "tok_end": 108, "label": "constant"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "104.3", "value": 104.3, "char_start": 489, "char_end": 494, "tok_start": 127, "tok_end": 132, "label": "copied"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "591.6", "value": 591.6, "char_start": 496, "char_end": 501, "tok_start": 133, "tok_end": 138, "label": "copied"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 518, "char_end": 521, "tok_start": 145, "tok_end": 148, "label": "constant"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "0.1757", "value": 0.1757, "char_start": 566, "char_end": 572, "tok_start": 162, "tok_end": 168, "label": "computed"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 580, "char_end": 583, "tok_start": 171, "tok_end": 174, "label": "constant"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "17.57", "value": 17.57, "char_start": 628, "char_end": 633, "tok_start": 188, "tok_end": 193, "label": "wrong_calc"}
+{"id": "ZBH/2007/page_54.pdf-1", "setting": "greedy", "number_text": "17.57%", "value": 17.57, "char_start": 651, "char_end": 657, "tok_start": 200, "tok_end": 205, "label": "computed"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$7,762,200", "value": 7762200.0, "char_start": 255, "char_end": 265, "tok_start": 72, "tok_end": 81, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$11,544,400", "value": 11544400.0, "char_start": 274, "char_end": 285, "tok_start": 90, "tok_end": 100, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$3,650,510", "value": 3650510.0, "char_start": 294, "char_end": 304, "tok_start": 109, "tok_end": 118, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$7,281,530", "value": 7281530.0, "char_start": 313, "char_end": 323, "tok_start": 127, "tok_end": 136, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$8,080,430", "value": 8080430.0, "char_start": 332, "char_end": 342, "tok_start": 145, "tok_end": 154, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$7,762,200", "value": 7762200.0, "char_start": 384, "char_end": 394, "tok_start": 165, "tok_end": 174, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$11,544,400", "value": 11544400.0, "char_start": 397, "char_end": 408, "tok_start": 176, "tok_end": 186, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$3,650,510", "value": 3650510.0, "char_start": 411, "char_end": 421, "tok_start": 188, "tok_end": 197, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$7,281,530", "value": 7281530.0, "char_start": 424, "char_end": 434, "tok_start": 199, "tok_end": 208, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$8,080,430", "value": 8080430.0, "char_start": 437, "char_end": 447, "tok_start": 210, "tok_end": 219, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$37,218,670", "value": 37218670.0, "char_start": 450, "char_end": 461, "tok_start": 221, "tok_end": 231, "label": "fabricated"}
+{"id": "AMT/2003/page_85.pdf-3", "setting": "greedy", "number_text": "$37,218,670", "value": 37218670.0, "char_start": 596, "char_end": 607, "tok_start": 266, "tok_end": 276, "label": "fabricated"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 122, "char_end": 123, "tok_start": 35, "tok_end": 36, "label": "constant"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "$9202 million", "value": 9202000000.0, "char_start": 132, "char_end": 145, "tok_start": 43, "tok_end": 47, "label": "copied"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "$9105 million", "value": 9105000000.0, "char_start": 152, "char_end": 165, "tok_start": 55, "tok_end": 59, "label": "copied"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "$9409 million", "value": 9409000000.0, "char_start": 172, "char_end": 185, "tok_start": 67, "tok_end": 71, "label": "copied"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "9202", "value": 9202.0, "char_start": 198, "char_end": 202, "tok_start": 76, "tok_end": 80, "label": "copied"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "9105", "value": 9105.0, "char_start": 205, "char_end": 209, "tok_start": 82, "tok_end": 86, "label": "copied"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "9409", "value": 9409.0, "char_start": 212, "char_end": 216, "tok_start": 88, "tok_end": 92, "label": "copied"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 220, "char_end": 221, "tok_start": 95, "tok_end": 96, "label": "constant"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "$9270.33 million", "value": 9270330000.0, "char_start": 224, "char_end": 240, "tok_start": 98, "tok_end": 105, "label": "copied"}
+{"id": "LMT/2016/page_52.pdf-2", "setting": "greedy", "number_text": "$9270.33 million", "value": 9270330000.0, "char_start": 337, "char_end": 353, "tok_start": 132, "tok_end": 139, "label": "copied"}
+{"id": "MA/2009/page_112.pdf-3", "setting": "greedy", "number_text": "$1,818,100", "value": 1818100.0, "char_start": 149, "char_end": 159, "tok_start": 43, "tok_end": 52, "label": "fabricated"}
+{"id": "MA/2009/page_112.pdf-3", "setting": "greedy", "number_text": "$2,709,000", "value": 2709000.0, "char_start": 189, "char_end": 199, "tok_start": 64, "tok_end": 73, "label": "fabricated"}
+{"id": "MA/2009/page_112.pdf-3", "setting": "greedy", "number_text": "1,818,100", "value": 1818100.0, "char_start": 386, "char_end": 395, "tok_start": 135, "tok_end": 144, "label": "fabricated"}
+{"id": "MA/2009/page_112.pdf-3", "setting": "greedy", "number_text": "2,709,000", "value": 2709000.0, "char_start": 397, "char_end": 406, "tok_start": 145, "tok_end": 154, "label": "fabricated"}
+{"id": "MA/2009/page_112.pdf-3", "setting": "greedy", "number_text": "0.67", "value": 0.67, "char_start": 436, "char_end": 440, "tok_start": 166, "tok_end": 170, "label": "computed"}
+{"id": "MA/2009/page_112.pdf-3", "setting": "greedy", "number_text": "0.67", "value": 0.67, "char_start": 517, "char_end": 521, "tok_start": 195, "tok_end": 199, "label": "computed"}
+{"id": "AMT/2008/page_94.pdf-2", "setting": "greedy", "number_text": "$18,370,000,000", "value": 18370000000.0, "char_start": 86, "char_end": 101, "tok_start": 25, "tok_end": 39, "label": "fabricated"}
+{"id": "PKG/2005/page_27.pdf-3", "setting": "greedy", "number_text": "$88.0 million", "value": 88000000.0, "char_start": 145, "char_end": 158, "tok_start": 45, "tok_end": 49, "label": "copied"}
+{"id": "PKG/2005/page_27.pdf-3", "setting": "greedy", "number_text": "$110.9 million", "value": 110900000.0, "char_start": 192, "char_end": 206, "tok_start": 64, "tok_end": 69, "label": "copied"}
+{"id": "PKG/2005/page_27.pdf-3", "setting": "greedy", "number_text": "$88.0 million", "value": 88000000.0, "char_start": 243, "char_end": 256, "tok_start": 81, "tok_end": 85, "label": "copied"}
+{"id": "PKG/2005/page_27.pdf-3", "setting": "greedy", "number_text": "$110.9 million", "value": 110900000.0, "char_start": 259, "char_end": 273, "tok_start": 88, "tok_end": 93, "label": "copied"}
+{"id": "PKG/2005/page_27.pdf-3", "setting": "greedy", "number_text": "$198.9 million", "value": 198900000.0, "char_start": 276, "char_end": 290, "tok_start": 96, "tok_end": 101, "label": "computed"}
+{"id": "PKG/2005/page_27.pdf-3", "setting": "greedy", "number_text": "$198.9 million", "value": 198900000.0, "char_start": 366, "char_end": 380, "tok_start": 126, "tok_end": 131, "label": "computed"}
+{"id": "MRO/2008/page_135.pdf-1", "setting": "greedy", "number_text": "$1,134 million", "value": 1134000000.0, "char_start": 213, "char_end": 227, "tok_start": 57, "tok_end": 62, "label": "copied"}
+{"id": "MRO/2008/page_135.pdf-1", "setting": "greedy", "number_text": "$1,044 million", "value": 1044000000.0, "char_start": 282, "char_end": 296, "tok_start": 81, "tok_end": 86, "label": "copied"}
+{"id": "MRO/2008/page_135.pdf-1", "setting": "greedy", "number_text": "$1,134 million", "value": 1134000000.0, "char_start": 337, "char_end": 351, "tok_start": 96, "tok_end": 101, "label": "copied"}
+{"id": "MRO/2008/page_135.pdf-1", "setting": "greedy", "number_text": "$1,044 million", "value": 1044000000.0, "char_start": 354, "char_end": 368, "tok_start": 104, "tok_end": 109, "label": "copied"}
+{"id": "MRO/2008/page_135.pdf-1", "setting": "greedy", "number_text": "$90 million", "value": 90000000.0, "char_start": 371, "char_end": 382, "tok_start": 112, "tok_end": 114, "label": "wrong_calc"}
+{"id": "MRO/2008/page_135.pdf-1", "setting": "greedy", "number_text": "$90 million", "value": 90000000.0, "char_start": 441, "char_end": 452, "tok_start": 125, "tok_end": 127, "label": "fabricated"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$21.2 million", "value": 21200000.0, "char_start": 184, "char_end": 197, "tok_start": 50, "tok_end": 54, "label": "copied"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$9.8 million", "value": 9800000.0, "char_start": 204, "char_end": 216, "tok_start": 62, "tok_end": 65, "label": "copied"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$6.1 million", "value": 6100000.0, "char_start": 223, "char_end": 235, "tok_start": 73, "tok_end": 76, "label": "copied"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$21.2", "value": 21.2, "char_start": 242, "char_end": 247, "tok_start": 81, "tok_end": 85, "label": "copied"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$9.8", "value": 9.8, "char_start": 250, "char_end": 254, "tok_start": 87, "tok_end": 90, "label": "copied"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$6.1", "value": 6.1, "char_start": 257, "char_end": 261, "tok_start": 92, "tok_end": 95, "label": "copied"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$37 million", "value": 37000000.0, "char_start": 264, "char_end": 275, "tok_start": 97, "tok_end": 99, "label": "computed"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 294, "char_end": 295, "tok_start": 106, "tok_end": 107, "label": "constant"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$37 million", "value": 37000000.0, "char_start": 306, "char_end": 317, "tok_start": 111, "tok_end": 113, "label": "computed"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "3", "value": 3.0, "char_start": 320, "char_end": 321, "tok_start": 116, "tok_end": 117, "label": "constant"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$12.33 million", "value": 12330000.0, "char_start": 324, "char_end": 338, "tok_start": 119, "tok_end": 124, "label": "wrong_calc"}
+{"id": "RSG/2017/page_74.pdf-2", "setting": "greedy", "number_text": "$12.33 million", "value": 12330000.0, "char_start": 427, "char_end": 441, "tok_start": 151, "tok_end": 156, "label": "fabricated"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$-377", "value": -377.0, "char_start": 243, "char_end": 248, "tok_start": 71, "tok_end": 74, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "(377)", "value": -377.0, "char_start": 249, "char_end": 254, "tok_start": 75, "tok_end": 78, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$1451", "value": 1451.0, "char_start": 287, "char_end": 292, "tok_start": 94, "tok_end": 98, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$-1970", "value": -1970.0, "char_start": 325, "char_end": 331, "tok_start": 115, "tok_end": 119, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "(1970)", "value": -1970.0, "char_start": 332, "char_end": 338, "tok_start": 120, "tok_end": 124, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$1451", "value": 1451.0, "char_start": 414, "char_end": 419, "tok_start": 149, "tok_end": 153, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$(-1970)", "value": -1970.0, "char_start": 422, "char_end": 430, "tok_start": 156, "tok_end": 160, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$1451", "value": 1451.0, "char_start": 433, "char_end": 438, "tok_start": 163, "tok_end": 167, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$1970", "value": 1970.0, "char_start": 441, "char_end": 446, "tok_start": 169, "tok_end": 173, "label": "copied"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$3421", "value": 3421.0, "char_start": 449, "char_end": 454, "tok_start": 175, "tok_end": 179, "label": "computed"}
+{"id": "C/2018/page_255.pdf-2", "setting": "greedy", "number_text": "$3421 million", "value": 3421000000.0, "char_start": 582, "char_end": 595, "tok_start": 217, "tok_end": 221, "label": "computed"}
+{"id": "AAPL/2012/page_71.pdf-4", "setting": "greedy", "number_text": "$488 million", "value": 488000000.0, "char_start": 249, "char_end": 261, "tok_start": 63, "tok_end": 66, "label": "copied"}
+{"id": "AAPL/2012/page_71.pdf-4", "setting": "greedy", "number_text": "$338 million", "value": 338000000.0, "char_start": 286, "char_end": 298, "tok_start": 79, "tok_end": 82, "label": "copied"}
+{"id": "AAPL/2012/page_71.pdf-4", "setting": "greedy", "number_text": "488", "value": 488.0, "char_start": 458, "char_end": 461, "tok_start": 136, "tok_end": 139, "label": "copied"}
+{"id": "AAPL/2012/page_71.pdf-4", "setting": "greedy", "number_text": "338", "value": 338.0, "char_start": 464, "char_end": 467, "tok_start": 141, "tok_end": 144, "label": "copied"}
+{"id": "AAPL/2012/page_71.pdf-4", "setting": "greedy", "number_text": "150", "value": 150.0, "char_start": 470, "char_end": 473, "tok_start": 146, "tok_end": 149, "label": "computed"}
+{"id": "AAPL/2012/page_71.pdf-4", "setting": "greedy", "number_text": "$150 million", "value": 150000000.0, "char_start": 623, "char_end": 635, "tok_start": 186, "tok_end": 189, "label": "computed"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "$2,077.6 million", "value": 2077600000.0, "char_start": 236, "char_end": 252, "tok_start": 52, "tok_end": 59, "label": "fabricated"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "-$1,807.3 million", "value": -1807300000.0, "char_start": 303, "char_end": 320, "tok_start": 76, "tok_end": 83, "label": "fabricated"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 515, "char_end": 518, "tok_start": 131, "tok_end": 134, "label": "constant"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "-1,807.3", "value": -1807.3, "char_start": 585, "char_end": 593, "tok_start": 155, "tok_end": 162, "label": "fabricated"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "2,077.6", "value": 2077.6, "char_start": 595, "char_end": 602, "tok_start": 163, "tok_end": 170, "label": "fabricated"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 619, "char_end": 622, "tok_start": 177, "tok_end": 180, "label": "constant"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "-87.00", "value": -87.0, "char_start": 650, "char_end": 656, "tok_start": 190, "tok_end": 195, "label": "fabricated"}
+{"id": "INTC/2013/page_47.pdf-4", "setting": "greedy", "number_text": "-87.00%", "value": -87.0, "char_start": 786, "char_end": 793, "tok_start": 227, "tok_end": 232, "label": "computed"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 516, "char_end": 519, "tok_start": 97, "tok_end": 100, "label": "constant"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "$2,873 million", "value": 2873000000.0, "char_start": 601, "char_end": 615, "tok_start": 119, "tok_end": 124, "label": "copied"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "$1,145 million", "value": 1145000000.0, "char_start": 680, "char_end": 694, "tok_start": 138, "tok_end": 143, "label": "copied"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "1,145", "value": 1145.0, "char_start": 770, "char_end": 775, "tok_start": 167, "tok_end": 172, "label": "copied"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "2,873", "value": 2873.0, "char_start": 777, "char_end": 782, "tok_start": 173, "tok_end": 178, "label": "copied"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 799, "char_end": 802, "tok_start": 185, "tok_end": 188, "label": "constant"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "40.00", "value": 40.0, "char_start": 811, "char_end": 816, "tok_start": 191, "tok_end": 196, "label": "wrong_calc"}
+{"id": "STT/2011/page_85.pdf-1", "setting": "greedy", "number_text": "40.00%", "value": 40.0, "char_start": 991, "char_end": 997, "tok_start": 228, "tok_end": 233, "label": "computed"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 287, "char_end": 290, "tok_start": 89, "tok_end": 92, "label": "constant"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "$2.36", "value": 2.36, "char_start": 339, "char_end": 344, "tok_start": 110, "tok_end": 114, "label": "copied"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "$1.96", "value": 1.96, "char_start": 372, "char_end": 377, "tok_start": 127, "tok_end": 131, "label": "copied"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "2.36", "value": 2.36, "char_start": 470, "char_end": 474, "tok_start": 157, "tok_end": 161, "label": "copied"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "1.96", "value": 1.96, "char_start": 477, "char_end": 481, "tok_start": 163, "tok_end": 167, "label": "copied"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "1.96", "value": 1.96, "char_start": 483, "char_end": 487, "tok_start": 168, "tok_end": 172, "label": "copied"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 504, "char_end": 507, "tok_start": 179, "tok_end": 182, "label": "constant"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "0.40", "value": 0.4, "char_start": 555, "char_end": 559, "tok_start": 198, "tok_end": 202, "label": "computed"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "1.96", "value": 1.96, "char_start": 561, "char_end": 565, "tok_start": 203, "tok_end": 207, "label": "copied"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 582, "char_end": 585, "tok_start": 214, "tok_end": 217, "label": "constant"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "0.2034", "value": 0.2034, "char_start": 620, "char_end": 626, "tok_start": 228, "tok_end": 234, "label": "computed"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 634, "char_end": 637, "tok_start": 237, "tok_end": 240, "label": "constant"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "20.34", "value": 20.34, "char_start": 672, "char_end": 677, "tok_start": 251, "tok_end": 256, "label": "wrong_calc"}
+{"id": "BLL/2010/page_39.pdf-3", "setting": "greedy", "number_text": "20.34%", "value": 20.34, "char_start": 781, "char_end": 787, "tok_start": 286, "tok_end": 291, "label": "computed"}
+{"id": "UNP/2009/page_89.pdf-2", "setting": "greedy", "number_text": "$2061 million", "value": 2061000000.0, "char_start": 267, "char_end": 280, "tok_start": 63, "tok_end": 67, "label": "copied"}
+{"id": "UNP/2009/page_89.pdf-2", "setting": "greedy", "number_text": "$2061 million", "value": 2061000000.0, "char_start": 569, "char_end": 582, "tok_start": 133, "tok_end": 137, "label": "copied"}
+{"id": "UNP/2009/page_89.pdf-2", "setting": "greedy", "number_text": "$2061 million", "value": 2061000000.0, "char_start": 841, "char_end": 854, "tok_start": 194, "tok_end": 198, "label": "copied"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 408, "char_end": 411, "tok_start": 124, "tok_end": 127, "label": "constant"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "$40,000", "value": 40000.0, "char_start": 563, "char_end": 570, "tok_start": 171, "tok_end": 177, "label": "copied"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "$66,000", "value": 66000.0, "char_start": 597, "char_end": 604, "tok_start": 194, "tok_end": 200, "label": "copied"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "66,000", "value": 66000.0, "char_start": 773, "char_end": 779, "tok_start": 270, "tok_end": 276, "label": "copied"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "40,000", "value": 40000.0, "char_start": 782, "char_end": 788, "tok_start": 278, "tok_end": 284, "label": "copied"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "26,000", "value": 26000.0, "char_start": 791, "char_end": 797, "tok_start": 286, "tok_end": 292, "label": "wrong_calc"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "26,000", "value": 26000.0, "char_start": 983, "char_end": 989, "tok_start": 370, "tok_end": 376, "label": "fabricated"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "66,000", "value": 66000.0, "char_start": 991, "char_end": 997, "tok_start": 377, "tok_end": 383, "label": "copied"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1034, "char_end": 1037, "tok_start": 395, "tok_end": 398, "label": "constant"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1130, "char_end": 1133, "tok_start": 424, "tok_end": 427, "label": "constant"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "26,000", "value": 26000.0, "char_start": 1190, "char_end": 1196, "tok_start": 447, "tok_end": 453, "label": "fabricated"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "66,000", "value": 66000.0, "char_start": 1198, "char_end": 1204, "tok_start": 454, "tok_end": 460, "label": "copied"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 1220, "char_end": 1223, "tok_start": 466, "tok_end": 469, "label": "constant"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "39.39", "value": 39.39, "char_start": 1232, "char_end": 1237, "tok_start": 472, "tok_end": 477, "label": "fabricated"}
+{"id": "ABMD/2012/page_79.pdf-4", "setting": "greedy", "number_text": "20", "value": 20.0, "char_start": 1353, "char_end": 1355, "tok_start": 510, "tok_end": 512, "label": "fabricated"}
+{"id": "PKG/2011/page_14.pdf-1", "setting": "greedy", "number_text": "48", "value": 48.0, "char_start": 84, "char_end": 86, "tok_start": 15, "tok_end": 17, "label": "computed"}
+{"id": "PKG/2011/page_14.pdf-1", "setting": "greedy", "number_text": "4", "value": 4.0, "char_start": 102, "char_end": 103, "tok_start": 21, "tok_end": 22, "label": "constant"}
+{"id": "PKG/2011/page_14.pdf-1", "setting": "greedy", "number_text": "44", "value": 44.0, "char_start": 129, "char_end": 131, "tok_start": 27, "tok_end": 29, "label": "copied"}
+{"id": "PKG/2011/page_14.pdf-1", "setting": "greedy", "number_text": "37", "value": 37.0, "char_start": 169, "char_end": 171, "tok_start": 35, "tok_end": 37, "label": "copied"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 389, "char_end": 392, "tok_start": 80, "tok_end": 83, "label": "constant"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "$42 million", "value": 42000000.0, "char_start": 465, "char_end": 476, "tok_start": 102, "tok_end": 104, "label": "copied"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "$15 million", "value": 15000000.0, "char_start": 545, "char_end": 556, "tok_start": 122, "tok_end": 124, "label": "copied"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 760, "char_end": 763, "tok_start": 173, "tok_end": 176, "label": "constant"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "15", "value": 15.0, "char_start": 804, "char_end": 806, "tok_start": 193, "tok_end": 195, "label": "copied"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "42", "value": 42.0, "char_start": 808, "char_end": 810, "tok_start": 196, "tok_end": 198, "label": "copied"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "100", "value": 100.0, "char_start": 827, "char_end": 830, "tok_start": 205, "tok_end": 208, "label": "constant"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "35.71", "value": 35.71, "char_start": 839, "char_end": 844, "tok_start": 211, "tok_end": 216, "label": "wrong_calc"}
+{"id": "AES/2017/page_85.pdf-2", "setting": "greedy", "number_text": "35.71%", "value": 35.71, "char_start": 973, "char_end": 979, "tok_start": 242, "tok_end": 247, "label": "computed"}
+{"id": "HWM/2018/page_96.pdf-1", "setting": "greedy", "number_text": "$26.79", "value": 26.79, "char_start": 147, "char_end": 153, "tok_start": 38, "tok_end": 43, "label": "copied"}
+{"id": "HWM/2018/page_96.pdf-1", "setting": "greedy", "number_text": "9 million", "value": 9000000.0, "char_start": 373, "char_end": 382, "tok_start": 101, "tok_end": 102, "label": "copied"}
+{"id": "HWM/2018/page_96.pdf-1", "setting": "greedy", "number_text": "26.79", "value": 26.79, "char_start": 440, "char_end": 445, "tok_start": 122, "tok_end": 127, "label": "copied"}
+{"id": "HWM/2018/page_96.pdf-1", "setting": "greedy", "number_text": "9", "value": 9.0, "char_start": 453, "char_end": 454, "tok_start": 130, "tok_end": 131, "label": "constant"}
+{"id": "HWM/2018/page_96.pdf-1", "setting": "greedy", "number_text": "240.11", "value": 240.11, "char_start": 482, "char_end": 488, "tok_start": 142, "tok_end": 148, "label": "computed"}
+{"id": "HWM/2018/page_96.pdf-1", "setting": "greedy", "number_text": "$240.11 million", "value": 240110000.0, "char_start": 558, "char_end": 573, "tok_start": 167, "tok_end": 173, "label": "computed"}

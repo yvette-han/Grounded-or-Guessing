@@ -38,12 +38,18 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 5: R1 `detector/transfer.py`: B3's fitting split into `fit_detectors`, `score_detector`, `test_metrics` (B3 output unchanged); detectors fit on FinQA as in B3, then score every TAT-QA number; CIs by bootstrap over TAT-QA tables. TAT-QA outputs live in `tatqa/`.
 - Nov 5: Manual work split so both GPUs run in parallel: Person A runs greedy and beam5 and the A steps; Person B runs temp07, temp12, topp09 and the B steps (`MANUAL_STEPS.md`). Labeling waits for the A5 decision; feature files go to the shared Drive folder `GoG-shared`.
 - Nov 5: Roles: Person A (Stage 1) = Eduardo, Person B (Stage 2) = Yvette.
+- Nov 6: A3 `max_new_tokens` 128 → 512. With 128, 44 of the first 50 greedy answers were cut before the final answer (the model writes step-by-step, mean 215 tokens when allowed to finish). With 512, 1 of 50 is cut; 256 would still cut 15, 384 would cut 1. Greedy is deterministic, so the 128-token answers are exact prefixes of the 512-token ones (checked on all 50).
+- Nov 6: A4 new label `constant`, checked before `copied`: a bare integer (no `$`, sign, scale word, `%`, comma or decimals) whose value is a FinQA program constant (1–10, 100, 1,000, …, 1,000,000). Reason: on the first 50 greedy answers, `100` (as in "multiply by 100") was 47 of 151 `fabricated` numbers, and the order rule then made every number after it `fabricated` too (131 of the 151). `constant` counts as a good input for `wrong_calc` and is left out of detector training like `question`. Fabricated share on the 50: 33.3% → 19.2%; answers with a fabricated number: 32 → 20 of 50.
+- Nov 6: A2 observation for the hand-check, not changed in code: a bare number vs a bare report number is matched as written, so `$739,187,000` vs the table's `739187` (in thousands) is `fabricated`, and the model's typo `$1,4151` (for 14151) is split into `1,` and `4151 million`, also `fabricated`.
+- Nov 6: Person A's GPU runs happen on the Yin lab server (V100, fp16, same code and batch size 8) instead of Colab; the first 50 greedy answers and the full greedy and beam5 runs come from there.
 
 ## Run notes: Person A
 
 _Person A (Eduardo) adds run notes and counts here (one line each, dated)._
 
 - Nov 6: A1 `python data/build_subset.py` on my laptop (CPU; only the tokenizer is needed). All 193 tests pass locally. Checks: 1,000 unique ids, no report in more than one split, no null or empty `gold_steps`; steps per program 1: 571, 2: 345, 3: 57, 4+: 27. 106 of the 1,000 questions contain a number after the skip rules (matches the ~10% noted for the `question` label).
+- Nov 6: A3 first 50 greedy answers (`gen/answers_greedy.jsonl`, 512-token budget): mean 215 new tokens, 1 of 50 cut at the limit, 9.1 numbers per answer, re-tokenization problems 0. Generation speed on the V100: ~1.3 s per answer at batch 8.
+- Nov 6: A4 on those 50 (453 numbers): copied 220 (48.6%), computed 51 (11.3%), question 0, constant 75 (16.6%), wrong_calc 20 (4.4%), fabricated 87 (19.2%). Hand-check sheet written: `labels/handcheck.csv` (50 numbers). I have not opened the key.
 
 ## Run notes: Person B
 

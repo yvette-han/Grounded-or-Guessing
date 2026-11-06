@@ -191,7 +191,8 @@ FinQA ids look like `ADI/2009/page_49.pdf-1`. The **report key** is company + ye
 | 1 | **copied** | The value appears in the report (within `label_tolerance` after normalization) |
 | 2 | **computed** | Not in the report, but matches the gold answer or an intermediate step of the gold `program` |
 | 3 | **question** | Not in the report or the gold program, but appears in the question (added Nov 5, see `LOG.md`) |
-| 4 | **wrong_calc** | Not correct, but the inputs were right: the model looked in the right place and did the math wrong. In code: every number before it in the answer is copied, computed or question, and at least one is copied |
+| 0 | **constant** | A bare integer that is a FinQA program constant (1–10, 100, 1,000, …, 1,000,000), e.g. the 100 in "multiply by 100". No `$`, sign, scale word, `%` or decimals. Checked before everything else (added Nov 6, see `LOG.md`) |
+| 4 | **wrong_calc** | Not correct, but the inputs were right: the model looked in the right place and did the math wrong. In code: every number before it in the answer is copied, computed, question or constant, and at least one is copied |
 | 5 | **fabricated** | Anything else |
 
 The order matters: a gold answer that happens to equal a report number is **copied**.
@@ -210,7 +211,7 @@ The order matters: a gold answer that happens to equal a report number is **copi
 
 ### 6.5 Positive class for detection
 
-Main task: **fabricated = 1**, copied + computed = 0. `wrong_calc` and `question` are left out of the main training set; `wrong_calc` is analyzed in §8, step B5.
+Main task: **fabricated = 1**, copied + computed = 0. `wrong_calc`, `question` and `constant` are left out of the main training set; `wrong_calc` is analyzed in §8, step B5.
 
 ---
 

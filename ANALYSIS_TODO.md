@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 6 (A1 done)._
+_Last updated: Nov 6 (A1 done; first 50 greedy answers and the hand-check sheet done; `constant` label and 512-token budget added)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -40,7 +40,10 @@ Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we deci
 - [ ] **A3:** batches of 8 with left padding and one seed per batch, so sampled answers depend on the batch size, and fp16 batching can change a greedy answer slightly
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens` and `hit_max_tokens`; `answer_text` is the decoded tokens up to the stop token, not stripped
+- [ ] **A3 (Nov 6):** `max_new_tokens` = 512, up from 128, because 128 cut 44 of the first 50 greedy answers before the final answer. Trade-off: longer answers mean more numbers per answer (9 vs 4) and slower feature extraction; 384 would cut 1 of 50 too
 - [ ] **A4:** a new label, `question`: a number found only in the question. Left out of main training, like `wrong_calc`
+- [ ] **A4 (Nov 6):** a new label, `constant`, checked **before** `copied`: a bare integer that is a FinQA program constant (1–10, 100, 1,000, …, 1,000,000), like the 100 in "multiply by 100". Left out of training, counts as a good input for `wrong_calc`. Review: the constant set, whether it should come before `copied` (a bare `100` copied from a table becomes `constant`), and whether the hand-check agrees
+- [ ] **A2 (Nov 6, not changed):** a bare number vs a bare report number is matched as written, so a value the model rescaled (`$739,187,000` for a table cell `739187` in thousands) is `fabricated`. Decide in the hand-check whether that is right, or whether bare-vs-bare should also try ×1,000 and ×1,000,000
 - [ ] **A4:** `wrong_calc` = every number before it in the answer is copied, computed or question, and at least one is copied. A number after a `wrong_calc` or `fabricated` one is `fabricated`
 - [ ] **A4:** `copied` is checked against every report number, so a wrong value can be `copied` by coincidence (in a test on fake answers, 3 of 14 wrong values matched within 1%, e.g. `3.473` vs `3.5%`). Watch for this in the hand-check
 - [ ] **A4:** the hand-check sheet is 50 random numbers from one setting (not balanced by label); answers whose tokens don't line up with the prompt are skipped and counted
@@ -98,7 +101,7 @@ README §3: each of us can explain every file in our folders line by line, and h
 - [ ] `data/build_subset.py`: sanity-check the counts it prints on Colab
 - [ ] `common/program.py`: check `tests/test_program.py`
 - [ ] `gen/generate.py`: check `tests/test_generate.py`, especially the decoding arguments each setting turns into
-- [ ] `labels/label.py`: check every expected label in `tests/test_label.py` against README §6.3
+- [ ] `labels/label.py`: check every expected label in `tests/test_label.py` against README §6.3, including the `constant` cases added Nov 6
 - [ ] `baseline/confidence.py`: explain why the logits at position *t* score token *t + 1*; check `tests/test_confidence.py`
 - [ ] `analysis/stage1.py` and `analysis/stage1.ipynb`: check the hand-worked example in `tests/test_stage1.py`
 
@@ -123,10 +126,10 @@ Claude makes the plots and tables; reading them and drawing conclusions is ours.
 | Step | What's ours | Who | Status |
 |---|---|---|---|
 | A1 | Run `data/build_subset.py`; fill the A1 stats line in `LOG.md` (a run) | A | ✅ done Nov 6 (`data/finqa_subset.jsonl`, stats in `LOG.md`) |
-| A3 | Run `gen/generate.py` for your settings; greedy `--limit 50` first (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | 🟢 ready to run |
+| A3 | Run `gen/generate.py` for your settings; greedy `--limit 50` first (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | A: ✅ first 50 greedy done Nov 6; full greedy and beam5 running · B: 🟢 ready to run |
 | B0 | Run `analysis/b0_attention_plot.py` (after A1); explain the plot to professor: what the heads attend to | B | 🟢 ready to run |
 | A4 | Run `labels/label.py` for your settings; label counts into `LOG.md` (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A3 |
-| A5 | Hand-label the same 50 numbers without seeing the auto labels; run `labels/agreement.py`; go through the disagreements; if under ~90%, decide how §6.3 changes | both | ⏳ needs the A3 greedy run |
+| A5 | Hand-label the same 50 numbers without seeing the auto labels; run `labels/agreement.py`; go through the disagreements; if under ~90%, decide how §6.3 changes | both | 🟢 `labels/handcheck.csv` ready (Nov 6) |
 | A6 | RQ0: what decoding does to accuracy and fabrication, and why ("Our reading" in `analysis/stage1.ipynb`) | A | ⏳ needs A3, A4 |
 | A6 | Stage 1 error analysis (Nov 23–29) | A | ⏳ needs A6 results |
 | A7 | Run `baseline/confidence.py` for your settings (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A4 |

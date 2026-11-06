@@ -9,8 +9,11 @@ Labels, checked in this order:
   computed    not in the report, but equals the gold answer or a step of the gold program
   question    not in the report or the gold program, but appears in the question
               (not in README 6.3; see LOG.md)
+  constant    a bare integer that is a FinQA program constant (1-10, 100, 1000,
+              ..., 1000000), e.g. the 100 in "multiply by 100"; checked first,
+              before copied (added Nov 6, see LOG.md)
   wrong_calc  none of the above, but every number before it in the answer is
-              copied, computed or question, and at least one is copied: the
+              copied, computed, question or constant, and at least one is copied: the
               model used the right inputs and got the math wrong
   fabricated  anything else: the first number of an answer that matches
               nothing, or any number after a wrong_calc or fabricated one
@@ -42,15 +45,31 @@ sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 from common.numbers import extract_numbers, find_match  # noqa: E402
 from common.prompt import encode_answer, tokens_in_span  # noqa: E402
 
-LABELS = ["copied", "computed", "question", "wrong_calc", "fabricated"]
-GOOD_INPUTS = {"copied", "computed", "question"}  # what may come before a wrong_calc
+LABELS = ["copied", "computed", "question", "constant", "wrong_calc", "fabricated"]
+GOOD_INPUTS = {"copied", "computed", "question", "constant"}  # what may come before a wrong_calc
+
+# FinQA's program constants (const_1 ... const_10, const_100, ..., const_1000000).
+# A bare integer with one of these values, written with no "$", sign, scale
+# word, "%" or decimals (e.g. the 100 in "multiply by 100"), is `constant`:
+# an arithmetic constant, not something copied, computed or made up.
+# Added Nov 6 after the first greedy run: `100` was the most common
+# "fabricated" number (47 of 151) and, by the order rule, made every number
+# after it fabricated too. See LOG.md.
+CONSTANTS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000, 10000, 100000, 1000000}
+
+
+def is_constant(number):
+    """True for a bare integer mention whose value is a FinQA program constant."""
+    return number.text.isdigit() and number.value in CONSTANTS
 
 
 def label_numbers(numbers, report_numbers, gold_values, question_numbers, tol):
     """Labels for one answer's numbers, in answer order (rules in the module docstring)."""
     labels = []
     for n in numbers:
-        if find_match(n, report_numbers, tol) is not None:
+        if is_constant(n):
+            label = "constant"
+        elif find_match(n, report_numbers, tol) is not None:
             label = "copied"
         elif find_match(n, gold_values, tol) is not None:
             label = "computed"

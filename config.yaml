@@ -2,7 +2,7 @@ model: Qwen/Qwen2.5-1.5B-Instruct
 seed: 354
 n_questions: 1000
 max_context_tokens: 1500
-max_new_tokens: 128
+max_new_tokens: 512     # was 128: that cut 44 of the first 50 greedy answers before the final answer (LOG.md, Nov 6)
 split: {train: 0.70, val: 0.15, test: 0.15}     # split BY REPORT, see README §6.2
 decoding:
   greedy:  {do_sample: false}

@@ -122,7 +122,7 @@ Your settings: `greedy`, `beam5`.
 
 **A-2 · Reviews** · any time. In `ANALYSIS_TODO.md`: section 1 items A1–A7, and section 2 files marked (A) or (both). Add a few test strings of your own to `tests/test_numbers.py`.
 
-**A-3 · First 50 greedy answers** · due Nov 12.
+**A-3 · First 50 greedy answers** · ✅ done Nov 6 on the Yin lab GPU server (`gen/answers_greedy.jsonl`, `labels/numbers_greedy.jsonl`, `labels/handcheck.csv`). The full greedy and beam5 runs were started there the same day. Kept for reference:
 
 ```python
 !python gen/generate.py --setting greedy --limit 50
@@ -263,7 +263,7 @@ Your settings: `temp07`, `temp12`, `topp09`. **This week (Nov 5–8): B-0, B-1, 
 Both of us, Nov 12–14 (README A5).
 
 1. Copy `labels/handcheck.csv` into your own Google Sheet (File → Import → Upload) or open it in Excel.
-2. Fill only your column (`label_A` or `label_B`) with `copied`, `computed`, `question`, `wrong_calc` or `fabricated` (README §6.3). Each row shows the answer with the number marked ⟦like this⟧, the question, the gold answer, program and steps, and the report.
+2. Fill only your column (`label_A` or `label_B`) with `copied`, `computed`, `question`, `constant`, `wrong_calc` or `fabricated` (README §6.3). Each row shows the answer with the number marked ⟦like this⟧, the question, the gold answer, program and steps, and the report.
 3. Don't look at the key, the labels file, or the other person's sheet.
 4. Download it as CSV and save it as `labels/handcheck_A.csv` or `labels/handcheck_B.csv`. Keep the `row` and `id` columns; sorting is fine.
 5. Eduardo, once both sheets are merged:

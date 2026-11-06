@@ -35,9 +35,22 @@ def labels_for(answer, context=CONTEXT):
     ("4,215 then 999 then 20%.", ["copied", "wrong_calc", "fabricated"]),  # 20% builds on a wrong number
     ("4,215, 3,900, 315, then 7.5%.", ["copied", "copied", "computed", "wrong_calc"]),
     ("In 2009 revenue was 4,215.", ["copied"]),                 # the year is skipped
+    # Arithmetic constants (added Nov 6): a bare 100 / 2 is `constant`, not fabricated,
+    # and does not make the numbers after it fabricated.
+    ("(4,215 - 3,900) / 3,900 * 100 = 8.1%.", ["copied", "copied", "copied", "constant", "computed"]),
+    ("Divide by 2: 315 / 2 = 157.5.", ["constant", "computed", "constant", "fabricated"]),  # no copied input before it, so not wrong_calc
+    ("Multiply by 100 to get 9.5%.", ["constant", "fabricated"]),   # a constant alone is not a copied input
+    ("$100 and 100% and 100 million.", ["fabricated", "fabricated", "fabricated"]),  # decorated: not constants
+    ("The report lists 100 units.", ["constant"]),              # a bare 100 is always a constant (next test)
 ])
 def test_label_numbers(answer, expected):
     assert labels_for(answer) == expected
+
+
+def test_constant_is_checked_before_copied():
+    # A bare 100 is a constant even when the report also contains 100.
+    context = CONTEXT + "\nunits sold : 100 ."
+    assert labels_for("Multiply 4,215 by 100.", context) == ["copied", "constant"]
 
 
 def test_copied_wins_over_computed():
