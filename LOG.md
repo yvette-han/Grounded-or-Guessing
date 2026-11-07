@@ -42,6 +42,8 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 6: A4 new label `constant`, checked before `copied`: a bare integer (no `$`, sign, scale word, `%`, comma or decimals) whose value is a FinQA program constant (1–10, 100, 1,000, …, 1,000,000). Reason: on the first 50 greedy answers, `100` (as in "multiply by 100") was 47 of 151 `fabricated` numbers, and the order rule then made every number after it `fabricated` too (131 of the 151). `constant` counts as a good input for `wrong_calc` and is left out of detector training like `question`. Fabricated share on the 50: 33.3% → 19.2%; answers with a fabricated number: 32 → 20 of 50.
 - Nov 6: A2 observation for the hand-check, not changed in code: a bare number vs a bare report number is matched as written, so `$739,187,000` vs the table's `739187` (in thousands) is `fabricated`, and the model's typo `$1,4151` (for 14151) is split into `1,` and `4151 million`, also `fabricated`.
 - Nov 6: Person A's GPU runs happen on the Yin lab server (V100, fp16, same code and batch size 8) instead of Colab; the first 50 greedy answers and the full greedy and beam5 runs come from there.
+- Nov 7: Other models (optional, later). A config can set `run_name` and `extends: config.yaml` (override only `model`, `run_name`, maybe `chat_template`); every script then reads and writes `gen/<run_name>/`, `labels/<run_name>/`, `baseline/<run_name>/`, `features/<run_name>/`, `detector/<run_name>/`, `analysis/figures/<run_name>/` by default. `config.yaml` has no `run_name`, so the Qwen run keeps the current folders. The FinQA subset is shared across models (same 1,000 questions and splits).
+- Nov 7: `gen/answers_*.jsonl` gained a `model` field; label, confidence, features and a resumed generate stop if it differs from the config model (another tokenizer would give wrong token offsets). The field was added to the existing greedy and beam5 files (both made with `Qwen/Qwen2.5-1.5B-Instruct`, server code identical to the repo). `gen/generate.py` also stops if the longest prompt + `max_new_tokens` exceeds the model's context window (the A1 length filter used Qwen's tokenizer).
 
 ## Run notes: Person A
 
@@ -51,6 +53,7 @@ _Person A (Eduardo) adds run notes and counts here (one line each, dated)._
 - Nov 6: A3 first 50 greedy answers (`gen/answers_greedy.jsonl`, 512-token budget): mean 215 new tokens, 1 of 50 cut at the limit, 9.1 numbers per answer, re-tokenization problems 0. Generation speed on the V100: ~1.3 s per answer at batch 8.
 - Nov 6: A4 on those 50 (453 numbers): copied 220 (48.6%), computed 51 (11.3%), question 0, constant 75 (16.6%), wrong_calc 20 (4.4%), fabricated 87 (19.2%). Hand-check sheet written: `labels/handcheck.csv` (50 numbers). I have not opened the key.
 - Nov 6: A3 full greedy run done (Yin lab V100, 20 min): 1,000 answers, mean 225.8 new tokens, 15 cut at 512, 10.3 numbers per answer, 2 answers with no number, re-tokenization problems 0. The first 50 are unchanged. beam5 started right after.
+- Nov 7: A3 full beam5 run done (Yin lab V100, ~65 min, batch 8): 1,000 answers (same ids as greedy), mean 235.6 new tokens, 24 cut at 512, 10.4 numbers per answer, 1 answer with no number, re-tokenization problems 0. 44 of 1,000 answers are word-for-word the same as greedy's.
 
 ## Run notes: Person B
 

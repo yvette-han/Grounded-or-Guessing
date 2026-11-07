@@ -37,11 +37,10 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
+from common.io import check_model, load_config, run_dir  # noqa: E402
 from common.numbers import extract_numbers, find_match  # noqa: E402
 from common.prompt import encode_answer, tokens_in_span  # noqa: E402
 
@@ -154,17 +153,23 @@ def main():
     ap.add_argument("--tokenizer", help="tokenizer name or path (default: the config model)")
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     ap.add_argument("--subset", type=Path, default=ROOT / "data" / "finqa_subset.jsonl")
-    ap.add_argument("--answers-dir", type=Path, default=ROOT / "gen")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "labels")
+    ap.add_argument("--answers-dir", type=Path,
+                    help="default: gen/, or gen/<run_name>/ if the config sets run_name")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: labels/, or labels/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
 
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.answers_dir = args.answers_dir or run_dir(cfg, ROOT, "gen")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "labels")
     tol = cfg["label_tolerance"]
     with open(args.subset) as f:
         questions = {r["id"]: r for r in map(json.loads, f)}
-    with open(args.answers_dir / f"answers_{args.setting}.jsonl") as f:
+    answers_path = args.answers_dir / f"answers_{args.setting}.jsonl"
+    with open(answers_path) as f:
         answers = {r["id"]: r for r in map(json.loads, f)}
+    if not args.tokenizer:
+        check_model(answers.values(), cfg["model"], answers_path)
 
     from transformers import AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer or cfg["model"])

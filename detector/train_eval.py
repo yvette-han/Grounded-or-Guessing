@@ -36,12 +36,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from common.io import read_jsonl  # noqa: E402
+from common.io import load_config, read_jsonl, run_dir  # noqa: E402
 
 DETECTORS = ["lookback", "hf", "lookback_hf", "confidence", "random"]
 POSITIVE, NEGATIVE = {"fabricated"}, {"copied", "computed"}
@@ -266,13 +265,18 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     ap.add_argument("--subset", type=Path, default=ROOT / "data" / "finqa_subset.jsonl")
-    ap.add_argument("--features-dir", type=Path, default=ROOT / "features")
-    ap.add_argument("--baseline-dir", type=Path, default=ROOT / "baseline")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "detector")
+    ap.add_argument("--features-dir", type=Path,
+                    help="default: features/, or features/<run_name>/ if the config sets run_name")
+    ap.add_argument("--baseline-dir", type=Path,
+                    help="default: baseline/, or baseline/<run_name>/ if the config sets run_name")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: detector/, or detector/<run_name>/ if the config sets run_name")
     ap.add_argument("--n-boot", type=int, default=1000)
     args = ap.parse_args()
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.features_dir = args.features_dir or run_dir(cfg, ROOT, "features")
+    args.baseline_dir = args.baseline_dir or run_dir(cfg, ROOT, "baseline")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "detector")
 
     questions = {q["id"]: q for q in read_jsonl(args.subset)}
     settings = [s for s in cfg["decoding"]

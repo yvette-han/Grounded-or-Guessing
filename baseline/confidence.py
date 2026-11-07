@@ -23,12 +23,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
-from common.io import group_records, read_jsonl  # noqa: E402
+from common.io import check_model, group_records, load_config, read_jsonl, run_dir  # noqa: E402
 from common.prompt import encode_answer  # noqa: E402
 
 
@@ -97,7 +96,9 @@ def run_setting(setting, model, tokenizer, answers_dir, labels_dir, out_dir, dev
     from tqdm import tqdm
 
     records = read_jsonl(labels_dir / f"numbers_{setting}.jsonl")
-    answers = {r["id"]: r for r in read_jsonl(answers_dir / f"answers_{setting}.jsonl")}
+    answers_path = answers_dir / f"answers_{setting}.jsonl"
+    answers = {r["id"]: r for r in read_jsonl(answers_path)}
+    check_model(answers.values(), model.name_or_path, answers_path)
     rows, skipped = [], []
     for qid, recs in tqdm(group_records(records).items(), desc=setting, unit="answer"):
         a = answers[qid]
@@ -137,13 +138,18 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--setting", nargs="+", help="default: every setting with a labels file")
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
-    ap.add_argument("--answers-dir", type=Path, default=ROOT / "gen")
-    ap.add_argument("--labels-dir", type=Path, default=ROOT / "labels")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "baseline")
+    ap.add_argument("--answers-dir", type=Path,
+                    help="default: gen/, or gen/<run_name>/ if the config sets run_name")
+    ap.add_argument("--labels-dir", type=Path,
+                    help="default: labels/, or labels/<run_name>/ if the config sets run_name")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: baseline/, or baseline/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
 
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.answers_dir = args.answers_dir or run_dir(cfg, ROOT, "gen")
+    args.labels_dir = args.labels_dir or run_dir(cfg, ROOT, "labels")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "baseline")
     settings = args.setting or [s for s in cfg["decoding"]
                                 if (args.labels_dir / f"numbers_{s}.jsonl").exists()]
     if not settings:

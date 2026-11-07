@@ -28,12 +28,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` and `features` import when run as a script
 
-from common.io import group_records, read_jsonl  # noqa: E402
+from common.io import check_model, group_records, load_config, read_jsonl, run_dir  # noqa: E402
 from common.prompt import encode_answer  # noqa: E402
 from features.attention import ROW_MODES, attention_row, number_hf, number_lookback  # noqa: E402
 
@@ -87,7 +86,9 @@ def run_setting(setting, model, tokenizer, args, device, cutoffs):
     from tqdm import tqdm
 
     records = read_jsonl(args.labels_dir / f"numbers_{setting}.jsonl")
-    answers = {r["id"]: r for r in read_jsonl(args.answers_dir / f"answers_{setting}.jsonl")}
+    answers_path = args.answers_dir / f"answers_{setting}.jsonl"
+    answers = {r["id"]: r for r in read_jsonl(answers_path)}
+    check_model(answers.values(), model.name_or_path, answers_path)
     groups = list(group_records(records).items())
     if args.limit:
         groups = groups[:args.limit]
@@ -152,13 +153,18 @@ def main():
                          "'predicting': the row before it, which predicts that token")
     ap.add_argument("--limit", type=int, help="only the first N answers of each setting (B1 check)")
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
-    ap.add_argument("--answers-dir", type=Path, default=ROOT / "gen")
-    ap.add_argument("--labels-dir", type=Path, default=ROOT / "labels")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "features")
+    ap.add_argument("--answers-dir", type=Path,
+                    help="default: gen/, or gen/<run_name>/ if the config sets run_name")
+    ap.add_argument("--labels-dir", type=Path,
+                    help="default: labels/, or labels/<run_name>/ if the config sets run_name")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: features/, or features/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
 
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.answers_dir = args.answers_dir or run_dir(cfg, ROOT, "gen")
+    args.labels_dir = args.labels_dir or run_dir(cfg, ROOT, "labels")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "features")
     settings = args.setting or [s for s in cfg["decoding"]
                                 if (args.labels_dir / f"numbers_{s}.jsonl").exists()]
     if not settings:

@@ -103,7 +103,7 @@ model: Qwen/Qwen2.5-1.5B-Instruct
 seed: 354
 n_questions: 1000
 max_context_tokens: 1500
-max_new_tokens: 128
+max_new_tokens: 512
 split: {train: 0.70, val: 0.15, test: 0.15}     # split BY REPORT, see §6
 decoding:
   greedy:  {do_sample: false}
@@ -116,6 +116,8 @@ hf_cutoffs: [0.25, 0.35, 0.45]   # normalized frequency; tune on val
 chat_template: true          # send the 6.1 prompt as the user turn of the model's chat template
 tatqa_n_questions: 500     # R1 stretch: TAT-QA test questions (data/build_tatqa.py)
 ```
+
+**Another model (optional):** a second config file can hold just `extends: config.yaml`, a new `model` and a `run_name`; pass it with `--config` and every script reads and writes `<folder>/<run_name>/` (e.g. `gen/llama1b/`) instead of the main folders. See `MANUAL_STEPS.md`, "Other models (optional)".
 
 ---
 

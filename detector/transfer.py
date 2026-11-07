@@ -25,12 +25,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from common.io import read_jsonl  # noqa: E402
+from common.io import load_config, read_jsonl, run_dir  # noqa: E402
 from detector.train_eval import (  # noqa: E402
     C_GRID, DETECTORS, finite_mask, fit_detectors, load_setting, pool, score_detector, split_masks,
     subset, targets, test_metrics, write_csv,
@@ -95,16 +94,25 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     ap.add_argument("--finqa-subset", type=Path, default=ROOT / "data" / "finqa_subset.jsonl")
-    ap.add_argument("--features-dir", type=Path, default=ROOT / "features")
-    ap.add_argument("--baseline-dir", type=Path, default=ROOT / "baseline")
+    ap.add_argument("--features-dir", type=Path,
+                    help="default: features/, or features/<run_name>/ if the config sets run_name")
+    ap.add_argument("--baseline-dir", type=Path,
+                    help="default: baseline/, or baseline/<run_name>/ if the config sets run_name")
     ap.add_argument("--tatqa-subset", type=Path, default=ROOT / "data" / "tatqa_subset.jsonl")
-    ap.add_argument("--tatqa-features-dir", type=Path, default=ROOT / "tatqa" / "features")
-    ap.add_argument("--tatqa-baseline-dir", type=Path, default=ROOT / "tatqa" / "baseline")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "detector")
+    ap.add_argument("--tatqa-features-dir", type=Path,
+                    help="default: tatqa/features/, or tatqa/features/<run_name>/ if the config sets run_name")
+    ap.add_argument("--tatqa-baseline-dir", type=Path,
+                    help="default: tatqa/baseline/, or tatqa/baseline/<run_name>/ if the config sets run_name")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: detector/, or detector/<run_name>/ if the config sets run_name")
     ap.add_argument("--n-boot", type=int, default=1000)
     args = ap.parse_args()
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.features_dir = args.features_dir or run_dir(cfg, ROOT, "features")
+    args.baseline_dir = args.baseline_dir or run_dir(cfg, ROOT, "baseline")
+    args.tatqa_features_dir = args.tatqa_features_dir or run_dir(cfg, ROOT, "tatqa/features")
+    args.tatqa_baseline_dir = args.tatqa_baseline_dir or run_dir(cfg, ROOT, "tatqa/baseline")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "detector")
 
     finqa, f_settings = load_dataset(cfg, args.finqa_subset, args.features_dir, args.baseline_dir)
     tatqa, t_settings = load_dataset(cfg, args.tatqa_subset, args.tatqa_features_dir, args.tatqa_baseline_dir)

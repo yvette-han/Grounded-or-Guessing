@@ -5,8 +5,9 @@ Run on a GPU (Colab) from the repo root, after A1:
     python gen/generate.py --setting greedy              # the rest; resumes where it stopped
     python gen/generate.py --setting temp12
 
-Output: gen/answers_{setting}.jsonl, one answer per line, fields
-    id, setting, prompt, answer_text, prompt_len, ctx_start, ctx_end,
+Output: gen/answers_{setting}.jsonl (gen/<run_name>/... if the config sets
+run_name), one answer per line, fields
+    id, setting, model, prompt, answer_text, prompt_len, ctx_start, ctx_end,
     n_new_tokens, hit_max_tokens
 
 Decoding uses only the setting from config.yaml: everything else is set to
@@ -25,11 +26,10 @@ import sys
 import zlib
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
+from common.io import check_model, load_config, run_dir  # noqa: E402
 from common.numbers import extract_numbers  # noqa: E402
 from common.prompt import encode, encode_answer  # noqa: E402
 
@@ -89,9 +89,10 @@ def chunks(items, size):
     return [items[i:i + size] for i in range(0, len(items), size)]
 
 
-def read_done(path):
+def read_done(path, model=None):
     """Ids already in the output file. A half-written last line (the run was
-    cut off mid-write) is removed so that new lines append cleanly."""
+    cut off mid-write) is removed so that new lines append cleanly. With
+    `model`, stops if the file holds answers from a different model."""
     if not path.exists():
         return set()
     with open(path) as f:
@@ -105,6 +106,8 @@ def read_done(path):
     if len(good) != len([line for line in lines if line.strip()]):
         with open(path, "w") as f:
             f.writelines(json.dumps(r) + "\n" for r in good)
+    if model is not None:
+        check_model(good, model, path)
     return {r["id"] for r in good}
 
 
@@ -118,11 +121,12 @@ def main():
     ap.add_argument("--overwrite", action="store_true", help="start the output file from scratch")
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     ap.add_argument("--subset", type=Path, default=ROOT / "data" / "finqa_subset.jsonl")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "gen")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: gen/, or gen/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
 
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "gen")
     if args.setting not in cfg["decoding"]:
         sys.exit(f"unknown setting {args.setting!r}; choose from {list(cfg['decoding'])}")
     gen_kwargs = generation_kwargs(cfg["decoding"][args.setting], cfg["max_new_tokens"])
@@ -133,7 +137,7 @@ def main():
     out_path = args.out_dir / f"answers_{args.setting}.jsonl"
     if args.overwrite and out_path.exists():
         out_path.unlink()
-    done = read_done(out_path)
+    done = read_done(out_path, cfg["model"])
     order = question_order(questions, cfg["seed"])
     if args.limit is not None:
         order = order[:args.limit]
@@ -161,6 +165,14 @@ def main():
     eos = shipped.eos_token_id
     stop_ids = set(eos if isinstance(eos, list) else [eos]) | {pad_id}
     print(f"model {cfg['model']} on {device}; generate({gen_kwargs})")
+    # The subset's length filter (max_context_tokens) was counted with the
+    # model in config.yaml when A1 ran; another tokenizer can need more tokens.
+    window = getattr(model.config, "max_position_embeddings", None)
+    longest = max(len(encode(tokenizer, questions[i]["question"], questions[i]["context_text"],
+                             chat_template)["input_ids"]) for i in todo)
+    print(f"  longest prompt {longest} tokens + max_new_tokens {cfg['max_new_tokens']}; context window {window}")
+    if window and longest + cfg["max_new_tokens"] > window:
+        sys.exit("some prompts plus max_new_tokens don't fit the model's context window")
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     retok_problems = 0
@@ -187,6 +199,7 @@ def main():
                 out.write(json.dumps({
                     "id": qid,
                     "setting": args.setting,
+                    "model": cfg["model"],
                     "prompt": enc["text"],
                     "answer_text": answer,
                     "prompt_len": len(enc["input_ids"]),

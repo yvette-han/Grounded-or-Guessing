@@ -29,13 +29,12 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from analysis.stage2 import read_test_scores  # noqa: E402
-from common.io import read_jsonl  # noqa: E402
+from common.io import load_config, read_jsonl, run_dir  # noqa: E402
 from common.numbers import extract_numbers, find_match, same_value  # noqa: E402
 from labels.label import LABELS  # noqa: E402
 
@@ -223,13 +222,20 @@ def main():
     ap.add_argument("-n", type=int, default=10, help="examples of each kind (README: 10)")
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     ap.add_argument("--subset", type=Path, default=ROOT / "data" / "finqa_subset.jsonl")
-    ap.add_argument("--answers-dir", type=Path, default=ROOT / "gen")
-    ap.add_argument("--labels-dir", type=Path, default=ROOT / "labels")
-    ap.add_argument("--detector-dir", type=Path, default=ROOT / "detector")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "analysis" / "figures")
+    ap.add_argument("--answers-dir", type=Path,
+                    help="default: gen/, or gen/<run_name>/ if the config sets run_name")
+    ap.add_argument("--labels-dir", type=Path,
+                    help="default: labels/, or labels/<run_name>/ if the config sets run_name")
+    ap.add_argument("--detector-dir", type=Path,
+                    help="default: detector/, or detector/<run_name>/ if the config sets run_name")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: analysis/figures/, or analysis/figures/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.answers_dir = args.answers_dir or run_dir(cfg, ROOT, "gen")
+    args.labels_dir = args.labels_dir or run_dir(cfg, ROOT, "labels")
+    args.detector_dir = args.detector_dir or run_dir(cfg, ROOT, "detector")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "analysis/figures")
     detector, examples, summary = run_all(cfg, args.subset, args.answers_dir, args.labels_dir, args.detector_dir,
                                           args.out_dir, args.detector, args.n, args.pick)
     n_fp = sum(e["kind"] == "fp" for e in examples)

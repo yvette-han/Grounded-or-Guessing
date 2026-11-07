@@ -23,11 +23,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))  # so `common` imports when run as a script
 
+from common.io import load_config, run_dir  # noqa: E402
 from common.numbers import extract_numbers, find_match, same_value  # noqa: E402
 from common.prompt import encode, encode_answer, tokens_in_span  # noqa: E402
 from features.attention import attention_row, lookback_ratio  # noqa: E402
@@ -178,11 +178,12 @@ def main():
                          "'predicting': the row of the token before it, which predicts that digit")
     ap.add_argument("--heads", help="heads to plot as layer:head, e.g. 10:3,20:5 "
                                     "(default: the 4 with the most attention on the report)")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "analysis" / "figures")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: analysis/figures/, or analysis/figures/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
 
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "analysis/figures")
     ex = load_example(args.subset, args.id)
 
     import torch

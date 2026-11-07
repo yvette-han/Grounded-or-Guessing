@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 6 (A1 done; first 50 greedy answers and the hand-check sheet done; `constant` label and 512-token budget added)._
+_Last updated: Nov 7 (full greedy and beam5 runs done; configs for other models: `run_name`, `extends`, `model` field)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -41,6 +41,8 @@ Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we deci
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens` and `hit_max_tokens`; `answer_text` is the decoded tokens up to the stop token, not stripped
 - [ ] **A3 (Nov 6):** `max_new_tokens` = 512, up from 128, because 128 cut 44 of the first 50 greedy answers before the final answer. Trade-off: longer answers mean more numbers per answer (9 vs 4) and slower feature extraction; 384 would cut 1 of 50 too
+- [ ] **A3 (Nov 7):** runs with other models: a config with `extends: config.yaml` + `model` + `run_name` writes to `<folder>/<run_name>/`; the FinQA subset (questions, splits, the A1 length filter counted with Qwen's tokenizer) stays shared. Review: whether a second model should reuse the same 1,000 questions, and which model(s) to try
+- [ ] **A3 (Nov 7):** `gen/answers_*.jsonl` carries `model`; label, confidence, features and a resumed generate stop on a mismatch. Added to the existing greedy and beam5 files after the fact
 - [ ] **A4:** a new label, `question`: a number found only in the question. Left out of main training, like `wrong_calc`
 - [ ] **A4 (Nov 6):** a new label, `constant`, checked **before** `copied`: a bare integer that is a FinQA program constant (1–10, 100, 1,000, …, 1,000,000), like the 100 in "multiply by 100". Left out of training, counts as a good input for `wrong_calc`. Review: the constant set, whether it should come before `copied` (a bare `100` copied from a table becomes `constant`), and whether the hand-check agrees
 - [ ] **A2 (Nov 6, not changed):** a bare number vs a bare report number is matched as written, so a value the model rescaled (`$739,187,000` for a table cell `739187` in thousands) is `fabricated`. Decide in the hand-check whether that is right, or whether bare-vs-bare should also try ×1,000 and ×1,000,000
@@ -93,7 +95,7 @@ README §3: each of us can explain every file in our folders line by line, and h
 - [ ] `common/prompt.py`: check `tests/test_prompt.py` (including `encode_answer`, used by A7 and B1)
 - [ ] `common/splits.py`: check `tests/test_splits.py`
 - [ ] `common/numbers.py`: check every expected value in `tests/test_numbers.py`, and add a few strings of our own in the styles the model actually uses (README A2)
-- [ ] `common/io.py`: the shared file helpers
+- [ ] `common/io.py`: the shared file helpers, plus `load_config` (`extends`), `run_dir` (`run_name` folders) and `check_model` added Nov 7; check `tests/test_io.py`
 - [ ] `labels/agreement.py`: check the hand-worked kappa and rates in `tests/test_agreement.py`
 
 **Eduardo (A)**
@@ -126,7 +128,7 @@ Claude makes the plots and tables; reading them and drawing conclusions is ours.
 | Step | What's ours | Who | Status |
 |---|---|---|---|
 | A1 | Run `data/build_subset.py`; fill the A1 stats line in `LOG.md` (a run) | A | ✅ done Nov 6 (`data/finqa_subset.jsonl`, stats in `LOG.md`) |
-| A3 | Run `gen/generate.py` for your settings; greedy `--limit 50` first (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | A: ✅ first 50 greedy done Nov 6; full greedy and beam5 running · B: 🟢 ready to run |
+| A3 | Run `gen/generate.py` for your settings; greedy `--limit 50` first (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | A: ✅ greedy and beam5 done (1,000 each, Nov 6–7; stats in `LOG.md`) · B: 🟢 ready to run |
 | B0 | Run `analysis/b0_attention_plot.py` (after A1); explain the plot to professor: what the heads attend to | B | 🟢 ready to run |
 | A4 | Run `labels/label.py` for your settings; label counts into `LOG.md` (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A3 |
 | A5 | Hand-label the same 50 numbers without seeing the auto labels; run `labels/agreement.py`; go through the disagreements; if under ~90%, decide how §6.3 changes | both | 🟢 `labels/handcheck.csv` ready (Nov 6) |
