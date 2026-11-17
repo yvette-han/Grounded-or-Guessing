@@ -1,12 +1,16 @@
-"""B3: train and compare detectors of fabricated numbers (README 8, step B3; task in 6.5).
+"""B3: train and compare detectors of hallucinated numbers (README 8, step B3; tasks in 6.5).
 
 Run from the repo root after B2 and A7 (no GPU needed):
     python detector/train_eval.py
     python detector/train_eval.py --features-dir features/predicting --out-dir detector/predicting
 
-Task (README 6.5): fabricated = 1; copied and computed = 0. wrong_calc and
-question are left out of training, tuning and the metrics, but every test
-number is still scored (for B4 and B5).
+Tasks (README 6.5), each trained and tested separately:
+  hallucinated (main)  fabricated or wrong_calc = 1; copied and computed = 0
+  fabricated (extra)   fabricated = 1; copied and computed = 0; wrong_calc left out
+question numbers are in neither task. Numbers outside a task are left out of
+its training, tuning and metrics, but every test number is still scored (for
+B4 and B5). The 3-way version (copied / computed / hallucinated) is
+detector/three_way.py.
 
 Data: every setting that has both features/{setting}.npz (B2) and
 baseline/confidence_{setting}.npz (A7), pooled, joined on (setting, row), and
@@ -26,8 +30,10 @@ with the best F1 on val. Test: AUROC and F1 at that threshold, with 95% CIs
 from bootstrap resamples of test reports.
 
 Outputs in detector/:
-  results.csv      one row per detector
-  test_scores.csv  every test number (all labels): each detector's score and flag
+  results.csv      one row per task and detector
+  test_scores.csv  every test number (all labels): each detector's score and flag.
+                   Main task: columns `{detector}`, `{detector}_flagged`;
+                   other tasks: `{task}_{detector}`, `{task}_{detector}_flagged`
 """
 
 import argparse
@@ -44,15 +50,26 @@ sys.path.insert(0, str(ROOT))
 from common.io import read_jsonl  # noqa: E402
 
 DETECTORS = ["lookback", "hf", "lookback_hf", "confidence", "random"]
-POSITIVE, NEGATIVE = {"fabricated"}, {"copied", "computed"}
+NEGATIVE = frozenset({"copied", "computed"})
+TASKS = {  # task: (positive labels, negative labels), README 6.5
+    "hallucinated": (frozenset({"fabricated", "wrong_calc"}), NEGATIVE),
+    "fabricated": (frozenset({"fabricated"}), NEGATIVE),
+}
+MAIN_TASK = "hallucinated"
 C_GRID = [0.001, 0.01, 0.1, 1.0, 10.0]
 
 
 # Pure functions (tested in tests/test_detector.py) -------------------------
 
-def targets(labels):
-    """1 for fabricated, 0 for copied/computed, -1 for labels left out (README 6.5)."""
-    return np.array([1 if lab in POSITIVE else 0 if lab in NEGATIVE else -1 for lab in labels])
+def targets(labels, task=MAIN_TASK):
+    """1 for the task's positive labels, 0 for copied/computed, -1 for labels left out (README 6.5)."""
+    positive, negative = TASKS[task]
+    return np.array([1 if lab in positive else 0 if lab in negative else -1 for lab in labels])
+
+
+def column_name(task, detector):
+    """Column of one task's scores in test_scores.csv: plain for the main task."""
+    return detector if task == MAIN_TASK else f"{task}_{detector}"
 
 
 def load_setting(features_path, confidence_path):
@@ -167,9 +184,9 @@ def fit_logreg(X_train, y_train, X_val, y_val, Cs, seed=0):
     return best
 
 
-def split_masks(data):
+def split_masks(data, task=MAIN_TASK):
     """(y, train, val, test) where train/val/test keep only numbers in the task (y >= 0)."""
-    y = targets(data["label"])
+    y = targets(data["label"], task)
     split = data["split"]
     return y, (split == "train") & (y >= 0), (split == "val") & (y >= 0), (split == "test") & (y >= 0)
 
@@ -181,18 +198,19 @@ def score_detector(det, fit, data, seed=0):
     return fit["model"].predict_proba(features_for(data, det, fit["cutoff_index"]))[:, 1]
 
 
-def fit_detectors(data, Cs=C_GRID, seed=0):
-    """Fit every detector on the train split and tune it on val.
+def fit_detectors(data, Cs=C_GRID, seed=0, task=MAIN_TASK):
+    """Fit every detector for one task on the train split and tune it on val.
 
     Returns {detector: {model, cutoff_index, hf_cutoff, C, val_auroc, threshold, n_features}};
     the threshold is the one with the best F1 on val.
     """
     from sklearn.metrics import roc_auc_score
 
-    y, train, val, _ = split_masks(data)
+    y, train, val, _ = split_masks(data, task)
     for name, m in (("train", train), ("val", val)):
         if len(np.unique(y[m])) < 2:
-            raise ValueError(f"the {name} split needs both fabricated and copied/computed numbers")
+            raise ValueError(f"task {task}: the {name} split needs both {'/'.join(sorted(TASKS[task][0]))} "
+                             "and copied/computed numbers")
     fitted = {}
     for det in DETECTORS:
         if det == "random":
@@ -226,33 +244,56 @@ def test_metrics(y, scores, groups, threshold, n_boot=1000, seed=0):
             "f1": f1_at(y, scores, threshold), "f1_ci_low": f1_lo, "f1_ci_high": f1_hi}
 
 
-def run(data, Cs=C_GRID, n_boot=1000, seed=0):
-    """Train, tune and test every detector.
+def run(data, Cs=C_GRID, n_boot=1000, seed=0, task=MAIN_TASK):
+    """Train, tune and test every detector for one task.
 
     Returns (results rows, test score columns, mask of the test numbers): each
     column has one value per test number, in data order, for every label.
+    Columns are named with column_name(task, detector).
     """
-    y, train, val, test = split_masks(data)
+    y, train, val, test = split_masks(data, task)
     test_all = data["split"] == "test"
     if len(np.unique(y[test])) < 2:
-        raise ValueError("the test split needs both fabricated and copied/computed numbers")
+        raise ValueError(f"task {task}: the test split needs both positive and copied/computed numbers")
     groups = data["report"][test]
+    test_labels = data["label"][test]
 
-    fitted = fit_detectors(data, Cs, seed)
+    fitted = fit_detectors(data, Cs, seed, task)
     results, columns = [], {}
     for det in DETECTORS:
         fit = fitted[det]
         scores = score_detector(det, fit, data, seed)
         results.append({
-            "detector": det, **test_metrics(y[test], scores[test], groups, fit["threshold"], n_boot, seed),
+            "task": task, "detector": det,
+            **test_metrics(y[test], scores[test], groups, fit["threshold"], n_boot, seed),
             "threshold": fit["threshold"], "val_auroc": fit["val_auroc"], "C": fit["C"],
             "hf_cutoff": fit["hf_cutoff"], "n_features": fit["n_features"],
             "n_train": int(train.sum()), "n_val": int(val.sum()), "n_test": int(test.sum()),
-            "n_test_fabricated": int((y[test] == 1).sum()),
+            "n_test_positive": int((y[test] == 1).sum()),
+            "n_test_fabricated": int((test_labels == "fabricated").sum()),
+            "n_test_wrong_calc": int((test_labels == "wrong_calc").sum()),
         })
-        columns[det] = scores[test_all]
-        columns[f"{det}_flagged"] = (scores[test_all] >= fit["threshold"]).astype(int)
+        name = column_name(task, det)
+        columns[name] = scores[test_all]
+        columns[f"{name}_flagged"] = (scores[test_all] >= fit["threshold"]).astype(int)
     return results, columns, test_all
+
+
+def load_dataset(cfg, subset_path, features_dir, baseline_dir):
+    """(data, settings, dropped labels): pooled features + confidence for every
+    setting that has both files, without the numbers that have a NaN feature."""
+    questions = {q["id"]: q for q in read_jsonl(subset_path)}
+    settings = [s for s in cfg["decoding"]
+                if (Path(features_dir) / f"{s}.npz").exists() and (Path(baseline_dir) / f"confidence_{s}.npz").exists()]
+    if not settings:
+        raise FileNotFoundError(f"no setting has both {features_dir}/<setting>.npz and "
+                                f"{baseline_dir}/confidence_<setting>.npz")
+    per_setting = {s: load_setting(Path(features_dir) / f"{s}.npz", Path(baseline_dir) / f"confidence_{s}.npz")
+                   for s in settings}
+    data = pool(per_setting, {i: q["split"] for i, q in questions.items()},
+                {i: q["report_key"] for i, q in questions.items()})
+    keep = finite_mask(data)
+    return subset(data, keep), settings, data["label"][~keep]
 
 
 def write_csv(path, rows):
@@ -274,23 +315,18 @@ def main():
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
 
-    questions = {q["id"]: q for q in read_jsonl(args.subset)}
-    settings = [s for s in cfg["decoding"]
-                if (args.features_dir / f"{s}.npz").exists()
-                and (args.baseline_dir / f"confidence_{s}.npz").exists()]
-    if not settings:
-        sys.exit("no setting has both features/{setting}.npz and baseline/confidence_{setting}.npz")
-    per_setting = {s: load_setting(args.features_dir / f"{s}.npz",
-                                   args.baseline_dir / f"confidence_{s}.npz") for s in settings}
-    data = pool(per_setting, {i: q["split"] for i, q in questions.items()},
-                {i: q["report_key"] for i, q in questions.items()})
-    keep = finite_mask(data)
-    dropped = data["label"][~keep]
-    data = subset(data, keep)
-    print(f"settings: {', '.join(settings)}; {len(keep)} numbers, dropped {len(dropped)} with a NaN "
-          f"feature ({', '.join(f'{lab} {n}' for lab, n in zip(*np.unique(dropped, return_counts=True)))})")
+    try:
+        data, settings, dropped = load_dataset(cfg, args.subset, args.features_dir, args.baseline_dir)
+    except FileNotFoundError as err:
+        sys.exit(str(err))
+    print(f"settings: {', '.join(settings)}; {len(data['label']) + len(dropped)} numbers, dropped {len(dropped)} "
+          f"with a NaN feature ({', '.join(f'{lab} {n}' for lab, n in zip(*np.unique(dropped, return_counts=True)))})")
 
-    results, columns, test_all = run(data, n_boot=args.n_boot, seed=cfg["seed"])
+    results, columns, test_all = [], {}, None
+    for task in TASKS:
+        rows, cols, test_all = run(data, n_boot=args.n_boot, seed=cfg["seed"], task=task)
+        results += rows
+        columns.update(cols)
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     write_csv(args.out_dir / "results.csv", results)
@@ -303,14 +339,17 @@ def main():
         test_rows.append(row)
     write_csv(args.out_dir / "test_scores.csv", test_rows)
 
-    r0 = results[0]
-    print(f"train {r0['n_train']}, val {r0['n_val']}, test {r0['n_test']} numbers "
-          f"({r0['n_test_fabricated']} fabricated in test)")
-    print(f"{'detector':<12} {'AUROC':>6}  {'95% CI':<13} {'F1':>5}  {'95% CI':<13} {'C':>6} {'cutoff':>6}")
-    for r in results:
-        print(f"{r['detector']:<12} {r['auroc']:6.3f}  {r['auroc_ci_low']:.3f}-{r['auroc_ci_high']:.3f}  "
-              f"{r['f1']:5.3f}  {r['f1_ci_low']:.3f}-{r['f1_ci_high']:.3f}  "
-              f"{'' if r['C'] is None else r['C']:>6} {'' if r['hf_cutoff'] is None else r['hf_cutoff']:>6}")
+    for task in TASKS:
+        rows = [r for r in results if r["task"] == task]
+        r0 = rows[0]
+        print(f"\ntask {task}{' (main)' if task == MAIN_TASK else ''}: train {r0['n_train']}, val {r0['n_val']}, "
+              f"test {r0['n_test']} numbers ({r0['n_test_positive']} positive in test: "
+              f"{r0['n_test_fabricated']} fabricated, {r0['n_test_wrong_calc']} wrong_calc)")
+        print(f"{'detector':<12} {'AUROC':>6}  {'95% CI':<13} {'F1':>5}  {'95% CI':<13} {'C':>6} {'cutoff':>6}")
+        for r in rows:
+            print(f"{r['detector']:<12} {r['auroc']:6.3f}  {r['auroc_ci_low']:.3f}-{r['auroc_ci_high']:.3f}  "
+                  f"{r['f1']:5.3f}  {r['f1_ci_low']:.3f}-{r['f1_ci_high']:.3f}  "
+                  f"{'' if r['C'] is None else r['C']:>6} {'' if r['hf_cutoff'] is None else r['hf_cutoff']:>6}")
     print(f"wrote {args.out_dir / 'results.csv'} and {args.out_dir / 'test_scores.csv'}")
 
 

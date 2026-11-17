@@ -6,3 +6,4 @@ __pycache__/
 data/raw/
 features/**/*.npz
 tatqa/features/
+hints/*.npz

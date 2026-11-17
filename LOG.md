@@ -38,6 +38,18 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 5: R1 `detector/transfer.py`: B3's fitting split into `fit_detectors`, `score_detector`, `test_metrics` (B3 output unchanged); detectors fit on FinQA as in B3, then score every TAT-QA number; CIs by bootstrap over TAT-QA tables. TAT-QA outputs live in `tatqa/`.
 - Nov 5: Manual work split so both GPUs run in parallel: Person A runs greedy and beam5 and the A steps; Person B runs temp07, temp12, topp09 and the B steps (`MANUAL_STEPS.md`). Labeling waits for the A5 decision; feature files go to the shared Drive folder `GoG-shared`.
 - Nov 5: Roles: Person A (Stage 1) = Eduardo, Person B (Stage 2) = Yvette.
+- Nov 11: Office hours with the professor. What he said:
+  - The project is a good fit for the class. Start simple: one model, a small set of instances with and without hallucinations, attention features, a simple classifier. Add the other ideas only if time allows.
+  - Read the related papers to see how they aggregate attention patterns. Start from their features (replicate them on our data), and add our own only if they improve the predictions. The point is to explore and understand how these methods work, not the best score.
+  - Hallucinations come in two kinds: made up with no support (our `fabricated`), or the right data with a wrong computation (our `wrong_calc`). With labels for these, the task could be 3-way: in the report, computed, hallucinated.
+  - Analyze how good the classifier is and which attention features are most indicative of hallucination; plot attention patterns on single examples and on groups of instances.
+  - Optional: for a question where the model hallucinates, add information to the question that points to the right place, rerun, and compare the attention on the same instance before and after.
+  - The report must describe what we learned about this area (from the papers and our experiments), backed by our experiments and analysis. The report is graded and required; a poster session would not be graded.
+- Nov 17: The poster session is cancelled (confirmed). The report (Dec 11) is the graded deliverable; the poster is removed from README, `MANUAL_STEPS.md` and `ANALYSIS_TODO.md`.
+- Nov 17: Detector tasks (Yvette, after office hours): main = hallucinated (`fabricated` or `wrong_calc`) vs copied + computed; extra = fabricated vs copied + computed (the main task until now); `question` in neither. `detector/results.csv` gains a `task` column; the extra task's scores in `test_scores.csv` are `fabricated_{detector}`. B4 RQ2 = hallucinated vs copied and vs computed; B5 false negatives = missed hallucinated numbers.
+- Nov 17: 3-way classifier `detector/three_way.py` (copied / computed / hallucinated): multinomial logistic regression with balanced class weights; C and HF cutoff by val macro-F1; test macro-F1 with a CI over reports, recall per class, confusion matrix.
+- Nov 17: R2 hint test `analysis/hint_test.py`, to run only if time allows. The hint is appended to the question (the report's tokens don't change); greedy; the new answer is labeled with the A4 rules; attention over the report is compared before and after. The counterpart number is matched by the text before it on its line. The focus number skips the cut-off last number of a truncated answer and the value 100.
+- Nov 17: Scope (1,000 questions × 5 settings) to be decided together after timing the first 50 greedy answers on a T4 (`MANUAL_STEPS.md` A-3).
 
 ## Run notes: Person A
 

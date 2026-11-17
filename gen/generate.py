@@ -110,6 +110,20 @@ def read_done(path):
 
 # Model run -----------------------------------------------------------------
 
+def plain_generation_config(model, tokenizer):
+    """Replace the model's default decoding settings (Qwen's: temperature 0.7,
+    top_p 0.8, top_k 20, repetition_penalty 1.05) with special tokens only.
+    Returns (pad_id, stop_ids). Also used by analysis/hint_test.py."""
+    from transformers import GenerationConfig
+
+    shipped = model.generation_config
+    pad_id = shipped.pad_token_id if shipped.pad_token_id is not None else tokenizer.pad_token_id
+    model.generation_config = GenerationConfig(
+        bos_token_id=shipped.bos_token_id, eos_token_id=shipped.eos_token_id, pad_token_id=pad_id)
+    eos = shipped.eos_token_id
+    return pad_id, set(eos if isinstance(eos, list) else [eos]) | {pad_id}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--setting", required=True, help="a key under `decoding` in config.yaml")
@@ -144,7 +158,7 @@ def main():
 
     import torch
     from tqdm import tqdm
-    from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, set_seed
+    from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     tokenizer = AutoTokenizer.from_pretrained(cfg["model"])
@@ -152,14 +166,7 @@ def main():
         cfg["model"], dtype=torch.float16 if device == "cuda" else torch.float32,
     ).to(device).eval()
 
-    # Replace the model's default decoding settings (Qwen's: temperature 0.7,
-    # top_p 0.8, top_k 20, repetition_penalty 1.05) with special tokens only.
-    shipped = model.generation_config
-    pad_id = shipped.pad_token_id if shipped.pad_token_id is not None else tokenizer.pad_token_id
-    model.generation_config = GenerationConfig(
-        bos_token_id=shipped.bos_token_id, eos_token_id=shipped.eos_token_id, pad_token_id=pad_id)
-    eos = shipped.eos_token_id
-    stop_ids = set(eos if isinstance(eos, list) else [eos]) | {pad_id}
+    pad_id, stop_ids = plain_generation_config(model, tokenizer)
     print(f"model {cfg['model']} on {device}; generate({gen_kwargs})")
 
     args.out_dir.mkdir(parents=True, exist_ok=True)

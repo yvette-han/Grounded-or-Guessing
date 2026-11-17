@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 5, with Yvette's tasks for this week._
+_Last updated: Nov 17, after office hours: the hallucinated task, the 3-way classifier and the R2 hint test (new code to review and explain), the paper reading, and the poster removed (cancelled)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -19,7 +19,7 @@ Goal: the B0 plot and the A1 stats for the meeting with professor. The runs are 
 
 ## 1. Choices made in AI-written code, to review
 
-Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we decide, it's our decision. **Who reviews:** A items → Eduardo, B items → Yvette, R1 → both.
+Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we decide, it's our decision. **Who reviews:** A items → Eduardo, B and R2 items → Yvette, R1 → both.
 
 **Stage 1 (Eduardo)**
 
@@ -40,7 +40,7 @@ Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we deci
 - [ ] **A3:** batches of 8 with left padding and one seed per batch, so sampled answers depend on the batch size, and fp16 batching can change a greedy answer slightly
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens` and `hit_max_tokens`; `answer_text` is the decoded tokens up to the stop token, not stripped
-- [ ] **A4:** a new label, `question`: a number found only in the question. Left out of main training, like `wrong_calc`
+- [ ] **A4:** a new label, `question`: a number found only in the question. Left out of every detector task (README §6.5)
 - [ ] **A4:** `wrong_calc` = every number before it in the answer is copied, computed or question, and at least one is copied. A number after a `wrong_calc` or `fabricated` one is `fabricated`
 - [ ] **A4:** `copied` is checked against every report number, so a wrong value can be `copied` by coincidence (in a test on fake answers, 3 of 14 wrong values matched within 1%, e.g. `3.473` vs `3.5%`). Watch for this in the hand-check
 - [ ] **A4:** the hand-check sheet is 50 random numbers from one setting (not balanced by label); answers whose tokens don't line up with the prompt are skipped and counted
@@ -62,28 +62,40 @@ Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we deci
 - [ ] **B2:** "normalized frequency" = numpy's `rfftfreq` units (0 to 0.5), so 0.25 / 0.35 / 0.45 keep the top 50% / 30% / 10%. If Qi et al. normalize the top to 1, the same cutoffs would keep 75% / 65% / 55%
 - [ ] **B2:** `hf_ctx` averages over all the number's tokens (the README §6.4 skip rule is only for lookback); `hf_gen` skips tokens with no answer token before them, and a one-token span gives 0
 - [ ] **B2:** HF features are stored as float16, and `features/*.npz` stays out of git (~5 MB per 1,000 numbers); they live in the shared Drive folder and can be rebuilt
+- [x] **B3 (decided Nov 17, Yvette, after office hours):** main task = hallucinated (`fabricated` or `wrong_calc`) vs copied + computed; extra task = fabricated vs copied + computed (the old main task); `question` in neither
 - [ ] **B3:** a number with a NaN in any feature is dropped for all detectors, so every detector is scored on the same numbers
 - [ ] **B3:** the confidence baseline is a logistic regression on mean/min log-prob and mean entropy, tuned on val like the others (not one raw score)
 - [ ] **B3:** C is picked from 0.001, 0.01, 0.1, 1, 10 by val AUROC; no class weighting; `hf` and `lookback_hf` each pick their own cutoff
 - [ ] **B3:** F1 threshold = best F1 on val; CIs = 1,000 bootstrap resamples of test reports (resamples with one class are skipped)
 - [ ] **B3:** settings are pooled with each (setting, number) as one example, so a question can appear up to five times; its copies share a report, so they share a split
-- [ ] **B4 RQ2:** each pairwise AUROC uses only test numbers with those two labels; "flagged" = score at or above B3's val-tuned threshold; "correct computed numbers" = numbers labeled `computed`
+- [ ] **B3 3-way:** multinomial logistic regression on the same feature sets, with **balanced class weights** (copied numbers far outnumber computed ones); C and HF cutoff chosen by val **macro-F1**; prediction = the most probable class; `random` = a uniformly random class
+- [ ] **B3 3-way:** macro-F1 averages over the classes present, so a bootstrap resample with no computed numbers averages over two classes; CIs over test reports as in B3
+- [ ] **B4 RQ2:** each pairwise AUROC (hallucinated vs copied, hallucinated vs computed) uses only test numbers with those labels, scored by the main task's detectors; "flagged" = score at or above B3's val-tuned threshold; "correct computed numbers" = numbers labeled `computed`
 - [ ] **B4 RQ3:** per-layer AUROC = a detector on that layer's heads only (12 features for lookback, 36 for lookback_hf), C tuned on val. Head importance = absolute standardized coefficient in the full detector (B3's C and cutoff, train only), summed over a head's 3 features for lookback_hf. Top-k = 10, 25, 50, 100, 200 and all
 - [ ] **B4 bridge:** a number's lookback = mean over all layers and heads; then the mean per setting, all splits. Shown per label too, because settings produce different label mixes
 - [ ] **B5:** the detector analyzed is the learned one with the best **val** AUROC (`--detector` / `DETECTOR` picks another)
 - [ ] **B5:** the 10 + 10 examples are a seeded random sample of the test errors; `--pick extreme` / `PICK = "extreme"` takes the most confident errors instead
-- [ ] **B5:** false positive = a flagged `copied` or `computed` number (a flagged `question` number doesn't count); false negative = a `fabricated` number that isn't flagged
+- [ ] **B5:** false positive = a flagged `copied` or `computed` number (a flagged `question` number doesn't count); false negative = a hallucinated (`fabricated` or `wrong_calc`) number that isn't flagged
 
 **R1 (both)**
 
 - [ ] **R1:** only TAT-QA's `arithmetic` questions with a numeric answer (train, dev and test_gold, all treated as test); 500 sampled after the A1 length filter
 - [ ] **R1:** TAT-QA context = the table first, then the paragraphs in order (FinQA: text, table, text)
 - [ ] **R1:** `gold_answer` is TAT-QA's answer as written (scale not applied; a percent answer like −22.22 is already ×100). `gold_steps` = every operation in the derivation; `%` and a lone `(n)` are read whichever way reproduces the answer. 18 of 6,959 derivations (0.3%) contain words and keep only the gold answer
-- [ ] **R1:** the transfer uses FinQA's C, cutoff and F1 threshold unchanged, and pools whichever TAT-QA settings were run
+- [ ] **R1:** the transfer uses FinQA's C, cutoff and F1 threshold unchanged (main task), and pools whichever TAT-QA settings were run
+
+**R2 (Yvette)**
+
+- [ ] **R2:** the hint is appended to the question after a space; the report comes first in the prompt, so its tokens and positions don't change (the script checks), and attention over the report is compared position by position
+- [ ] **R2:** candidates = a seeded random sample of answers with a hallucinated number (default greedy); the focus number = the first hallucinated one that isn't the cut-off last number of a truncated answer and isn't the value 100 (mostly the "× 100" of a percent formula; `--keep-100` allows it)
+- [ ] **R2:** the new answer uses the same decoding setting with a seed from the id; with a sampling setting a different answer can also come from the draw, so greedy is the default
+- [ ] **R2:** the new answer's numbers are labeled with the A4 rules, with the hint as part of the question (numbers in the hint count as `question`)
+- [ ] **R2:** counterpart = the new answer's number whose text before it on its line (up to 40 characters) is most similar to the focus number's (difflib ratio); `counterpart_index` overrides it
+- [ ] **R2:** the plots use the same head for every pair: B4's top lookback head (`--head` picks another); the right panel is lookback per layer, averaged over heads
 
 ## 2. AI-written code we must be able to explain
 
-README §3: each of us can explain every file in our folders line by line, and has checked its tests' expected values by hand. By Dec 9, each must also be able to explain the other's files.
+README §3: each of us can explain every file in our folders line by line, and has checked its tests' expected values by hand. By Dec 11, each must also be able to explain the other's files.
 
 **Both**
 
@@ -97,7 +109,7 @@ README §3: each of us can explain every file in our folders line by line, and h
 
 - [ ] `data/build_subset.py`: sanity-check the counts it prints on Colab
 - [ ] `common/program.py`: check `tests/test_program.py`
-- [ ] `gen/generate.py`: check `tests/test_generate.py`, especially the decoding arguments each setting turns into
+- [ ] `gen/generate.py`: check `tests/test_generate.py`, especially the decoding arguments each setting turns into (`plain_generation_config`, moved out of `main` on Nov 17, is also used by R2)
 - [ ] `labels/label.py`: check every expected label in `tests/test_label.py` against README §6.3
 - [ ] `baseline/confidence.py`: explain why the logits at position *t* score token *t + 1*; check `tests/test_confidence.py`
 - [ ] `analysis/stage1.py` and `analysis/stage1.ipynb`: check the hand-worked example in `tests/test_stage1.py`
@@ -106,9 +118,11 @@ README §3: each of us can explain every file in our folders line by line, and h
 
 - [ ] `analysis/b0_attention_plot.py`: check `tests/test_b0.py`
 - [ ] `features/attention.py` and `features/extract.py`: check the hand-worked lookback and HF values in `tests/test_features.py`
-- [ ] `detector/train_eval.py`: check the hand-worked F1 and threshold cases in `tests/test_detector.py`
+- [ ] `detector/train_eval.py`: check the hand-worked F1 and threshold cases and the two tasks' targets in `tests/test_detector.py`
+- [ ] `detector/three_way.py`: check the hand-worked per-class F1, macro-F1 and confusion matrix in `tests/test_three_way.py`
 - [ ] `analysis/stage2.py` and `analysis/stage2.ipynb`: check `tests/test_stage2.py`
 - [ ] `analysis/errors.py` and `analysis/errors.ipynb`: check `tests/test_errors.py`
+- [ ] `analysis/hint_test.py` (R2): check `tests/test_hint_test.py` (gold program numbers, focus choice, counterpart matching)
 
 **R1 (both)**
 
@@ -131,12 +145,13 @@ Claude makes the plots and tables; reading them and drawing conclusions is ours.
 | A6 | Stage 1 error analysis (Nov 23–29) | A | ⏳ needs A6 results |
 | A7 | Run `baseline/confidence.py` for your settings (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A4 |
 | B1–B2 | `features/extract.py --limit 20`: row sums ~1, lookback within 0–1 (B1 done); then the full run for your settings (B2 done) | B: the check · A, B: full runs | ⏳ needs A4 |
-| B3 | Read `detector/results.csv`: which detectors beat the confidence baseline, given the CIs | B | ⏳ needs A7, B2 |
+| Papers | Read the related papers: how they aggregate attention into features for hallucination detection, and which features we replicate. What we learned about the area goes in the report (office hours, `LOG.md`) | both | 🟢 ready |
+| B3 | Read `detector/results.csv` (both tasks): which detectors beat the confidence baseline, given the CIs; and the 3-way confusion matrix (`three_way_confusion.png`) | B | ⏳ needs A7, B2 |
 | B4 | **RQ2 (main contribution):** do detectors flag correct computed numbers, and does that support the hypothesis? (RQ2 cell in `analysis/stage2.ipynb`) | B | ⏳ needs B3 |
 | B4 | RQ3: which layers and heads carry the signal; does a top-100-head detector keep most of the AUROC? (RQ3 cell) | B | ⏳ needs B3 |
 | B4 | Bridge: does the lookback ratio fall as temperature rises? (bridge cell) | B | ⏳ needs B2 |
 | B5 | Explain 10 false positives, 10 false negatives, and where `wrong_calc` falls, in our own words (notes files, then `analysis/errors.ipynb`) | A: false positives, `wrong_calc` · B: false negatives | ⏳ needs B3 |
 | R1 | Optional: hand-check ~30 TAT-QA labels, then interpret the transfer (`detector/transfer_results.csv`) | A: TAT-QA subset, greedy · B: temp12, transfer · both: hand-check | ⏳ needs B3 and the R1 runs (`MANUAL_STEPS.md`, "R1 (optional)") |
-| R2 | Poster text and takeaways | A: dataset, labeling, decoding chart · B: attention diagram, AUROC table, heatmap | ⏳ |
+| R2 | Optional: write the hints by hand; check the counterparts; then, in our own words, what changes in the attention when a hallucination goes away (`hint_*.png`, `hint_results.csv`) | B | ⏳ needs B4 |
 | R3 | Report: own sections, then both edit the draft | both | ⏳ |
-| Dec 7–8 | Rehearse: each explains the other's half | both | ⏳ |
+| Dec 7–10 | Report edits; each can explain the other's half | both | ⏳ |

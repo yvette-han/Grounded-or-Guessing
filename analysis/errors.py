@@ -5,17 +5,19 @@ Run from the repo root after B3 (no GPU needed):
     python analysis/errors.py --detector lookback --pick extreme
 or open analysis/errors.ipynb, which calls the same functions.
 
-For one detector (default: the learned detector with the best val AUROC in
-detector/results.csv, so the choice doesn't depend on test results), on the test split:
+For one detector of B3's main task (default: the learned detector with the best
+val AUROC in detector/results.csv, so the choice doesn't depend on test
+results), on the test split:
   false positives  copied or computed numbers it flags (score >= its val-tuned threshold)
-  false negatives  fabricated numbers it doesn't flag
+  false negatives  hallucinated numbers (fabricated or wrong_calc) it doesn't flag
   --pick random (default): a seeded random sample of each; --pick extreme: the
   highest-scoring false positives and lowest-scoring false negatives.
 Each example shows the question, gold answer and steps, the answer with the
 number marked, the labels of every number in that answer, and the report lines
 where the number's value appears.
-Where wrong_calc falls: score summary per label (n, quartiles, share flagged)
-and a box plot of scores per label with the threshold.
+Where each label falls (e.g. wrong_calc vs fabricated): score summary per
+label (n, quartiles, share flagged) and a box plot of scores per label with
+the threshold.
 
 Writes to analysis/figures/:
   b5_examples.md, b5_examples.csv   the false positives and false negatives
@@ -37,6 +39,7 @@ sys.path.insert(0, str(ROOT))
 from analysis.stage2 import read_test_scores  # noqa: E402
 from common.io import read_jsonl  # noqa: E402
 from common.numbers import extract_numbers, find_match, same_value  # noqa: E402
+from detector.train_eval import MAIN_TASK, TASKS  # noqa: E402
 from labels.label import LABELS  # noqa: E402
 
 LEARNED = ["lookback", "hf", "lookback_hf", "confidence"]
@@ -46,17 +49,23 @@ BLUE, ORANGE = "#2a78d6", "#eb6834"
 
 # Pure functions (tested in tests/test_errors.py) ---------------------------
 
+def main_task_rows(results):
+    """The rows of detector/results.csv for B3's main task."""
+    return [r for r in results if r.get("task", MAIN_TASK) == MAIN_TASK]
+
+
 def choose_detector(results):
     """The learned detector with the best val AUROC (results: rows of detector/results.csv)."""
-    rows = [r for r in results if r["detector"] in LEARNED]
+    rows = [r for r in main_task_rows(results) if r["detector"] in LEARNED]
     return max(rows, key=lambda r: float(r["val_auroc"]))["detector"]
 
 
 def pick_errors(ts, detector, n=10, seed=0, pick="random"):
     """(false positive indices, false negative indices) into the test-score arrays."""
     labels, flagged, scores = ts["label"], ts[f"{detector}_flagged"], ts[detector]
-    fp = np.flatnonzero(np.isin(labels, ["copied", "computed"]) & (flagged == 1))
-    fn = np.flatnonzero((labels == "fabricated") & (flagged == 0))
+    positive, negative = TASKS[MAIN_TASK]
+    fp = np.flatnonzero(np.isin(labels, sorted(negative)) & (flagged == 1))
+    fn = np.flatnonzero(np.isin(labels, sorted(positive)) & (flagged == 0))
     if pick == "extreme":
         return fp[np.argsort(-scores[fp], kind="stable")][:n], fn[np.argsort(scores[fn], kind="stable")][:n]
     if pick != "random":
@@ -131,8 +140,9 @@ def build_examples(ts, idx, kind, detector, threshold, labels_by_setting, answer
 
 def examples_markdown(examples, detector, threshold):
     lines = [f"# B5 examples · detector `{detector}` · threshold {threshold:.3f}", "",
-             "False positives: copied or computed numbers the detector flags. False negatives: fabricated "
-             "numbers it misses. Test split. Explanations go in `analysis/errors.ipynb`.", ""]
+             "False positives: copied or computed numbers the detector flags. False negatives: hallucinated "
+             "numbers (fabricated or wrong_calc) it misses. Test split. Explanations go in `analysis/errors.ipynb`.",
+             ""]
     for ex in examples:
         title = "False positive" if ex["kind"] == "fp" else "False negative"
         lines += [
@@ -193,7 +203,7 @@ def run_all(cfg, subset_path, answers_dir, labels_dir, detector_dir, out_dir, de
     with open(Path(detector_dir) / "results.csv", newline="") as f:
         results = list(csv.DictReader(f))
     detector = detector or choose_detector(results)
-    threshold = float(next(r for r in results if r["detector"] == detector)["threshold"])
+    threshold = float(next(r for r in main_task_rows(results) if r["detector"] == detector)["threshold"])
     ts = read_test_scores(Path(detector_dir) / "test_scores.csv")
 
     settings = sorted(set(ts["setting"]))
