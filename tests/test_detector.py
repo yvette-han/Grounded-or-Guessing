@@ -6,14 +6,21 @@ import pytest
 pytest.importorskip("sklearn")
 
 from detector.train_eval import (  # noqa: E402
-    DETECTORS, best_f1_threshold, bootstrap_ci, f1_at, features_for, finite_mask, load_setting,
-    pool, run, subset, targets,
+    DETECTORS, MAIN_TASK, best_f1_threshold, bootstrap_ci, column_name, f1_at, features_for, finite_mask,
+    load_setting, pool, run, subset, targets,
 )
 
 
 def test_targets():
     labels = ["fabricated", "copied", "computed", "wrong_calc", "question"]
-    assert list(targets(labels)) == [1, 0, 0, -1, -1]
+    assert MAIN_TASK == "hallucinated"
+    assert list(targets(labels)) == [1, 0, 0, 1, -1]                  # wrong_calc is hallucinated
+    assert list(targets(labels, "fabricated")) == [1, 0, 0, -1, -1]   # extra task: wrong_calc left out
+
+
+def test_column_name():
+    assert column_name("hallucinated", "lookback") == "lookback"
+    assert column_name("fabricated", "lookback") == "fabricated_lookback"
 
 
 def test_f1_at_by_hand():
@@ -85,11 +92,13 @@ def test_load_setting_joins_on_row(tmp_path):
 
 
 def _synthetic(n_reports=60, per_report=12, seed=1):
-    """Lookback (and hf at cutoff index 1) separate fabricated from the rest; everything else is noise."""
+    """Lookback (and hf at cutoff index 1) separate hallucinated (fabricated, wrong_calc) numbers
+    from the rest; everything else is noise."""
     rng = np.random.default_rng(seed)
     n = n_reports * per_report
-    labels = rng.choice(["fabricated", "copied", "computed", "wrong_calc"], size=n, p=[0.3, 0.5, 0.15, 0.05])
-    fab = (labels == "fabricated")[:, None, None]
+    labels = rng.choice(["fabricated", "copied", "computed", "wrong_calc", "question"], size=n,
+                        p=[0.25, 0.45, 0.15, 0.1, 0.05])
+    fab = np.isin(labels, ["fabricated", "wrong_calc"])[:, None, None]
     d = {
         "lookback": rng.normal(size=(n, 2, 3)) - 1.5 * fab,
         "hf_ctx": rng.normal(size=(n, 2, 2, 3)),
@@ -114,12 +123,23 @@ def test_run_on_synthetic_data():
     results, columns, test_all = run(data, n_boot=100, seed=0)
     by = {r["detector"]: r for r in results}
     assert [r["detector"] for r in results] == DETECTORS
+    assert {r["task"] for r in results} == {"hallucinated"}
     assert by["lookback"]["auroc"] > 0.9 and by["lookback_hf"]["auroc"] > 0.9
     assert by["hf"]["hf_cutoff"] == 0.45                 # the cutoff that carries the signal
     assert by["confidence"]["auroc"] < 0.7 and 0.3 < by["random"]["auroc"] < 0.7
     for r in results:
         assert r["auroc_ci_low"] <= r["auroc"] <= r["auroc_ci_high"]
-    # every test number is scored, including wrong_calc (left out of training and metrics)
+    # every test number is scored, including question (left out of training and metrics)
     assert len(columns["lookback"]) == test_all.sum()
-    assert "wrong_calc" in set(data["label"][test_all])
+    assert "question" in set(data["label"][test_all])
     assert by["lookback"]["n_test"] == int((test_all & (targets(data["label"]) >= 0)).sum())
+    test_labels = data["label"][test_all]
+    assert by["lookback"]["n_test_positive"] == int(np.isin(test_labels, ["fabricated", "wrong_calc"]).sum())
+
+    # the extra task: fabricated only, wrong_calc left out; its columns are prefixed
+    results, columns, _ = run(data, n_boot=100, seed=0, task="fabricated")
+    by = {r["detector"]: r for r in results}
+    assert "fabricated_lookback" in columns and "lookback" not in columns
+    assert by["lookback"]["auroc"] > 0.9
+    assert by["lookback"]["n_test_positive"] == int((test_labels == "fabricated").sum())
+    assert by["lookback"]["n_test"] == int(np.isin(test_labels, ["fabricated", "copied", "computed"]).sum())

@@ -2,9 +2,9 @@
 
 Claude writes the code. We run it on Colab, check the output, and write the analysis. Tick items off in `ANALYSIS_TODO.md` as you finish them.
 
-_Last updated: Nov 7._
+_Last updated: Nov 23, merged on `eduardo`: Nov 17 office-hours changes (hallucinated task and 3-way classifier in B-7, scope decision, R2 hint test, poster removed) plus Person A's Nov 6–7 runs and the other-models section._
 
-**Contents:** [Who does what](#who-does-what) · [Timeline](#timeline) · [Setup and sharing](#setup-and-sharing) · [Eduardo (Person A)](#eduardo-person-a) · [Yvette (Person B)](#yvette-person-b) · [Hand-check](#hand-check) · [Script options and checks](#script-options-and-checks) · [R1 (optional)](#r1-optional) · [Other models (optional)](#other-models-optional)
+**Contents:** [Who does what](#who-does-what) · [Timeline](#timeline) · [Setup and sharing](#setup-and-sharing) · [Eduardo (Person A)](#eduardo-person-a) · [Yvette (Person B)](#yvette-person-b) · [Hand-check](#hand-check) · [Script options and checks](#script-options-and-checks) · [R1 (optional)](#r1-optional) · [R2 (optional)](#r2-optional) · [Other models (optional)](#other-models-optional)
 
 On Colab, each code block below is one cell. Shell commands start with `!`; change folders with `%cd`.
 
@@ -20,10 +20,9 @@ Each of us runs the full chain (generate → label → confidence → features) 
 | Runs and writes up | A1, A6, Stage 1 error analysis | B0, B1 check, B3, B4 |
 | Together | A5 hand-check | A5 hand-check |
 | B5 | the 10 false positives, where `wrong_calc` falls | the 10 false negatives |
-| Reviews in `ANALYSIS_TODO.md` | items A1–A7, files marked (A) | items B0–B5, files marked (B) |
-| Poster | dataset, labeling, decoding chart | attention diagram, AUROC table, head/layer heatmap |
+| Reviews in `ANALYSIS_TODO.md` | items A1–A7, files marked (A) | items B0–B5 and R2, files marked (B) |
 
-Running a script doesn't change who owns it. By Dec 9, each of us must be able to explain the other's half.
+Running a script doesn't change who owns it. By Dec 11, each of us must be able to explain the other's half.
 
 ### Timeline
 
@@ -32,13 +31,13 @@ Running a script doesn't change who owns it. By Dec 9, each of us must be able t
 | When | Eduardo (A) | Yvette (B) |
 |---|---|---|
 | Nov 5–8 | A-0 setup · A-1 subset 🔁 · A-2 reviews | B-0 setup · B-1 B0 plot for the meeting · B-2 reviews |
-| Nov 9–12 | A-3 ✅ first 50 greedy answers + hand-check sheet; full `greedy`, `beam5` done Nov 7 | B-3 generate `temp07`, `temp12`, `topp09` · B-4 B1 check (after A-3) |
+| Nov 9–12 | A-3 ✅ first 50 greedy answers + hand-check sheet; full `greedy`, `beam5` done Nov 7 on the Yin lab V100 (timed there, not on a T4) · decide the scope together | B-3 decide the scope together · generate `temp07`, `temp12`, `topp09` · B-4 B1 check (after A-3) |
 | Nov 12–14 | A-4 hand-label 🔁 · run the agreement · decide the rules together | B-5 hand-label 🔁 · decide the rules together |
 | Nov 14–20 | A-5 label, confidence, features for your settings 🔁 | B-6 label, confidence, features for your settings 🔁 |
 | Nov 16–22 | A-6 Stage 1 results (needs B-6) | B-7 detectors (needs A-5) |
 | Nov 23–29 | A-7 Stage 1 error analysis | B-8 Stage 2 analysis + B5 examples 🔁 |
-| Nov 30–Dec 6 | A-8 B5 false positives · poster, report · optional R1 | B-9 B5 false negatives · poster, report · optional R1 |
-| Dec 7–8 | Rehearse Yvette's half | Rehearse Eduardo's half |
+| Nov 30–Dec 6 | A-8 B5 false positives · report · optional R1 | B-9 B5 false negatives · report · optional R1 or R2 |
+| Dec 7–10 | A-10 report edits | B-11 report edits |
 
 **Label after Nov 14, not before.** If the hand-check changes the rules (README §6.3), every label, confidence score and feature file must be redone. Generating answers doesn't depend on the rules, so generate first. The one exception is the first 50 greedy answers, which the hand-check needs.
 
@@ -130,6 +129,8 @@ Your settings: `greedy`, `beam5`.
 ```
 
 - Don't open `labels/handcheck_key.csv` or `labels/numbers_greedy.jsonl` before the hand-check: they show the auto labels.
+- **Timing** (scope decision, office hours): measured on the Yin lab V100 instead of a T4 (fp16, batch 8): greedy ~1.3 s per answer (20 min for 1,000), beam5 ~65 min for 1,000; 15 and 24 answers cut at 512 tokens (`LOG.md` run notes). On the Nov 10 CPU sample, greedy took about 25–30 s per answer and beam5 about 128 s (batch size 2).
+- **Decide the scope with Yvette** before the full runs: keep 1,000 questions × 5 settings, use fewer questions (`--limit N`, the same N for every setting), or drop `beam5`. Write the decision in `LOG.md` (above the run notes).
 - Push `gen/answers_greedy.jsonl`, `labels/numbers_greedy.jsonl` and `labels/handcheck.csv` (not the key yet); merge; tell Yvette. 🔁
 
 Then start the full runs. They take hours and resume after a disconnect:
@@ -162,9 +163,9 @@ Then start the full runs. They take hours and resume after a disconnect:
 
 **A-8 · B5: false positives and `wrong_calc`** · after B-8. Pull `main`. Read `analysis/figures/b5_examples.md` and `b5_scores_by_label.png`. In `analysis/notes/b5_A.md`, explain each of the 10 false positives, then the pattern, then where `wrong_calc` falls. Push.
 
-**A-9 · Poster and report.** Your parts: dataset and labeling, the decoding chart (`stage1_bars.png`), the Stage 1 results. Then edit the full draft together.
+**A-9 · Report.** Your sections: dataset and labeling, the decoding chart (`stage1_bars.png`), the Stage 1 results. Then edit the full draft together.
 
-**A-10 · Rehearse** · Dec 7–8. Be able to explain Yvette's half: `features/`, `detector/`, `analysis/stage2.py`, and her readings.
+**A-10 · Report edits** · Dec 7–10. Be able to explain Yvette's half: `features/`, `detector/`, `analysis/stage2.py`, and her readings.
 
 ---
 
@@ -197,7 +198,7 @@ Your settings: `temp07`, `temp12`, `topp09`. **This week (Nov 5–8): B-0, B-1, 
 
 **B-2 · Reviews** · before Nov 12. In `ANALYSIS_TODO.md`: section 1 items B0–B5, and section 2 files marked (B) or (both). Start with the row choice (you decide it in B-4), the B1 definitions, and the B2 frequency units: check how Qi et al. (2026) normalize frequency before Nov 14.
 
-**B-3 · Generate your settings** · from Mon Nov 9, or earlier if you have spare GPU time. Needs only the subset.
+**B-3 · Generate your settings** · from Mon Nov 9, or earlier if you have spare GPU time. Needs only the subset and the scope decision from A-3 (if you agreed on fewer questions, add the same `--limit N`).
 
 ```python
 !python gen/generate.py --setting temp07
@@ -239,10 +240,13 @@ Your settings: `temp07`, `temp12`, `topp09`. **This week (Nov 5–8): B-0, B-1, 
 
 ```python
 !python detector/train_eval.py --features-dir {SHARED}/features
+!python detector/three_way.py --features-dir {SHARED}/features
 ```
 
-- Check: the settings line, the dropped counts, and that the test split has fabricated numbers. Note the chosen C and cutoffs in `LOG.md`.
-- Push `detector/results.csv` and `detector/test_scores.csv`.
+- Check `train_eval.py`: the settings line, the dropped counts, and that each task's test split has positives (it prints `fabricated` and `wrong_calc` counts). Two tables: `hallucinated` (main) and `fabricated` (extra).
+- Check `three_way.py`: the test split has all three classes (copied, computed, hallucinated); look at `analysis/figures/three_way_confusion.png`.
+- Note the chosen C and cutoffs (both scripts) in `LOG.md`.
+- Push `detector/results.csv`, `detector/test_scores.csv`, `detector/three_way_*.csv` and `analysis/figures/three_way_confusion.png`.
 
 **B-8 · Stage 2 analysis (B4) and the B5 examples** · Nov 23–29.
 
@@ -252,9 +256,9 @@ Your settings: `temp07`, `temp12`, `topp09`. **This week (Nov 5–8): B-0, B-1, 
 
 **B-9 · B5: false negatives.** In `analysis/notes/b5_B.md`, explain each of the 10 false negatives, then the pattern. Push. At the end, one of us copies `b5_A.md` and `b5_B.md` into `analysis/errors.ipynb`.
 
-**B-10 · Poster and report.** Your parts: the attention diagram (`b0_attention.png`), the AUROC table (`detector/results.csv`), the head/layer heatmap (`stage2_heads.png`), the Stage 2 results. Then edit the full draft together.
+**B-10 · Report.** Your sections: the attention diagram (`b0_attention.png`), the AUROC table (`detector/results.csv`), the 3-way confusion matrix (`three_way_confusion.png`), the head/layer heatmap (`stage2_heads.png`), the Stage 2 results, and R2 if you ran it. Then edit the full draft together.
 
-**B-11 · Rehearse** · Dec 7–8. Be able to explain Eduardo's half: `data/`, `gen/`, `labels/`, `baseline/`, `analysis/stage1.py`, and Eduardo's readings.
+**B-11 · Report edits** · Dec 7–10. Be able to explain Eduardo's half: `data/`, `gen/`, `labels/`, `baseline/`, `analysis/stage1.py`, and Eduardo's readings.
 
 ---
 
@@ -288,12 +292,14 @@ Both of us, Nov 12–14 (README A5).
 | `labels/agreement.py` | `--sheet-a`, `--sheet-b`, `--key`, `--out` | agreement rates (into `LOG.md`) |
 | `baseline/confidence.py` | `--setting ...` (default: every labeled setting) | number count matches the labels file; `NaNs: 0`; no skipped answers |
 | `features/extract.py` | `--setting ...`, `--limit N`, `--row predicting`, `--out-dir` | row sums about 1; lookback, `hf_ctx`, `hf_gen` within 0–1; NaN only for numbers at the start of an answer. Needs more GPU memory than generation |
-| `detector/train_eval.py` | `--features-dir`, `--out-dir` | settings used; dropped counts by label; the test split has fabricated numbers |
+| `detector/train_eval.py` | `--features-dir`, `--out-dir` | settings used; dropped counts by label; each task's test split has positives |
+| `detector/three_way.py` | `--features-dir`, `--out-dir`, `--fig-dir` | the test split has copied, computed and hallucinated numbers |
 | `analysis/stage1.py` | | every setting is in the table; missing ones are named |
 | `analysis/stage2.py` | `--features-dir` | one row per detector; every setting in the bridge |
 | `analysis/errors.py` | `--detector`, `--pick extreme`, `-n` | 10 false positives and 10 false negatives |
 | `data/build_tatqa.py` | | about 0.3% of derivations don't reproduce their answer |
 | `detector/transfer.py` | `--features-dir`, `--tatqa-features-dir` | refuses features made with a different `--row` or HF cutoffs |
+| `analysis/hint_test.py` | `candidates --setting greedy -n 20 --split test --keep-100`; `run --row predicting --head L,H` | no "report's tokens changed; skipped"; the counterpart in `hint_results.csv` is the right number |
 
 **To compare both row choices:** extract with `--row predicting --out-dir {SHARED}/features_predicting`, then run `detector/train_eval.py --features-dir {SHARED}/features_predicting --out-dir detector/predicting`.
 
@@ -341,6 +347,28 @@ Push `tatqa/`, `detector/transfer_results.csv` and `detector/tatqa_scores.csv`.
 
 ---
 
+## R2 (optional)
+
+Yvette, only if time allows, after B-8 (it needs the row choice from B-4 and `analysis/figures/stage2_heads.csv`). Suggested at office hours (`LOG.md`): when a hint in the question removes a hallucination, compare the attention before and after on the same question.
+
+1. List candidates (no GPU): answers with a hallucinated number, greedy.
+
+```python
+!python analysis/hint_test.py candidates --setting greedy -n 20
+```
+
+2. Copy `hints/candidates.csv` to `hints/hints.csv`. For about 10 rows, write a `hint` by hand: one sentence that points to where the answer is in the report (`gold_input_lines` shows the lines with the gold program's numbers), e.g. "Use the row 'adjusted consolidated cash flow'." Leave the other rows' `hint` empty. Whether a hint may contain numbers is your call; write it in `LOG.md`.
+3. Run on the GPU, with your B-4 row choice (add `--row predicting` only if you chose it):
+
+```python
+!python analysis/hint_test.py run
+```
+
+- On the Nov 17 CPU smoke test one hint took ~3 minutes; the GPU time isn't measured.
+- Check `hints/hint_results.csv`: for each hint, is `counterpart_number` the number in the new answer that takes the focus number's place (`counterpart_context` shows the text before it)? If not, put the right index in `counterpart_index` in `hints/hints.csv` (0 = the new answer's first number; the numbers are in `hints/numbers.jsonl` with their `k`) and run again.
+- In `LOG.md`: how many hints, and for how many the focus number's counterpart is no longer hallucinated.
+- Push `hints/hints.csv`, `hints/hint_results.csv`, `hints/answers.jsonl`, `hints/numbers.jsonl` and `analysis/figures/hint_*.png`. Copy `hints/pair_*.npz` (~1 MB each) to `{SHARED}/hints`, not git.
+
 ## Other models (optional)
 
 Only if we decide to compare a second model (decide together first; it's a new choice for `LOG.md`). The Qwen run stays where it is.
@@ -367,4 +395,3 @@ Only if we decide to compare a second model (decide together first; it's a new c
 - Gated models (Llama, Gemma) need a Hugging Face token: `huggingface-cli login`, or `HF_TOKEN` in Colab Secrets.
 - If a script says an answers file "was generated by" another model, you passed the wrong `--config` (or none).
 - Record in `LOG.md`: the model, `run_name`, the generate stats line, and any decoding setting that ran out of memory.
-

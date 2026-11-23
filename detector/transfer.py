@@ -7,9 +7,9 @@ MANUAL_STEPS.md step 12 exist (no GPU needed):
 Every detector is fit exactly as in B3: FinQA train split; C, HF cutoff and
 F1 threshold chosen on FinQA val. Then every TAT-QA number is scored. Per
 detector: FinQA test AUROC (for reference), and TAT-QA AUROC and F1 at the
-FinQA threshold, with 95% CIs from bootstrap over TAT-QA tables. Task as in
-README 6.5 (fabricated vs copied + computed); numbers with a NaN feature are
-dropped, as in B3.
+FinQA threshold, with 95% CIs from bootstrap over TAT-QA tables. Task: B3's
+main task (README 6.5: hallucinated = fabricated or wrong_calc, vs copied +
+computed); numbers with a NaN feature are dropped, as in B3.
 
 FinQA uses every setting with features/ and baseline/ files; TAT-QA every
 setting with tatqa/features/ and tatqa/baseline/ files. Both must use the same
@@ -29,26 +29,11 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from common.io import load_config, read_jsonl, run_dir  # noqa: E402
+from common.io import load_config, run_dir  # noqa: E402
 from detector.train_eval import (  # noqa: E402
-    C_GRID, DETECTORS, finite_mask, fit_detectors, load_setting, pool, score_detector, split_masks,
-    subset, targets, test_metrics, write_csv,
+    C_GRID, DETECTORS, fit_detectors, load_dataset, score_detector, split_masks, targets, test_metrics,
+    write_csv,
 )
-
-
-def load_dataset(cfg, subset_path, features_dir, baseline_dir):
-    """(data, settings): pooled features + confidence for every setting that has both."""
-    questions = {q["id"]: q for q in read_jsonl(subset_path)}
-    settings = [s for s in cfg["decoding"]
-                if (Path(features_dir) / f"{s}.npz").exists() and (Path(baseline_dir) / f"confidence_{s}.npz").exists()]
-    if not settings:
-        raise FileNotFoundError(f"no setting has both {features_dir}/<setting>.npz and "
-                                f"{baseline_dir}/confidence_<setting>.npz")
-    per_setting = {s: load_setting(Path(features_dir) / f"{s}.npz", Path(baseline_dir) / f"confidence_{s}.npz")
-                   for s in settings}
-    data = pool(per_setting, {i: q["split"] for i, q in questions.items()},
-                {i: q["report_key"] for i, q in questions.items()})
-    return subset(data, finite_mask(data)), settings
 
 
 def check_compatible(finqa_features, tatqa_features):
@@ -68,7 +53,7 @@ def transfer(finqa, tatqa, Cs=C_GRID, n_boot=1000, seed=0):
     y_t = targets(tatqa["label"])
     keep = y_t >= 0
     if len(np.unique(y_t[keep])) < 2:
-        raise ValueError("TAT-QA needs both fabricated and copied/computed numbers")
+        raise ValueError("TAT-QA needs both hallucinated and copied/computed numbers")
     groups = tatqa["report"][keep]
 
     fitted = fit_detectors(finqa, Cs, seed)
@@ -83,7 +68,7 @@ def transfer(finqa, tatqa, Cs=C_GRID, n_boot=1000, seed=0):
             "finqa_test_auroc": float(roc_auc_score(y_f[test_f], finqa_scores[test_f])),
             **{f"tatqa_{k}": v for k, v in metrics.items()},
             "threshold": fit["threshold"], "C": fit["C"], "hf_cutoff": fit["hf_cutoff"],
-            "n_tatqa": int(keep.sum()), "n_tatqa_fabricated": int((y_t[keep] == 1).sum()),
+            "n_tatqa": int(keep.sum()), "n_tatqa_positive": int((y_t[keep] == 1).sum()),
         })
         columns[det] = scores
         columns[f"{det}_flagged"] = (scores >= fit["threshold"]).astype(int)
@@ -114,8 +99,8 @@ def main():
     args.tatqa_baseline_dir = args.tatqa_baseline_dir or run_dir(cfg, ROOT, "tatqa/baseline")
     args.out_dir = args.out_dir or run_dir(cfg, ROOT, "detector")
 
-    finqa, f_settings = load_dataset(cfg, args.finqa_subset, args.features_dir, args.baseline_dir)
-    tatqa, t_settings = load_dataset(cfg, args.tatqa_subset, args.tatqa_features_dir, args.tatqa_baseline_dir)
+    finqa, f_settings, _ = load_dataset(cfg, args.finqa_subset, args.features_dir, args.baseline_dir)
+    tatqa, t_settings, _ = load_dataset(cfg, args.tatqa_subset, args.tatqa_features_dir, args.tatqa_baseline_dir)
     check_compatible(args.features_dir / f"{f_settings[0]}.npz", args.tatqa_features_dir / f"{t_settings[0]}.npz")
     print(f"FinQA settings: {', '.join(f_settings)}; TAT-QA settings: {', '.join(t_settings)}")
 
@@ -130,7 +115,7 @@ def main():
         score_rows.append(r)
     write_csv(args.out_dir / "tatqa_scores.csv", score_rows)
 
-    print(f"TAT-QA: {rows[0]['n_tatqa']} numbers in the task ({rows[0]['n_tatqa_fabricated']} fabricated)")
+    print(f"TAT-QA: {rows[0]['n_tatqa']} numbers in the task ({rows[0]['n_tatqa_positive']} hallucinated)")
     print(f"{'detector':<12} {'FinQA AUROC':>11} {'TAT-QA AUROC':>12}  {'95% CI':<13} {'F1':>5}  {'95% CI'}")
     for r in rows:
         print(f"{r['detector']:<12} {r['finqa_test_auroc']:11.3f} {r['tatqa_auroc']:12.3f}  "

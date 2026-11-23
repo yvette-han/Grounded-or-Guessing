@@ -20,20 +20,25 @@ def test_choose_detector_uses_val_auroc_and_skips_random():
             {"detector": "lookback_hf", "val_auroc": "0.83"}, {"detector": "confidence", "val_auroc": "0.70"},
             {"detector": "random", "val_auroc": "0.99"}]
     assert choose_detector(rows) == "hf"
+    # only the main task's rows count
+    tasks = [dict(r, task="hallucinated") for r in rows] + [
+        {"task": "fabricated", "detector": "confidence", "val_auroc": "0.95"}]
+    assert choose_detector(tasks) == "hf"
 
 
 def _ts():
-    ts = {"label": np.array(["copied", "computed", "fabricated", "fabricated", "copied", "question", "computed"]),
-          "lookback": np.array([0.9, 0.2, 0.3, 0.8, 0.1, 0.95, 0.7]),
-          "lookback_flagged": np.array([1, 0, 0, 1, 0, 1, 1])}
+    ts = {"label": np.array(["copied", "computed", "fabricated", "fabricated", "copied", "question", "computed",
+                             "wrong_calc"]),
+          "lookback": np.array([0.9, 0.2, 0.3, 0.8, 0.1, 0.95, 0.7, 0.05]),
+          "lookback_flagged": np.array([1, 0, 0, 1, 0, 1, 1, 0])}
     return ts
 
 
 def test_pick_errors_by_hand():
     # false positives: copied/computed flagged -> 0 (0.9), 6 (0.7); the flagged question (5) doesn't count
-    # false negatives: fabricated not flagged -> 2
+    # false negatives: hallucinated (fabricated or wrong_calc) not flagged -> 7 (0.05), 2 (0.3)
     fp, fn = pick_errors(_ts(), "lookback", n=10, pick="extreme")
-    assert list(fp) == [0, 6] and list(fn) == [2]
+    assert list(fp) == [0, 6] and list(fn) == [7, 2]
     fp, _ = pick_errors(_ts(), "lookback", n=1, pick="extreme")
     assert list(fp) == [0]                                  # the most confident one
     a, _ = pick_errors(_ts(), "lookback", n=1, seed=3)

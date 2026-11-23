@@ -10,11 +10,12 @@ from detector.transfer import check_compatible, transfer  # noqa: E402
 
 
 def _data(n_reports, signal, split_of_index, seed, per_report=12):
-    """Lookback is lower for fabricated numbers by `signal`."""
+    """Lookback is lower for hallucinated (fabricated, wrong_calc) numbers by `signal`."""
     rng = np.random.default_rng(seed)
     n = n_reports * per_report
-    labels = rng.choice(["fabricated", "copied", "computed", "wrong_calc"], size=n, p=[0.3, 0.5, 0.15, 0.05])
-    fab = (labels == "fabricated")[:, None, None]
+    labels = rng.choice(["fabricated", "copied", "computed", "wrong_calc", "question"], size=n,
+                        p=[0.3, 0.45, 0.15, 0.05, 0.05])
+    fab = np.isin(labels, ["fabricated", "wrong_calc"])[:, None, None]
     reports = np.repeat([f"R{seed}-{i}" for i in range(n_reports)], per_report)
     ids = np.array([f"{r}-{k}" for k, r in enumerate(reports)])
     d = {"lookback": rng.normal(size=(n, 2, 3)) - signal * fab, "hf_ctx": rng.normal(size=(n, 2, 2, 3)),
@@ -37,7 +38,8 @@ def test_transfer_keeps_a_shared_signal():
     assert 0.3 < by["random"]["tatqa_auroc"] < 0.7
     assert by["lookback"]["tatqa_auroc_ci_low"] <= by["lookback"]["tatqa_auroc"] <= by["lookback"]["tatqa_auroc_ci_high"]
     assert len(columns["lookback"]) == len(tatqa["label"])     # every TAT-QA number is scored, all labels
-    assert by["lookback"]["n_tatqa"] == int(np.isin(tatqa["label"], ["fabricated", "copied", "computed"]).sum())
+    assert by["lookback"]["n_tatqa"] == int(np.isin(tatqa["label"], ["fabricated", "wrong_calc", "copied", "computed"]).sum())
+    assert by["lookback"]["n_tatqa_positive"] == int(np.isin(tatqa["label"], ["fabricated", "wrong_calc"]).sum())
 
 
 def test_transfer_without_the_signal_is_near_chance():

@@ -4,8 +4,10 @@ Run from the repo root after B3 (no GPU needed):
     python analysis/stage2.py
 or open analysis/stage2.ipynb, which calls the same functions.
 
+Everything uses B3's main task (README 6.5): hallucinated = fabricated or
+wrong_calc, vs copied + computed.
 RQ2, from detector/test_scores.csv (test split):
-  per detector, AUROC of fabricated vs copied and of fabricated vs computed,
+  per detector, AUROC of hallucinated vs copied and of hallucinated vs computed,
   separately, and the share of each label's numbers it flags (score >= its
   val-tuned threshold). The computed share = correct computed numbers flagged.
 RQ3, for the lookback and lookback_hf detectors, on the same numbers as B3:
@@ -37,8 +39,8 @@ sys.path.insert(0, str(ROOT))
 from analysis.stage1 import bootstrap_ci as ratio_ci  # noqa: E402
 from common.io import load_config, read_jsonl, run_dir  # noqa: E402
 from detector.train_eval import (  # noqa: E402
-    C_GRID, DETECTORS, bootstrap_ci, features_for, finite_mask, fit_logreg, load_setting, pool,
-    subset, targets,
+    C_GRID, DETECTORS, MAIN_TASK, TASKS, bootstrap_ci, features_for, finite_mask, fit_logreg, load_setting,
+    pool, subset, targets,
 )
 from labels.label import LABELS  # noqa: E402
 
@@ -63,12 +65,14 @@ def read_test_scores(path):
     return out
 
 
-def pair_auroc(labels, scores, groups, neg, pos="fabricated", n_boot=1000, seed=0):
-    """AUROC of pos (1) vs neg (0), only numbers with those labels; with a CI."""
+def pair_auroc(labels, scores, groups, neg, pos=TASKS[MAIN_TASK][0], n_boot=1000, seed=0):
+    """AUROC of the labels in pos (1) vs the label neg (0), only numbers with
+    those labels; with a CI. pos defaults to the main task's positives."""
     from sklearn.metrics import roc_auc_score
 
-    keep = (labels == pos) | (labels == neg)
-    y = (labels[keep] == pos).astype(int)
+    pos = sorted(pos)
+    keep = np.isin(labels, pos) | (labels == neg)
+    y = np.isin(labels[keep], pos).astype(int)
     if len(np.unique(y)) < 2:
         return None, None, None, int(keep.sum())
     lo, hi = bootstrap_ci(y, scores[keep], groups[keep], roc_auc_score, n_boot, seed)
@@ -94,8 +98,8 @@ def rq2_table(ts, n_boot=1000, seed=0):
         row = {"detector": det}
         for neg in ("copied", "computed"):
             auc, lo, hi, n = pair_auroc(ts["label"], ts[det], ts["report"], neg, n_boot=n_boot, seed=seed)
-            row.update({f"auroc_fab_vs_{neg}": auc, f"auroc_fab_vs_{neg}_ci_low": lo,
-                        f"auroc_fab_vs_{neg}_ci_high": hi, f"n_fab_vs_{neg}": n})
+            row.update({f"auroc_hal_vs_{neg}": auc, f"auroc_hal_vs_{neg}_ci_low": lo,
+                        f"auroc_hal_vs_{neg}_ci_high": hi, f"n_hal_vs_{neg}": n})
         for label in LABELS:
             share, lo, hi, n = flag_share(ts["label"], ts[f"{det}_flagged"], ts["report"], label, n_boot, seed)
             row.update({f"flagged_{label}": share, f"flagged_{label}_ci_low": lo,
@@ -301,7 +305,7 @@ def plot_bridge(path, bridge_rows, settings):
     fig, ax = plt.subplots(figsize=(1.2 * len(settings) + 3, 3.8), facecolor=SURFACE)
     _style(ax)
     groups = [("all", "all numbers", INK)] + [
-        (lab, lab, c) for lab, c in zip(["copied", "computed", "fabricated"], SERIES)]
+        (lab, lab, c) for lab, c in zip(["copied", "computed", "wrong_calc", "fabricated"], SERIES)]
     width = 0.8 / len(groups)
     for j, (label, name, color) in enumerate(groups):
         rows = {r["setting"]: r for r in bridge_rows if r["label"] == label}
@@ -313,7 +317,7 @@ def plot_bridge(path, bridge_rows, settings):
                     elinewidth=1.2, capsize=0, label=name, zorder=3)
     ax.set_xticks(range(len(settings)), settings)
     ax.set_ylabel("mean lookback ratio", fontsize=8, color=INK_2)
-    ax.legend(frameon=False, fontsize=8, labelcolor=INK_2, ncol=4, loc="upper left", bbox_to_anchor=(0, 1.14))
+    ax.legend(frameon=False, fontsize=8, labelcolor=INK_2, ncol=5, loc="upper left", bbox_to_anchor=(0, 1.14))
     ax.set_title("Mean lookback (all layers and heads) by decoding setting · bars: 95% CI over reports",
                  loc="left", fontsize=9, color=INK, pad=24)
     fig.tight_layout()
@@ -337,11 +341,11 @@ def _rq2_markdown(rows):
     def auc(r, k):
         return "–" if r[k] is None else f"{r[k]:.3f} ({r[k + '_ci_low']:.3f}–{r[k + '_ci_high']:.3f})"
 
-    lines = ["| Detector | AUROC fabricated vs copied | AUROC fabricated vs computed "
+    lines = ["| Detector | AUROC hallucinated vs copied | AUROC hallucinated vs computed "
              "| Flagged: copied | computed | wrong_calc | question | fabricated |",
              "|---|---|---|---|---|---|---|---|"]
     for r in rows:
-        lines.append(f"| {r['detector']} | {auc(r, 'auroc_fab_vs_copied')} | {auc(r, 'auroc_fab_vs_computed')} "
+        lines.append(f"| {r['detector']} | {auc(r, 'auroc_hal_vs_copied')} | {auc(r, 'auroc_hal_vs_computed')} "
                      f"| {pct(r['flagged_copied'])} | {pct(r['flagged_computed'])} | {pct(r['flagged_wrong_calc'])} "
                      f"| {pct(r['flagged_question'])} | {pct(r['flagged_fabricated'])} |")
     return "\n".join(lines) + "\n"
@@ -370,7 +374,7 @@ def run_all(cfg, subset_path, features_dir, baseline_dir, detector_dir, out_dir,
     data = pool(per_setting, {i: q["split"] for i, q in questions.items()}, report_of)
     data = subset(data, finite_mask(data))
     with open(Path(detector_dir) / "results.csv", newline="") as f:
-        b3 = {r["detector"]: r for r in csv.DictReader(f)}
+        b3 = {r["detector"]: r for r in csv.DictReader(f) if r.get("task", MAIN_TASK) == MAIN_TASK}
     layer_rows, head_rows, topk_rows, importances = [], [], [], {}
     for fs in RQ3_DETECTORS:
         cut = b3[fs]["hf_cutoff"]

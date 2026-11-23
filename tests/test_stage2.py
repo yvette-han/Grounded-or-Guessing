@@ -21,6 +21,13 @@ def test_pair_auroc_by_hand():
     auc, _, _, n = pair_auroc(labels, scores, groups, "computed", n_boot=50)
     assert (auc, n) == (0.5, 3)                 # 0.9 > 0.8 but 0.7 < 0.8
     assert pair_auroc(labels, scores, groups, "question")[0] is None   # no question numbers
+    # wrong_calc counts as hallucinated (the main task), unless pos says otherwise
+    labels = np.array(["wrong_calc", "copied", "fabricated"])
+    scores = np.array([0.9, 0.5, 0.1])
+    auc, _, _, n = pair_auroc(labels, scores, np.arange(3), "copied", n_boot=20)
+    assert (auc, n) == (0.5, 3)                 # 0.9 > 0.5 but 0.1 < 0.5
+    auc, _, _, n = pair_auroc(labels, scores, np.arange(3), "copied", pos={"fabricated"}, n_boot=20)
+    assert (auc, n) == (0.0, 2)
 
 
 def test_flag_share_by_hand():
@@ -41,7 +48,7 @@ def test_rq2_table_has_every_detector():
         ts[f"{det}_flagged"] = (ts[det] > 0.5).astype(int)
     rows = rq2_table(ts, n_boot=20)
     assert [r["detector"] for r in rows] == DETECTORS
-    assert rows[0]["n_fab_vs_copied"] == 20 and rows[0]["n_wrong_calc"] == 10
+    assert rows[0]["n_hal_vs_copied"] == 30 and rows[0]["n_wrong_calc"] == 10   # fabricated + wrong_calc + copied
 
 
 def _small(n=5, layers=2, heads=3, cutoffs=2):
@@ -72,11 +79,11 @@ def test_head_importance_and_rank():
 
 
 def _synthetic(n_reports=60, per_report=12, layers=3, heads=4, seed=2):
-    """Only heads (1, 0) and (1, 2) carry signal."""
+    """Only heads (1, 0) and (1, 2) carry signal (lower for hallucinated numbers)."""
     rng = np.random.default_rng(seed)
     n = n_reports * per_report
     labels = rng.choice(["fabricated", "copied", "computed", "wrong_calc"], size=n, p=[0.3, 0.5, 0.15, 0.05])
-    fab = labels == "fabricated"
+    fab = np.isin(labels, ["fabricated", "wrong_calc"])
     lb = rng.normal(size=(n, layers, heads))
     lb[:, 1, 0] -= 2 * fab
     lb[:, 1, 2] -= 2 * fab
