@@ -149,7 +149,7 @@ Claude makes the plots and tables; reading them and drawing conclusions is ours.
 | A5 | Hand-label the same 50 numbers without seeing the auto labels; run `labels/agreement.py`; go through the disagreements; if under ~90%, decide how §6.3 changes | both | 🟢 `labels/handcheck.csv` ready (Nov 6) |
 | A6 | RQ0: what decoding does to accuracy and fabrication, and why ("Our reading" in `analysis/stage1.ipynb`) | A | 🟢 provisional greedy + beam5 table, chart and executed notebook (Nov 23); final needs B-6 and the hand-check rules |
 | A6 | Stage 1 error analysis (Nov 23–29) | A | ⏳ needs A6 results |
-| A7 | Run `baseline/confidence.py` for your settings (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A4 |
+| A7 | Run `baseline/confidence.py` for your settings (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | A: 🟢 greedy and beam5 done Nov 23, **provisional** (fixed-code labels; UNLV GPU) · B: ⏳ needs B-6 |
 | B1–B2 | `features/extract.py --limit 20`: row sums ~1, lookback within 0–1 (B1 done); then the full run for your settings (B2 done) | B: the check · A, B: full runs | ⏳ needs A4 |
 | Papers | Read the related papers: how they aggregate attention into features for hallucination detection, and which features we replicate. What we learned about the area goes in the report (office hours, `LOG.md`) | both | 🟢 ready |
 | B3 | Read `detector/results.csv` (both tasks): which detectors beat the confidence baseline, given the CIs; and the 3-way confusion matrix (`three_way_confusion.png`) | B | ⏳ needs A7, B2 |
