@@ -66,6 +66,7 @@ _Person A (Eduardo) adds run notes and counts here (one line each, dated)._
 - Nov 6: A4 on those 50 (453 numbers): copied 220 (48.6%), computed 51 (11.3%), question 0, constant 75 (16.6%), wrong_calc 20 (4.4%), fabricated 87 (19.2%). Hand-check sheet written: `labels/handcheck.csv` (50 numbers). I have not opened the key.
 - Nov 6: A3 full greedy run done (Yin lab V100, 20 min): 1,000 answers, mean 225.8 new tokens, 15 cut at 512, 10.3 numbers per answer, 2 answers with no number, re-tokenization problems 0. The first 50 are unchanged. beam5 started right after.
 - Nov 7: A3 full beam5 run done (Yin lab V100, ~65 min, batch 8): 1,000 answers (same ids as greedy), mean 235.6 new tokens, 24 cut at 512, 10.4 numbers per answer, 1 answer with no number, re-tokenization problems 0. 44 of 1,000 answers are word-for-word the same as greedy's.
+- Nov 23: A5 `labels/label.py` on the full greedy and beam5 answers (laptop, CPU, ~1 min each), **provisional**: pre-hand-check rules, to be redone if the A5 hand-check changes §6.3. greedy: 1,000 answers, 998 with numbers, 10,306 numbers: copied 5,074 (49.2%), computed 1,009 (9.8%), question 57 (0.6%), constant 1,936 (18.8%), wrong_calc 536 (5.2%), fabricated 1,694 (16.4%). beam5: 1,000 answers, 999 with numbers, 10,448 numbers: copied 4,959 (47.5%), computed 1,027 (9.8%), question 62 (0.6%), constant 2,178 (20.8%), wrong_calc 509 (4.9%), fabricated 1,713 (16.4%).
 
 ## Run notes: Person B
 
