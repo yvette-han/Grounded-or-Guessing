@@ -31,11 +31,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from common.io import load_config, run_dir  # noqa: E402
 from detector.train_eval import (  # noqa: E402
     C_GRID, DETECTORS, TASKS, bootstrap_ci, features_for, load_dataset, write_csv,
 )
@@ -212,14 +212,21 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     ap.add_argument("--subset", type=Path, default=ROOT / "data" / "finqa_subset.jsonl")
-    ap.add_argument("--features-dir", type=Path, default=ROOT / "features")
-    ap.add_argument("--baseline-dir", type=Path, default=ROOT / "baseline")
-    ap.add_argument("--out-dir", type=Path, default=ROOT / "detector")
-    ap.add_argument("--fig-dir", type=Path, default=ROOT / "analysis" / "figures")
+    ap.add_argument("--features-dir", type=Path,
+                    help="default: features/, or features/<run_name>/ if the config sets run_name")
+    ap.add_argument("--baseline-dir", type=Path,
+                    help="default: baseline/, or baseline/<run_name>/ if the config sets run_name")
+    ap.add_argument("--out-dir", type=Path,
+                    help="default: detector/, or detector/<run_name>/ if the config sets run_name")
+    ap.add_argument("--fig-dir", type=Path,
+                    help="default: analysis/figures/, or analysis/figures/<run_name>/ if the config sets run_name")
     ap.add_argument("--n-boot", type=int, default=1000)
     args = ap.parse_args()
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.features_dir = args.features_dir or run_dir(cfg, ROOT, "features")
+    args.baseline_dir = args.baseline_dir or run_dir(cfg, ROOT, "baseline")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "detector")
+    args.fig_dir = args.fig_dir or run_dir(cfg, ROOT, "analysis/figures")
     try:
         data, settings, dropped = load_dataset(cfg, args.subset, args.features_dir, args.baseline_dir)
     except FileNotFoundError as err:

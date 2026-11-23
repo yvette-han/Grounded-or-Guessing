@@ -50,11 +50,13 @@ _SCALES = {
     "billion": 1e9, "b": 1e9, "bn": 1e9,
     "trillion": 1e12,
 }
-_PERCENT = re.compile(r"\s?(?:%|percent\b|per cent\b)", re.IGNORECASE)
+# "%" may be written as LaTeX "\%" ("17.14\%"), which the model often does.
+_PERCENT = re.compile(r"\s?\\?(?:%|percent\b|per cent\b)", re.IGNORECASE)
 _CLOSE = re.compile(r"\s*\)")
 # A month name just before a day: "december 31", "dec. 31", and FinQA's spaced "dec . 31".
 _MONTH_BEFORE = re.compile(
-    r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s?\.)?\s+\Z", re.IGNORECASE
+    r"\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?"
+    r"|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)(?:\s?\.)?\s+\Z", re.IGNORECASE
 )
 
 

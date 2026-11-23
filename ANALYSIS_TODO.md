@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 23 (merged main into `eduardo`; provisional greedy/beam5 labels and Stage 1 table)._
+_Last updated: Nov 23 (merged main into `eduardo`; review fixes: LaTeX `\%`, month skip, comma constants, `run_name` in three_way/hint_test; provisional greedy/beam5 labels and Stage 1 table)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -46,6 +46,7 @@ Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we deci
 - [ ] **A4:** a new label, `question`: a number found only in the question. Left out of every detector task (README §6.5)
 - [ ] **A4 (Nov 6):** a new label, `constant`, checked **before** `copied`: a bare integer that is a FinQA program constant (1–10, 100, 1,000, …, 1,000,000), like the 100 in "multiply by 100". Left out of training, counts as a good input for `wrong_calc`. Review: the constant set, whether it should come before `copied` (a bare `100` copied from a table becomes `constant`), and whether the hand-check agrees
 - [ ] **A2 (Nov 6, not changed):** a bare number vs a bare report number is matched as written, so a value the model rescaled (`$739,187,000` for a table cell `739187` in thousands) is `fabricated`. Decide in the hand-check whether that is right, or whether bare-vs-bare should also try ×1,000 and ×1,000,000
+- [ ] **A2/A4 (Nov 23, review fixes):** LaTeX `\%` counts as a percent; the date skip needs a real month name; `1,000`-style constants are `constant`. These changed 276 greedy and 304 beam5 labels (mostly wrong_calc → computed). Not changed, decide at the hand-check: LaTeX scale words (`24 \text{ million}`) and the 1% tolerance on small rounded ratios (`1.6%` vs 0.0164)
 - [ ] **A4:** `wrong_calc` = every number before it in the answer is copied, computed or question, and at least one is copied. A number after a `wrong_calc` or `fabricated` one is `fabricated`
 - [ ] **A4:** `copied` is checked against every report number, so a wrong value can be `copied` by coincidence (in a test on fake answers, 3 of 14 wrong values matched within 1%, e.g. `3.473` vs `3.5%`). Watch for this in the hand-check
 - [ ] **A4:** the hand-check sheet is 50 random numbers from one setting (not balanced by label); answers whose tokens don't line up with the prompt are skipped and counted
@@ -106,7 +107,7 @@ README §3: each of us can explain every file in our folders line by line, and h
 
 - [ ] `common/prompt.py`: check `tests/test_prompt.py` (including `encode_answer`, used by A7 and B1)
 - [ ] `common/splits.py`: check `tests/test_splits.py`
-- [ ] `common/numbers.py`: check every expected value in `tests/test_numbers.py`, and add a few strings of our own in the styles the model actually uses (README A2)
+- [ ] `common/numbers.py`: check every expected value in `tests/test_numbers.py`, and add a few strings of our own in the styles the model actually uses (README A2). Nov 23: LaTeX `\%` read as a percent; the month-day skip matches real month names only
 - [ ] `common/io.py`: the shared file helpers, plus `load_config` (`extends`), `run_dir` (`run_name` folders) and `check_model` added Nov 7; check `tests/test_io.py`
 - [ ] `labels/agreement.py`: check the hand-worked kappa and rates in `tests/test_agreement.py`
 
@@ -115,7 +116,7 @@ README §3: each of us can explain every file in our folders line by line, and h
 - [ ] `data/build_subset.py`: sanity-check the counts it prints on Colab
 - [ ] `common/program.py`: check `tests/test_program.py`
 - [ ] `gen/generate.py`: check `tests/test_generate.py`, especially the decoding arguments each setting turns into (`plain_generation_config`, moved out of `main` on Nov 17, is also used by R2)
-- [ ] `labels/label.py`: check every expected label in `tests/test_label.py` against README §6.3, including the `constant` cases added Nov 6
+- [ ] `labels/label.py`: check every expected label in `tests/test_label.py` against README §6.3, including the `constant` cases added Nov 6 and the comma constant and LaTeX-percent cases added Nov 23
 - [ ] `baseline/confidence.py`: explain why the logits at position *t* score token *t + 1*; check `tests/test_confidence.py`
 - [ ] `analysis/stage1.py` and `analysis/stage1.ipynb`: check the hand-worked example in `tests/test_stage1.py`
 
@@ -124,10 +125,10 @@ README §3: each of us can explain every file in our folders line by line, and h
 - [ ] `analysis/b0_attention_plot.py`: check `tests/test_b0.py`
 - [ ] `features/attention.py` and `features/extract.py`: check the hand-worked lookback and HF values in `tests/test_features.py`
 - [ ] `detector/train_eval.py`: check the hand-worked F1 and threshold cases and the two tasks' targets in `tests/test_detector.py`
-- [ ] `detector/three_way.py`: check the hand-worked per-class F1, macro-F1 and confusion matrix in `tests/test_three_way.py`
+- [ ] `detector/three_way.py`: check the hand-worked per-class F1, macro-F1 and confusion matrix in `tests/test_three_way.py`; Nov 23: config via `load_config`, folders via `run_dir`
 - [ ] `analysis/stage2.py` and `analysis/stage2.ipynb`: check `tests/test_stage2.py`
-- [ ] `analysis/errors.py` and `analysis/errors.ipynb`: check `tests/test_errors.py`
-- [ ] `analysis/hint_test.py` (R2): check `tests/test_hint_test.py` (gold program numbers, focus choice, counterpart matching)
+- [ ] `analysis/errors.py` and `analysis/errors.ipynb`: check `tests/test_errors.py`; Nov 23: stops if a test score's row no longer matches the labels file
+- [ ] `analysis/hint_test.py` (R2): check `tests/test_hint_test.py` (gold program numbers, focus choice, counterpart matching); Nov 23: `load_config`/`run_dir`, `model` check and field, unlabelable new answers skipped
 
 **R1 (both)**
 

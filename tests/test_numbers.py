@@ -56,6 +56,12 @@ CASES = [
     ("dec . 29 2012", []),           # FinQA's spaced abbreviation
     ("dec. 29, 2012", []),
     ("Q4 and the 3rd quarter", []),
+    ("sept. 30, 2012", []),
+    ("revenue decreased 12 compared", [(12, N)]),   # "dec..." inside a word is not a month (Nov 23 fix)
+    ("margin of 5 points", [(5, N)]),               # nor is "mar..."
+    # LaTeX percent, as the model writes it in math (Nov 23 fix)
+    (r"\approx 17.14\%", [(17.14, P)]),
+    (r"growth = 8.1 \% .", [(8.1, P)]),
 ]
 
 

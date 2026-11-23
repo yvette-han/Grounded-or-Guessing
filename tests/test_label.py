@@ -53,6 +53,16 @@ def test_constant_is_checked_before_copied():
     assert labels_for("Multiply 4,215 by 100.", context) == ["copied", "constant"]
 
 
+def test_constant_with_comma():
+    # "1,000" is a bare program constant too (README 6.3 excludes only $, sign, scale word, % and decimals).
+    assert labels_for("Multiply 4,215 by 1,000.") == ["copied", "constant"]
+
+
+def test_latex_percent_is_a_percent():
+    # 8.08\% is the gold 0.0807692 written as a LaTeX percent.
+    assert labels_for(r"(4,215 - 3,900) / 3,900 = 8.08\%.") == ["copied", "copied", "copied", "computed"]
+
+
 def test_copied_wins_over_computed():
     # 315 is a gold step, but if the report also has it, it is copied (README 6.3).
     context = CONTEXT + "\nthe change was 315 ."

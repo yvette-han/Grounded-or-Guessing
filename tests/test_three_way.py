@@ -63,3 +63,18 @@ def test_run_on_synthetic_data():
     assert set(columns["lookback"]) <= set(CLASSES) and len(columns["lookback"]) == test.sum()
     n_hal = int(np.isin(data["label"][test], ["fabricated", "wrong_calc"]).sum())
     assert by["lookback"]["n_test_hallucinated"] == n_hal
+
+
+def test_main_follows_extends_and_run_name(tmp_path, monkeypatch, capsys):
+    # An `extends` config with a run_name must read features/<run_name>/ (not Qwen's features/).
+    import sys
+    from pathlib import Path
+
+    from detector import three_way
+    root = Path(three_way.__file__).resolve().parents[1]
+    cfg = tmp_path / "other.yaml"
+    cfg.write_text(f"extends: {root / 'config.yaml'}\nmodel: some/other-model\nrun_name: zz_test_run\n")
+    monkeypatch.setattr(sys, "argv", ["three_way.py", "--config", str(cfg)])
+    with pytest.raises(SystemExit) as err:
+        three_way.main()
+    assert "features/zz_test_run" in str(err.value)

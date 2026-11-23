@@ -49,7 +49,7 @@ GOOD_INPUTS = {"copied", "computed", "question", "constant"}  # what may come be
 
 # FinQA's program constants (const_1 ... const_10, const_100, ..., const_1000000).
 # A bare integer with one of these values, written with no "$", sign, scale
-# word, "%" or decimals (e.g. the 100 in "multiply by 100"), is `constant`:
+# word, "%" or decimals (e.g. the 100 in "multiply by 100", or "1,000"), is `constant`:
 # an arithmetic constant, not something copied, computed or made up.
 # Added Nov 6 after the first greedy run: `100` was the most common
 # "fabricated" number (47 of 151) and, by the order rule, made every number
@@ -59,7 +59,7 @@ CONSTANTS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000, 10000, 100000, 1000000}
 
 def is_constant(number):
     """True for a bare integer mention whose value is a FinQA program constant."""
-    return number.text.isdigit() and number.value in CONSTANTS
+    return number.text.replace(",", "").isdigit() and number.value in CONSTANTS
 
 
 def label_numbers(numbers, report_numbers, gold_values, question_numbers, tol):

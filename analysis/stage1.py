@@ -14,7 +14,7 @@ Measures (all over the questions answered in every available setting):
   gold_anywhere          some number in the answer equals the gold answer
   fabricated_share       numbers labeled fabricated / all labeled numbers
   answers_with_fabricated  answers with at least one fabricated number
-  <label>_share          the same for copied, computed, question, wrong_calc
+  <label>_share          the same for copied, computed, question, constant, wrong_calc
   differs_from_greedy    the last number differs from greedy's last number for the same question
   mean_new_tokens, cut_at_max   answer length (A3), and answers cut at max_new_tokens
   distinct finals (printed): mean number of different last numbers per question across settings

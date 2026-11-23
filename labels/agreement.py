@@ -5,7 +5,7 @@ Workflow:
      -> labels/handcheck.csv (to fill in) and labels/handcheck_key.csv (auto labels)
   2. Each of us fills our own column (label_A or label_B) in our own copy of
      handcheck.csv, without looking at handcheck_key.csv or the other column.
-     Use the label names of README 6.3: copied, computed, question, wrong_calc, fabricated.
+     Use the label names of README 6.3: copied, computed, question, constant, wrong_calc, fabricated.
   3. python labels/agreement.py --sheet-a <A's copy> --sheet-b <B's copy>
      (both default to labels/handcheck.csv, for when both columns are in one file)
 

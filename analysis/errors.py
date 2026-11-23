@@ -119,6 +119,9 @@ def build_examples(ts, idx, kind, detector, threshold, labels_by_setting, answer
     for k, i in enumerate(idx, 1):
         setting, qid = ts["setting"][i], ts["id"][i]
         rec = labels_by_setting[setting][int(ts["row"][i])]
+        if rec["id"] != qid:
+            raise SystemExit(f"{setting} row {int(ts['row'][i])}: the labels file has id {rec['id']}, the test "
+                             f"scores have {qid}; the labels changed after the detectors ran, rerun B1-B3")
         answer = answers_by_setting[setting][qid]["answer_text"]
         q = questions[qid]
         number = extract_numbers(answer[rec["char_start"]:rec["char_end"]])

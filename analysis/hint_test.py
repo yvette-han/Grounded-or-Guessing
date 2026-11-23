@@ -54,13 +54,12 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from analysis.stage1 import is_correct  # noqa: E402
-from common.io import group_records, read_jsonl  # noqa: E402
+from common.io import check_model, group_records, load_config, read_jsonl, run_dir  # noqa: E402
 from common.numbers import extract_numbers  # noqa: E402
 from common.prompt import encode, encode_answer, tokens_in_span  # noqa: E402
 from detector.train_eval import TASKS  # noqa: E402
@@ -222,8 +221,11 @@ def run_hints(cfg, args):
     for h in hints:
         k, setting, qid = int(h["k"]), h["setting"], h["id"]
         if setting not in cache:
+            answers_path = args.answers_dir / f"answers_{setting}.jsonl"
+            setting_answers = read_jsonl(answers_path)
+            check_model(setting_answers, cfg["model"], answers_path)
             cache[setting] = (read_jsonl(args.labels_dir / f"numbers_{setting}.jsonl"),
-                              {a["id"]: a for a in read_jsonl(args.answers_dir / f"answers_{setting}.jsonl")})
+                              {a["id"]: a for a in setting_answers})
         records, answers = cache[setting]
         q, before = questions[qid], answers[qid]
         before_recs = [r for r in records if r["id"] == qid]
@@ -249,13 +251,17 @@ def run_hints(cfg, args):
         toks = out[0, len(enc["input_ids"]):].tolist()
         n_new, hit_max = count_new_tokens(toks, stop_ids)
         after_text = tokenizer.decode(toks[:n_new], skip_special_tokens=True)
-        after = {"k": k, "id": qid, "setting": setting, "hint": h["hint"], "question": hq, "prompt": enc["text"],
+        after = {"k": k, "id": qid, "setting": setting, "model": cfg["model"], "hint": h["hint"], "question": hq,
+                 "prompt": enc["text"],
                  "answer_text": after_text, "prompt_len": len(enc["input_ids"]), "ctx_start": enc["ctx_start"],
                  "ctx_end": enc["ctx_end"], "n_new_tokens": n_new, "hit_max_tokens": hit_max}
+        # 3. labels with the A4 rules (one misaligned answer is skipped, as in labels/label.py)
+        try:
+            after_recs = label_answer(after, dict(q, question=hq), tokenizer, tol)
+        except ValueError as err:
+            print(f"  hint {k}: could not label the new answer ({err}); skipped")
+            continue
         new_answers.append(after)
-
-        # 3. labels with the A4 rules
-        after_recs = label_answer(after, dict(q, question=hq), tokenizer, tol)
         new_numbers += [dict(r, k=k) for r in after_recs]
 
         # 4. attention, before and after
@@ -427,24 +433,37 @@ def main():
     r = sub.add_parser("run", help="rerun with the hints and compare attention (GPU)")
     r.add_argument("--hints", type=Path, default=ROOT / "hints" / "hints.csv")
     r.add_argument("--head", help="layer,head for the plots (default: top lookback head of B4)")
-    r.add_argument("--heads-csv", type=Path, default=ROOT / "analysis" / "figures" / "stage2_heads.csv")
+    r.add_argument("--heads-csv", type=Path,
+                   help="default: stage2_heads.csv in analysis/figures/ (or analysis/figures/<run_name>/)")
     r.add_argument("--row", choices=["number", "predicting"], default="number",
                    help="attention row mode; use the one B1 used")
-    r.add_argument("--fig-dir", type=Path, default=ROOT / "analysis" / "figures")
+    r.add_argument("--fig-dir", type=Path,
+                   help="default: analysis/figures/, or analysis/figures/<run_name>/ if the config sets run_name")
     for p in (c, r):
         p.add_argument("--config", type=Path, default=ROOT / "config.yaml")
         p.add_argument("--subset", type=Path, default=ROOT / "data" / "finqa_subset.jsonl")
-        p.add_argument("--answers-dir", type=Path, default=ROOT / "gen")
-        p.add_argument("--labels-dir", type=Path, default=ROOT / "labels")
-        p.add_argument("--out-dir", type=Path, default=ROOT / "hints")
+        p.add_argument("--answers-dir", type=Path,
+                       help="default: gen/, or gen/<run_name>/ if the config sets run_name")
+        p.add_argument("--labels-dir", type=Path,
+                       help="default: labels/, or labels/<run_name>/ if the config sets run_name")
+        p.add_argument("--out-dir", type=Path,
+                       help="default: hints/, or hints/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_config(args.config)
+    args.answers_dir = args.answers_dir or run_dir(cfg, ROOT, "gen")
+    args.labels_dir = args.labels_dir or run_dir(cfg, ROOT, "labels")
+    args.out_dir = args.out_dir or run_dir(cfg, ROOT, "hints")
+    if args.command == "run":
+        args.fig_dir = args.fig_dir or run_dir(cfg, ROOT, "analysis/figures")
+        args.heads_csv = args.heads_csv or run_dir(cfg, ROOT, "analysis/figures") / "stage2_heads.csv"
 
     if args.command == "candidates":
         questions = {q["id"]: q for q in read_jsonl(args.subset)}
         records = read_jsonl(args.labels_dir / f"numbers_{args.setting}.jsonl")
-        answers = {a["id"]: a for a in read_jsonl(args.answers_dir / f"answers_{args.setting}.jsonl")}
+        answers_path = args.answers_dir / f"answers_{args.setting}.jsonl"
+        answer_list = read_jsonl(answers_path)
+        check_model(answer_list, cfg["model"], answers_path)
+        answers = {a["id"]: a for a in answer_list}
         rows = pick_candidates(records, answers, questions, args.n, cfg["seed"], args.split,
                                () if args.keep_100 else (100.0,))
         if not rows:

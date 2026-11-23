@@ -70,3 +70,18 @@ def test_pick_candidates_is_seeded_and_marks_the_number():
     assert rows[0]["gold_input_lines"] == "a | 1 / b | 2"
     test_rows = pick_candidates(records, answers, questions, n=10, split="test")
     assert {r["id"] for r in test_rows} == {"q1", "q3"}
+
+
+def test_main_follows_extends_and_run_name(tmp_path, monkeypatch):
+    # `candidates` with an `extends` config reads labels/<run_name>/ (and doesn't fail on a missing key).
+    import sys
+    from pathlib import Path
+
+    from analysis import hint_test
+    root = Path(hint_test.__file__).resolve().parents[1]
+    cfg = tmp_path / "other.yaml"
+    cfg.write_text(f"extends: {root / 'config.yaml'}\nmodel: some/other-model\nrun_name: zz_test_run\n")
+    monkeypatch.setattr(sys, "argv", ["hint_test.py", "candidates", "--config", str(cfg)])
+    with pytest.raises(FileNotFoundError) as err:
+        hint_test.main()
+    assert "labels/zz_test_run" in str(err.value)
