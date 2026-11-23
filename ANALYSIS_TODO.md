@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 23 (merged main into `eduardo`: office-hours changes on top of the full greedy and beam5 runs, the `constant` label and `run_name` configs)._
+_Last updated: Nov 23 (merged main into `eduardo`; provisional greedy/beam5 labels and Stage 1 table)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -144,9 +144,9 @@ Claude makes the plots and tables; reading them and drawing conclusions is ours.
 | A1 | Run `data/build_subset.py`; fill the A1 stats line in `LOG.md` (a run) | A | ✅ done Nov 6 (`data/finqa_subset.jsonl`, stats in `LOG.md`) |
 | A3 | Run `gen/generate.py` for your settings; greedy `--limit 50` first (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | A: ✅ greedy and beam5 done (1,000 each, Nov 6–7; stats in `LOG.md`) · B: 🟢 ready to run |
 | B0 | Run `analysis/b0_attention_plot.py` (after A1); explain the plot to professor: what the heads attend to | B | 🟢 ready to run |
-| A4 | Run `labels/label.py` for your settings; label counts into `LOG.md` (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A3 |
+| A4 | Run `labels/label.py` for your settings; label counts into `LOG.md` (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | A: 🟢 greedy and beam5 labeled Nov 23, **provisional** (pre-hand-check rules; counts in `LOG.md`) · B: ⏳ needs B-3 |
 | A5 | Hand-label the same 50 numbers without seeing the auto labels; run `labels/agreement.py`; go through the disagreements; if under ~90%, decide how §6.3 changes | both | 🟢 `labels/handcheck.csv` ready (Nov 6) |
-| A6 | RQ0: what decoding does to accuracy and fabrication, and why ("Our reading" in `analysis/stage1.ipynb`) | A | ⏳ needs A3, A4 |
+| A6 | RQ0: what decoding does to accuracy and fabrication, and why ("Our reading" in `analysis/stage1.ipynb`) | A | 🟢 provisional greedy + beam5 table, chart and executed notebook (Nov 23); final needs B-6 and the hand-check rules |
 | A6 | Stage 1 error analysis (Nov 23–29) | A | ⏳ needs A6 results |
 | A7 | Run `baseline/confidence.py` for your settings (a run) | A: greedy, beam5 · B: temp07, temp12, topp09 | ⏳ needs A4 |
 | B1–B2 | `features/extract.py --limit 20`: row sums ~1, lookback within 0–1 (B1 done); then the full run for your settings (B2 done) | B: the check · A, B: full runs | ⏳ needs A4 |

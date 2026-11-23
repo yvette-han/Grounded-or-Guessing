@@ -67,6 +67,7 @@ _Person A (Eduardo) adds run notes and counts here (one line each, dated)._
 - Nov 6: A3 full greedy run done (Yin lab V100, 20 min): 1,000 answers, mean 225.8 new tokens, 15 cut at 512, 10.3 numbers per answer, 2 answers with no number, re-tokenization problems 0. The first 50 are unchanged. beam5 started right after.
 - Nov 7: A3 full beam5 run done (Yin lab V100, ~65 min, batch 8): 1,000 answers (same ids as greedy), mean 235.6 new tokens, 24 cut at 512, 10.4 numbers per answer, 1 answer with no number, re-tokenization problems 0. 44 of 1,000 answers are word-for-word the same as greedy's.
 - Nov 23: A5 `labels/label.py` on the full greedy and beam5 answers (laptop, CPU, ~1 min each), **provisional**: pre-hand-check rules, to be redone if the A5 hand-check changes §6.3. greedy: 1,000 answers, 998 with numbers, 10,306 numbers: copied 5,074 (49.2%), computed 1,009 (9.8%), question 57 (0.6%), constant 1,936 (18.8%), wrong_calc 536 (5.2%), fabricated 1,694 (16.4%). beam5: 1,000 answers, 999 with numbers, 10,448 numbers: copied 4,959 (47.5%), computed 1,027 (9.8%), question 62 (0.6%), constant 2,178 (20.8%), wrong_calc 509 (4.9%), fabricated 1,713 (16.4%).
+- Nov 23: A6 `analysis/stage1.py` on greedy + beam5 (provisional labels, 1,000 common questions): accuracy greedy 48.6% (45.4–51.8), beam5 50.3% (47.2–53.5); fabricated numbers 16.4% in both; beam5 answers differ from greedy on 34.2%; temp07/temp12/topp09 not yet available. `analysis/stage1.ipynb` executed with outputs (local kernel: Python 3.10).
 
 ## Run notes: Person B
 
