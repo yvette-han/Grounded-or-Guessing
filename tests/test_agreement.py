@@ -4,7 +4,7 @@ import csv
 
 import pytest
 
-from labels.agreement import cohen_kappa, compare, load_rows, normalize_label
+from labels.agreement import add_llm, cohen_kappa, compare, compare_llm, load_rows, normalize_label
 
 
 def test_normalize_label():
@@ -67,3 +67,26 @@ def test_load_rows_reports_bad_labels(tmp_path):
     _write(tmp_path / "s.csv", [{"row": "1", "id": "q1", "label_A": "copy", "label_B": ""}])
     _, errors = load_rows(tmp_path / "s.csv", tmp_path / "s.csv", tmp_path / "key.csv")
     assert len(errors) == 1 and "label_A" in errors[0]
+
+
+def test_llm_labeler_reported_separately(tmp_path):
+    rows = [
+        {"row": "1", "id": "q1", "number": "4", "a": "copied", "b": "copied", "auto": "copied"},
+        {"row": "2", "id": "q1", "number": "5", "a": "computed", "b": "computed", "auto": "fabricated"},
+        {"row": "3", "id": "q2", "number": "6", "a": "copied", "b": "wrong_calc", "auto": "copied"},
+    ]
+    sheet = tmp_path / "llm.csv"
+    with open(sheet, "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=["row", "id", "number", "label_llm", "reason_llm"])
+        w.writeheader()
+        w.writerows([{"row": "1", "id": "q1", "number": "4", "label_llm": "copied", "reason_llm": ""},
+                     {"row": "2", "id": "q1", "number": "5", "label_llm": "fabricated", "reason_llm": ""},
+                     {"row": "3", "id": "q2", "number": "6", "label_llm": "Wrong calc", "reason_llm": ""}])
+    assert add_llm(rows, sheet) == []
+    res = compare_llm(rows)
+    assert res["n_llm"] == 3
+    assert res["llm_vs_a"] == (1, 3)           # only row 1
+    assert res["llm_vs_b"] == (2, 3)           # rows 1 and 3
+    assert res["llm_vs_consensus"] == (1, 2)   # A = B on rows 1, 2; LLM agrees on row 1
+    assert res["llm_vs_auto"] == (2, 3)        # rows 1 and 2
+    assert compare(rows)["a_vs_b"] == (2, 3)   # the human comparison is unchanged

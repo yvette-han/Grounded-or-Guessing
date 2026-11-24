@@ -7,3 +7,5 @@ data/raw/
 features/**/*.npz
 tatqa/features/
 hints/*.npz
+# LLM hand-check labels: kept out of git until both human sheets are merged (MANUAL_STEPS, Hand-check)
+labels/handcheck_llm.csv

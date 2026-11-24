@@ -9,6 +9,10 @@ Workflow:
   3. python labels/agreement.py --sheet-a <A's copy> --sheet-b <B's copy>
      (both default to labels/handcheck.csv, for when both columns are in one file)
 
+Optional: --sheet-llm labels/handcheck_llm.csv adds an LLM labeler (column
+label_llm), reported separately against A, B, A = B rows and the auto label. It
+never replaces a human column, and the A5 agreement is still A vs B.
+
 Prints agreement rates and writes labels/handcheck_disagreements.csv with every
 row where any two of A, B and the auto label differ. Rows are matched by the
 `row` column, so sorting the sheet is fine.
@@ -104,6 +108,41 @@ def load_rows(sheet_a, sheet_b, key):
     return rows, errors
 
 
+def add_llm(rows, sheet_llm):
+    """Attach the LLM labeler's label_llm to each row (by `row`, ids checked). Returns errors."""
+    llm = {r["row"]: r for r in read_csv(sheet_llm)}
+    errors = []
+    for entry in rows:
+        r = llm.get(entry["row"])
+        if r is None or r["id"] != entry["id"]:
+            errors.append(f"row {entry['row']}: missing from the LLM sheet or its id differs")
+            entry["llm"] = None
+            continue
+        try:
+            entry["llm"] = normalize_label(r.get("label_llm", ""))
+        except ValueError as err:
+            errors.append(f"row {entry['row']}, label_llm: {err}")
+            entry["llm"] = None
+    return errors
+
+
+def compare_llm(rows):
+    """The LLM labeler vs A, B, the A = B rows and auto: (agreeing, total) and kappa vs each person."""
+    def vs(key):
+        pairs = [(r["llm"], r[key]) for r in rows if r.get("llm") and r[key]]
+        kappa = cohen_kappa([x for x, _ in pairs], [y for _, y in pairs]) if pairs else None
+        return rate(pairs), kappa
+    consensus = [r for r in rows if r.get("llm") and r["a"] and r["a"] == r["b"]]
+    (llm_a, kappa_a), (llm_b, kappa_b), (llm_auto, _) = vs("a"), vs("b"), vs("auto")
+    return {
+        "n_llm": sum(1 for r in rows if r.get("llm")),
+        "llm_vs_a": llm_a, "kappa_llm_a": kappa_a,
+        "llm_vs_b": llm_b, "kappa_llm_b": kappa_b,
+        "llm_vs_consensus": rate([(r["llm"], r["a"]) for r in consensus]),
+        "llm_vs_auto": llm_auto,
+    }
+
+
 def _pct(pair):
     agree, total = pair
     return f"{agree}/{total} = {agree / total:.0%}" if total else "n/a (no rows)"
@@ -115,9 +154,13 @@ def main():
     ap.add_argument("--sheet-b", type=Path, default=ROOT / "labels" / "handcheck.csv")
     ap.add_argument("--key", type=Path, default=ROOT / "labels" / "handcheck_key.csv")
     ap.add_argument("--out", type=Path, default=ROOT / "labels" / "handcheck_disagreements.csv")
+    ap.add_argument("--sheet-llm", type=Path,
+                    help="optional LLM labeler sheet with a label_llm column (e.g. labels/handcheck_llm.csv)")
     args = ap.parse_args()
 
     rows, errors = load_rows(args.sheet_a, args.sheet_b, args.key)
+    if args.sheet_llm:
+        errors += add_llm(rows, args.sheet_llm)
     if errors:
         sys.exit("fix these first:\n  " + "\n  ".join(errors))
     res = compare(rows)
@@ -129,6 +172,15 @@ def main():
     print(f"B vs auto:              {_pct(res['b_vs_auto'])}")
     print(f"A = B rows vs auto:     {_pct(res['consensus_vs_auto'])}")
 
+    if args.sheet_llm:
+        llm = compare_llm(rows)
+        fmt = lambda k: f"{k:.2f}" if k is not None else "n/a"  # noqa: E731
+        print(f"\nLLM labeler ({args.sheet_llm.name}, {llm['n_llm']} labeled), reported separately:")
+        print(f"LLM vs A:               {_pct(llm['llm_vs_a'])}   (kappa {fmt(llm['kappa_llm_a'])})")
+        print(f"LLM vs B:               {_pct(llm['llm_vs_b'])}   (kappa {fmt(llm['kappa_llm_b'])})")
+        print(f"LLM vs A = B rows:      {_pct(llm['llm_vs_consensus'])}")
+        print(f"LLM vs auto:            {_pct(llm['llm_vs_auto'])}")
+
     if res["confusion"]:
         print("\nrows where A = B: hand label (rows) vs auto label (columns)")
         print(" " * 12 + "".join(f"{c:>12}" for c in LABELS))
@@ -136,7 +188,8 @@ def main():
             print(f"{h:>12}" + "".join(f"{res['confusion'][(h, c)]:>12}" for c in LABELS))
 
     with open(args.out, "w", newline="", encoding="utf-8-sig") as f:
-        w = csv.DictWriter(f, fieldnames=["row", "id", "number", "a", "b", "auto"])
+        fields = ["row", "id", "number", "a", "b", "auto"] + (["llm"] if args.sheet_llm else [])
+        w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         w.writeheader()
         w.writerows(res["disagreements"])
     print(f"\n{len(res['disagreements'])} rows with any disagreement -> {args.out}")
