@@ -209,7 +209,7 @@ def run_hints(cfg, args):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     tokenizer = AutoTokenizer.from_pretrained(cfg["model"])
     model = AutoModelForCausalLM.from_pretrained(
-        cfg["model"], dtype=torch.float16 if device == "cuda" else torch.float32,
+        cfg["model"], dtype=getattr(torch, args.dtype),  # float16 overflows into NaN attention
         attn_implementation="eager").to(device).eval()
     pad_id, stop_ids = plain_generation_config(model, tokenizer)
     print(f"{cfg['model']} on {device}; {len(hints)} hints; plot head layer {head[0]} head {head[1]}")
@@ -435,6 +435,8 @@ def main():
     r.add_argument("--head", help="layer,head for the plots (default: top lookback head of B4)")
     r.add_argument("--heads-csv", type=Path,
                    help="default: stage2_heads.csv in analysis/figures/ (or analysis/figures/<run_name>/)")
+    r.add_argument("--dtype", choices=["float32", "bfloat16", "float16"], default="float32",
+                   help="model weights dtype (default float32; float16 gives NaN attention)")
     r.add_argument("--row", choices=["number", "predicting"], default="number",
                    help="attention row mode; use the one B1 used")
     r.add_argument("--fig-dir", type=Path,

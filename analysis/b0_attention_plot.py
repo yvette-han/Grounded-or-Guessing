@@ -178,6 +178,8 @@ def main():
                          "'predicting': the row of the token before it, which predicts that digit")
     ap.add_argument("--heads", help="heads to plot as layer:head, e.g. 10:3,20:5 "
                                     "(default: the 4 with the most attention on the report)")
+    ap.add_argument("--dtype", choices=["float32", "bfloat16", "float16"], default="float32",
+                    help="model weights dtype (default float32; float16 gives NaN attention)")
     ap.add_argument("--out-dir", type=Path,
                     help="default: analysis/figures/, or analysis/figures/<run_name>/ if the config sets run_name")
     args = ap.parse_args()
@@ -193,7 +195,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(cfg["model"])
     model = AutoModelForCausalLM.from_pretrained(
         cfg["model"],
-        dtype=torch.float16 if device == "cuda" else torch.float32,
+        dtype=getattr(torch, args.dtype),  # float16 overflows into NaN attention
         attn_implementation="eager",  # needed for output_attentions
     ).to(device).eval()
     print(f"{cfg['model']}: {model.config.num_hidden_layers} layers, "
@@ -235,7 +237,9 @@ def main():
         out = model(torch.tensor([ids], device=device), output_attentions=True)
     att = torch.stack([a[0, :, row, :] for a in out.attentions]).float().cpu().numpy()
     del out  # all layers' full attention maps; free GPU memory
-    print(f"attention rows sum to {att.sum(-1).min():.3f}-{att.sum(-1).max():.3f} (should be ~1)")
+    sums = att.sum(-1)
+    print(f"attention rows sum to {np.nanmin(sums):.3f}-{np.nanmax(sums):.3f} (should be ~1); "
+          f"NaN/inf rows: {int((~np.isfinite(sums)).sum())} (should be 0)")
 
     ctx = slice(enc["ctx_start"], enc["ctx_end"])
     lookback = lookback_ratio(att, ctx, slice(n_prompt, toks[0]))  # answer tokens before the number

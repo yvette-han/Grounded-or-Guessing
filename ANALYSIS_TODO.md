@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 23 (merged main into `eduardo`; review fixes: LaTeX `\%`, month skip, comma constants, `run_name` in three_way/hint_test; provisional greedy/beam5 labels and Stage 1 table)._
+_Last updated: Nov 23 (merged main into `eduardo`; review fixes: LaTeX `\%`, month skip, comma constants, `run_name` in three_way/hint_test; provisional greedy/beam5 labels, Stage 1 table and confidence; float32 for attention features)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -123,7 +123,7 @@ README §3: each of us can explain every file in our folders line by line, and h
 **Yvette (B)**
 
 - [ ] `analysis/b0_attention_plot.py`: check `tests/test_b0.py`
-- [ ] `features/attention.py` and `features/extract.py`: check the hand-worked lookback and HF values in `tests/test_features.py`
+- [ ] `features/attention.py` and `features/extract.py`: check the hand-worked lookback and HF values in `tests/test_features.py`. Nov 23: the model now loads in float32 by default (`--dtype`; float16 eager attention gave NaN in layers 1–27), and the row-sum check counts NaN/inf rows and stops on the first answer if it has any. Same `--dtype` in `analysis/b0_attention_plot.py` and `analysis/hint_test.py run`
 - [ ] `detector/train_eval.py`: check the hand-worked F1 and threshold cases and the two tasks' targets in `tests/test_detector.py`
 - [ ] `detector/three_way.py`: check the hand-worked per-class F1, macro-F1 and confusion matrix in `tests/test_three_way.py`; Nov 23: config via `load_config`, folders via `run_dir`
 - [ ] `analysis/stage2.py` and `analysis/stage2.ipynb`: check `tests/test_stage2.py`

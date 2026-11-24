@@ -16,6 +16,18 @@ import numpy as np
 
 ROW_MODES = ("number", "predicting")
 
+# Attention maps need float32: in float16, eager attention overflows on Qwen2.5 and returns
+# NaN rows (seen Nov 23: layers 1-27 all NaN on an RTX 6000). bfloat16 only on GPUs that
+# support it (A100, L4, H100), not T4, V100 or RTX 6000.
+ATTN_DTYPES = ("float32", "bfloat16", "float16")
+
+
+def bad_row_count(row_sums, tol=0.01):
+    """How many attention rows are not finite or don't sum to ~1."""
+    row_sums = np.asarray(row_sums)
+    return int((~np.isfinite(row_sums) | (np.abs(row_sums - 1) > tol)).sum())
+
+
 
 def attention_row(t, mode):
     """The attention row used for the number token at position t."""

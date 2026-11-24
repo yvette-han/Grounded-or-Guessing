@@ -142,3 +142,10 @@ def test_save_npz_roundtrip(tmp_path):
     assert list(data["label"]) == ["copied", "fabricated"]
     assert list(data["row"]) == [0, 1]
     assert str(data["row_mode"]) == "number" and int(data["n_layers"]) == 3
+
+
+def test_bad_row_count_flags_nan_inf_and_off_sums():
+    from features.attention import bad_row_count
+    assert bad_row_count(np.array([1.0, 0.999, 1.004])) == 0
+    assert bad_row_count(np.array([1.0, np.nan, np.inf, -np.inf])) == 3
+    assert bad_row_count(np.array([[1.0, 0.5], [1.2, 1.0]])) == 2

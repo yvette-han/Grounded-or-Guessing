@@ -61,6 +61,7 @@ Example: `Nov 14: switched tolerance to 1% because 'about 12%' was being labeled
 - Nov 23: A4 fix: `constant` also covers comma-written constants (`1,000`, `1,000,000`), as README §6.3 says.
 - Nov 23: Merge fixes: `detector/three_way.py` and `analysis/hint_test.py` read the config with `load_config` and default every folder to `run_dir` (they ignored `extends`/`run_name`); `hint_test.py` checks the answers' `model`, writes `model` on its new answers, and skips (instead of crashing on) a new answer it can't label. `analysis/errors.py` stops if a test score's row no longer matches its labels-file id.
 - Nov 23: Review notes, not changed: a LaTeX scale word (`24 \text{ million}`) is read as a plain 24 (3 greedy, 4 beam5 labels affected); `gen/generate.py` has no pad-id fallback for models without one (matters for some other models, e.g. Llama); the 1% relative tolerance rejects small rounded ratios like `1.6%` vs 0.0164 (a §6.3 rule to decide at the hand-check).
+- Nov 23: `features/extract.py`, `analysis/b0_attention_plot.py` and `analysis/hint_test.py run` load the model in float32 by default (new `--dtype`). In float16, eager attention overflows on Qwen2.5: the first full beam5 extraction (UNLV RTX 6000) had NaN attention in layers 1–27 and layer 0 heads 1 and 3, so ~97% of lookback/HF values were NaN. The old row-sum check printed only `inf to -inf` because `min()` skips NaN; it now counts NaN/inf rows and stops on the first answer if it has any. Generation and confidence (no attention maps) stay float16; confidence had 0 NaNs.
 
 ## Run notes: Person A
 
@@ -75,6 +76,7 @@ _Person A (Eduardo) adds run notes and counts here (one line each, dated)._
 - Nov 23: A6 `analysis/stage1.py` on greedy + beam5 (provisional labels, 1,000 common questions): accuracy greedy 48.6% (45.4–51.8), beam5 50.3% (47.2–53.5); fabricated numbers greedy 16.1% (14.1–17.9), beam5 16.1% (14.1–18.0); answers with a fabricated number 43.9% and 41.9%; beam5 answers differ from greedy on 34.2%; temp07/temp12/topp09 not yet available. `analysis/stage1.ipynb` executed with outputs (local kernel: Python 3.10).
 - Nov 23: `labels/handcheck_key.csv` (untracked, unopened) rebuilt with the fixed code's labels for the same 50 numbers (matched on id + char_start); the blank sheet `labels/handcheck.csv` is unchanged. 1 of the 50 auto labels differs from the Nov 6 key.
 - Nov 23: A7 `baseline/confidence.py --setting greedy beam5` on the UNLV server (Quadro RTX 6000, GPU 2; Yin GPU 5 was full), 381 s for both: greedy 10,306 of 10,306 numbers, mean_logprob -1.73 to 0.00; beam5 10,448 of 10,448, -1.48 to 0.00; NaNs 0; labels and ids in the files match the fixed `labels/numbers_*.jsonl`. **Provisional** like the labels.
+- Nov 23: A5 features: the float16 beam5 run (2,694 s, UNLV GPU 2) is invalid (NaN, see the decision line above); kept only on the server, not used. Rerun in float32 (same code through a wrapper; 15-answer check: row sums 1.000, lookback 0–1, HF NaN 0), greedy then beam5, ~3 s per answer, ~18.4 GB, started 00:01 UTC Nov 24 (tmux `gog_fp32` on UNLV). Counts to be filled in when it finishes.
 
 ## Run notes: Person B
 
