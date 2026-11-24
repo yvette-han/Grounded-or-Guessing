@@ -1,13 +1,11 @@
-# Running the features (Eduardo)
+# Running the features
 
 _Last updated: Nov 24._
 
-Yvette runs the features for `temp07`, `temp12` and `topp09` on her RTX 4060. This file is what Eduardo runs:
-
 - **Part 1, now:** finish `greedy` and `beam5` and share the files.
-- **Part 2, only if Yvette asks:** her 20-answer test ran out of memory or was too slow, so her three settings run on your server instead.
+- **Part 2, only if asked:** run `temp07`, `temp12` and `topp09` on your server.
 
-Every run uses the code on `main` from commit `b6b197e` on (float32, one layer at a time), the default `--dtype float32`, and the **same `--row` for all five settings**: `number`, unless we chose `predicting`.
+Use the code on `main` from commit `b6b197e` on, the default `--dtype float32`, and the **same `--row` for all five settings**: `number`, unless we chose `predicting`.
 
 ---
 
@@ -20,13 +18,12 @@ Every run uses the code on `main` from commit `b6b197e` on (float32, one layer a
    - the number count equals the line count of `labels/numbers_{setting}.jsonl`
 2. Copy `greedy.npz` and `beam5.npz` into the shared Drive folder `GoG-shared/features`, not git (about 50 MB each). From the server, e.g. `scp` them to your laptop, then upload them in the browser.
 3. In `LOG.md`, under your run notes: time, GPU, dtype, row and the check lines. Push.
-4. Tell Yvette.
 
 ---
 
-## Part 2 · temp07, temp12, topp09 (only if Yvette asks)
+## Part 2 · temp07, temp12, topp09 (only if asked)
 
-Yvette first pushes `gen/answers_{temp07,temp12,topp09}.jsonl` and `labels/numbers_{temp07,temp12,topp09}.jsonl` to `main`.
+The answers and labels for these settings (`gen/answers_*.jsonl`, `labels/numbers_*.jsonl`) will be on `main` first.
 
 1. Pull on the server:
 
@@ -46,12 +43,12 @@ python features/extract.py --setting temp07 --limit 20 --out-dir features/check
 python features/extract.py --setting temp07 temp12 topp09 --out-dir <server features folder>
 ```
 
-   - Time: about 3 s per answer on the UNLV GPU (from the greedy and beam5 run), so about 50 min per setting and 2.5 h for all three.
+   - Time: about 3 s per answer (from the greedy and beam5 run), so about 50 min per setting and 2.5 h for all three.
    - Checks: the same as Part 1. The script stops by itself if an answers file was made with a different model.
 
-4. Copy `temp07.npz`, `temp12.npz` and `topp09.npz` into `GoG-shared/features`, add the run note to `LOG.md`, push, and tell Yvette.
+4. Copy `temp07.npz`, `temp12.npz` and `topp09.npz` into `GoG-shared/features`, add the run note to `LOG.md`, and push.
 
-**Confidence:** Yvette runs it for her settings on her own GPU (it fits in 8 GB). If she asks you to run it instead:
+**Confidence, only if asked too:**
 
 ```bash
 python baseline/confidence.py --setting temp07 temp12 topp09
@@ -63,9 +60,9 @@ It takes a few minutes. Push the three `baseline/confidence_*.npz` files; they g
 
 ## If a label rule changes after the hand-check
 
-The feature files store each number's label, and the detectors check that it matches the confidence file. So after relabeling, confidence and features are redone for every setting that was relabeled, unless we add a script that rewrites only the labels (ask Claude).
+The feature files store each number's label, and the detectors check that it matches the confidence file. So after relabeling, confidence and features are redone for every setting that was relabeled, unless a script that rewrites only the labels is added.
 
-## What goes back to Yvette
+## Where the files go
 
 | What | Where |
 |---|---|
