@@ -2,7 +2,7 @@
 
 Claude writes the code. We run it on Colab, check the output, and write the analysis. Tick items off in `ANALYSIS_TODO.md` as you finish them.
 
-_Last updated: Nov 23 (features in float32: B-6 note and table), merged on `eduardo`: Nov 17 office-hours changes (hallucinated task and 3-way classifier in B-7, scope decision, R2 hint test, poster removed) plus Person A's Nov 6–7 runs and the other-models section._
+_Last updated: Nov 23 (features in float32, one layer at a time, fits 8 GB: B-6 note and table), merged on `eduardo`: Nov 17 office-hours changes (hallucinated task and 3-way classifier in B-7, scope decision, R2 hint test, poster removed) plus Person A's Nov 6–7 runs and the other-models section._
 
 **Contents:** [Who does what](#who-does-what) · [Timeline](#timeline) · [Setup and sharing](#setup-and-sharing) · [Eduardo (Person A)](#eduardo-person-a) · [Yvette (Person B)](#yvette-person-b) · [Hand-check](#hand-check) · [Script options and checks](#script-options-and-checks) · [R1 (optional)](#r1-optional) · [R2 (optional)](#r2-optional) · [Other models (optional)](#other-models-optional)
 
@@ -225,7 +225,7 @@ Your settings: `temp07`, `temp12`, `topp09`. **This week (Nov 5–8): B-0, B-1, 
 
 **B-6 · Label, confidence, features** · after the rules are settled. Add `--row predicting` to the last line only if you chose it.
 
-> Nov 23: `features/extract.py` now runs in float32 (float16 gave ~97% NaN features; see `LOG.md`). It peaked at ~18 GB on Eduardo's answers, so a free T4 (15 GB) will probably run out of memory on long answers. Use a ≥24 GB GPU (Colab L4/A100, or ask Eduardo to run it on the UNLV server). If you already made feature files in float16, check them for NaN and redo them.
+> Nov 23: `features/extract.py` now runs in float32 (float16 gave ~97% NaN features; see `LOG.md`) and copies the attention one layer at a time (`features/capture.py`), so it fits an 8 GB GPU: peak 6.2 GiB on the longest greedy answer (1,995 tokens), vs 12.2 GiB before. That works on an RTX 4060 (8 GB) or a T4. Close other GPU programs first; if it still runs out of memory, ask Eduardo to run it on the UNLV server. Keep the default float32 (no `--dtype`): bfloat16 changes the attention values, so its features can't be mixed with ours. If you already made feature files in float16, redo them.
 
 ```python
 !python labels/label.py --setting temp07
@@ -299,7 +299,7 @@ Optional (Nov 23): an LLM labeler labeled the same 50 numbers blind into `labels
 | `labels/label.py` | `--setting`, `--handcheck N` (never overwrites an existing sheet) | label counts (into `LOG.md`); no skipped answers |
 | `labels/agreement.py` | `--sheet-a`, `--sheet-b`, `--key`, `--out` | agreement rates (into `LOG.md`) |
 | `baseline/confidence.py` | `--setting ...` (default: every labeled setting) | number count matches the labels file; `NaNs: 0`; no skipped answers |
-| `features/extract.py` | `--setting ...`, `--limit N`, `--row predicting`, `--out-dir` | row sums about 1; lookback, `hf_ctx`, `hf_gen` within 0–1; NaN only for numbers at the start of an answer; `rows NaN/inf or off by >1%: 0`. Loads the model in float32 (`--dtype`; float16 gives NaN attention). Peak ~18 GB on the longest answers (Nov 23, RTX 6000), more than a T4's 15 GB |
+| `features/extract.py` | `--setting ...`, `--limit N`, `--row predicting`, `--out-dir` | row sums about 1; lookback, `hf_ctx`, `hf_gen` within 0–1; NaN only for numbers at the start of an answer; `rows NaN/inf or off by >1%: 0`. Loads the model in float32 (keep the default `--dtype`; float16 gives NaN, bfloat16 different values). Copies attention one layer at a time: peak 6.2 GiB on the longest greedy answer, fits an 8 GB GPU |
 | `detector/train_eval.py` | `--features-dir`, `--out-dir` | settings used; dropped counts by label; each task's test split has positives |
 | `detector/three_way.py` | `--features-dir`, `--out-dir`, `--fig-dir` | the test split has copied, computed and hallucinated numbers |
 | `analysis/stage1.py` | | every setting is in the table; missing ones are named |

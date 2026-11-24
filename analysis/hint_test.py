@@ -178,16 +178,14 @@ def attention_for(model, tokenizer, prompt_text, answer_text, records, row_mode,
     """Teacher-forced pass over prompt + answer. Returns (rows_att [layers, heads, rows, seq],
     each number's indices into rows, each number's token positions, answer_start), as in B1."""
     import torch
+    from features.capture import attention_rows
     from features.extract import number_positions, rows_needed
 
     full = encode_answer(tokenizer, prompt_text, answer_text)
     s0 = full["answer_start"]
     positions = [number_positions(s0, r["tok_start"], r["tok_end"]) for r in records]
     rows, index = rows_needed(positions, row_mode)
-    with torch.inference_mode():
-        out = model(input_ids=torch.tensor([full["input_ids"]], device=device), output_attentions=True)
-        rows_att = torch.stack([layer[0][:, rows, :] for layer in out.attentions]).float().cpu().numpy()
-        del out
+    rows_att = attention_rows(model, torch.tensor([full["input_ids"]], device=device), rows)
     return rows_att, index, positions, s0
 
 

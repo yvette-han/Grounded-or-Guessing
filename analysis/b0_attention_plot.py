@@ -233,10 +233,8 @@ def main():
     row_text = tokenizer.decode([ids[row]])
     print(f"\nplotting the row of token {row} {row_text!r} for {num.text!r}")
 
-    with torch.no_grad():
-        out = model(torch.tensor([ids], device=device), output_attentions=True)
-    att = torch.stack([a[0, :, row, :] for a in out.attentions]).float().cpu().numpy()
-    del out  # all layers' full attention maps; free GPU memory
+    from features.capture import attention_rows
+    att = attention_rows(model, torch.tensor([ids], device=device), [row])[:, :, 0, :]  # [layers, heads, seq]
     sums = att.sum(-1)
     print(f"attention rows sum to {np.nanmin(sums):.3f}-{np.nanmax(sums):.3f} (should be ~1); "
           f"NaN/inf rows: {int((~np.isfinite(sums)).sum())} (should be 0)")

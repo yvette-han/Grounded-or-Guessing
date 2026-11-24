@@ -6,8 +6,10 @@ Run on a GPU (Colab) from the repo root, after A4:
     python features/extract.py --setting greedy --row predicting
 
 For each answer: one teacher-forced forward pass over prompt + answer with
-output_attentions=True (eager attention, float32 by default, batch size 1; float16
-overflows into NaN attention, see features/attention.py). Right away only
+eager attention (float32 by default, batch size 1; float16 overflows into NaN
+attention, and bfloat16 changes the values, see features/attention.py).
+The rows are copied one layer at a time and the LM head is skipped
+(features/capture.py), so it fits an 8 GB GPU. Right away only
 the attention rows of the number tokens are kept (all layers and heads), and
 the rest is dropped. Per number, averaged over its digit tokens
 (tok_start..tok_end from A4), per layer and head:
@@ -35,6 +37,7 @@ sys.path.insert(0, str(ROOT))  # so `common` and `features` import when run as a
 
 from common.io import check_model, group_records, load_config, read_jsonl, run_dir  # noqa: E402
 from common.prompt import encode_answer  # noqa: E402
+from features.capture import attention_rows  # noqa: E402
 from features.attention import (  # noqa: E402
     ATTN_DTYPES, ROW_MODES, attention_row, bad_row_count, number_hf, number_lookback,
 )
@@ -113,11 +116,8 @@ def run_setting(setting, model, tokenizer, args, device, cutoffs):
         rows, index = rows_needed(positions, args.row)
 
         ids = torch.tensor([full["input_ids"]], device=device)
-        with torch.inference_mode():
-            out = model(input_ids=ids, output_attentions=True)
-            # [layers, heads, n_rows, seq]: keep only the rows we need, drop the rest
-            rows_att = torch.stack([layer[0][:, rows, :] for layer in out.attentions]).float().cpu().numpy()
-            del out
+        # [layers, heads, n_rows, seq], copied one layer at a time (features/capture.py)
+        rows_att = attention_rows(model, ids, rows)
         sums = rows_att.sum(-1)
         n_bad = bad_row_count(sums)
         if n_bad and not out_rows:
@@ -164,7 +164,8 @@ def main():
                          "'predicting': the row before it, which predicts that token")
     ap.add_argument("--limit", type=int, help="only the first N answers of each setting (B1 check)")
     ap.add_argument("--dtype", choices=ATTN_DTYPES, default="float32",
-                    help="model weights dtype (default float32; float16 gives NaN attention)")
+                    help="model weights dtype (default float32; keep it: float16 gives NaN attention "
+                         "and bfloat16 gives different values, so settings would not be comparable)")
     ap.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     ap.add_argument("--answers-dir", type=Path,
                     help="default: gen/, or gen/<run_name>/ if the config sets run_name")

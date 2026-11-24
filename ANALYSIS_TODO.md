@@ -159,7 +159,7 @@ README §3: each of us can explain every file in our folders line by line, and h
 **Yvette (B)**
 
 - [ ] `analysis/b0_attention_plot.py`: check `tests/test_b0.py`
-- [ ] `features/attention.py` and `features/extract.py`: check the hand-worked lookback and HF values in `tests/test_features.py`. Nov 23: the model now loads in float32 by default (`--dtype`; float16 eager attention gave NaN in layers 1–27), and the row-sum check counts NaN/inf rows and stops on the first answer if it has any. Same `--dtype` in `analysis/b0_attention_plot.py` and `analysis/hint_test.py run`
+- [ ] `features/attention.py` and `features/extract.py`: check the hand-worked lookback and HF values in `tests/test_features.py`. Nov 23: the model now loads in float32 by default (`--dtype`; float16 eager attention gave NaN in layers 1–27), and the row-sum check counts NaN/inf rows and stops on the first answer if it has any. Same `--dtype` in `analysis/b0_attention_plot.py` and `analysis/hint_test.py run`. Nov 23 (later): all three copy attention one layer at a time through `features/capture.py` and skip the LM head (fits 8 GB); check `tests/test_capture.py` (equal to `output_attentions` on a tiny model)
 - [ ] `detector/train_eval.py`: check the hand-worked F1 and threshold cases and the two tasks' targets in `tests/test_detector.py`
 - [ ] `detector/three_way.py`: check the hand-worked per-class F1, macro-F1 and confusion matrix in `tests/test_three_way.py`; Nov 23: config via `load_config`, folders via `run_dir`
 - [ ] `analysis/stage2.py` and `analysis/stage2.ipynb`: check `tests/test_stage2.py`

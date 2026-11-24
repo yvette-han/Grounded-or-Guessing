@@ -17,8 +17,9 @@ import numpy as np
 ROW_MODES = ("number", "predicting")
 
 # Attention maps need float32: in float16, eager attention overflows on Qwen2.5 and returns
-# NaN rows (seen Nov 23: layers 1-27 all NaN on an RTX 6000). bfloat16 only on GPUs that
-# support it (A100, L4, H100), not T4, V100 or RTX 6000.
+# NaN rows (seen Nov 23: layers 1-27 all NaN on an RTX 6000). bfloat16 has no NaN, but it
+# changes single attention values by up to ~1.0 vs float32 (Nov 23 check on real answers),
+# so features from different dtypes are not comparable: every setting must use float32.
 ATTN_DTYPES = ("float32", "bfloat16", "float16")
 
 
