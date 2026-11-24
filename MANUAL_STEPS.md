@@ -278,7 +278,7 @@ Both of us, Nov 12–14 (README A5).
 !python labels/agreement.py --sheet-a labels/handcheck_A.csv --sheet-b labels/handcheck_B.csv
 ```
 
-Optional (Nov 23): an LLM (Fable) labeled the same 50 numbers blind into `labels/handcheck_llm.csv` (label + one-line reason each). It is git-ignored so neither of us sees it before labeling. After both sheets are merged, compare it as a third, separately reported labeler, then decide together whether to commit it (remove its `.gitignore` line) and mention it in the report:
+Optional (Nov 23): an LLM labeler labeled the same 50 numbers blind into `labels/handcheck_llm.csv` (label + one-line reason each). It is git-ignored so neither of us sees it before labeling. After both sheets are merged, compare it as a third, separately reported labeler, then decide together whether to commit it (remove its `.gitignore` line) and mention it in the report:
 
 ```python
 !python labels/agreement.py --sheet-a labels/handcheck_A.csv --sheet-b labels/handcheck_B.csv --sheet-llm labels/handcheck_llm.csv
