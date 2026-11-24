@@ -2,7 +2,7 @@
 
 Claude writes the code. We run it on Colab, check the output, and write the analysis. Tick items off in `ANALYSIS_TODO.md` as you finish them.
 
-_Last updated: Nov 23 (features in float32, one layer at a time, fits 8 GB: B-6 note and table), merged on `eduardo`: Nov 17 office-hours changes (hallucinated task and 3-way classifier in B-7, scope decision, R2 hint test, poster removed) plus Person A's Nov 6–7 runs and the other-models section._
+_Last updated: Nov 24: `RUN_FEATURES.md` (Eduardo's feature runs; Yvette runs her three settings on her RTX 4060). Before that, Nov 23: features in float32, one layer at a time, fits 8 GB._
 
 **Contents:** [Who does what](#who-does-what) · [Timeline](#timeline) · [Setup and sharing](#setup-and-sharing) · [Eduardo (Person A)](#eduardo-person-a) · [Yvette (Person B)](#yvette-person-b) · [Hand-check](#hand-check) · [Script options and checks](#script-options-and-checks) · [R1 (optional)](#r1-optional) · [R2 (optional)](#r2-optional) · [Other models (optional)](#other-models-optional)
 
@@ -146,6 +146,8 @@ Then start the full runs. They take hours and resume after a disconnect:
 **A-4 · Hand-check** · Nov 12–14. Fill `label_A` (see [Hand-check](#hand-check)) and push `labels/handcheck_A.csv`. 🔁 When Yvette's sheet is merged, run the agreement (step 5 there) and decide the rules with Yvette.
 
 **A-5 · Label, confidence, features** · after the rules are settled. Use the row choice from B-4: add `--row predicting` to the last line only if Yvette chose it.
+
+> Nov 24: features for greedy and beam5, and for Yvette's settings only if she asks: [`RUN_FEATURES.md`](RUN_FEATURES.md).
 
 ```python
 !python labels/label.py --setting greedy

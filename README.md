@@ -128,6 +128,7 @@ requirements.txt        pip install -r requirements.txt
 LOG.md                  decisions and dead ends, dated; run notes per person at the bottom
 ANALYSIS_TODO.md        analysis, reviews and explanations that are ours to do (§3)
 MANUAL_STEPS.md         who runs what, in which order: Colab checklists for A and B
+RUN_FEATURES.md         Eduardo's feature runs: greedy and beam5 now; Yvette's settings only if she asks
 CLAUDE.md               notes for Claude (AI-use rule, keeping the trackers current)
 common/                 both: prompt.py     prompt + token spans (§6.1, §6.4)
                               numbers.py    find and compare numbers (§6.3)
