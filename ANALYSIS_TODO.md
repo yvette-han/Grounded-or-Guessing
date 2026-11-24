@@ -2,7 +2,7 @@
 
 README §3: AI may write the code, but *"the analysis and the knowledge that you produce must be your own."* This file lists that work, plus the AI-written code we must understand. Claude adds items as it writes code; we tick them off. How to run each step: `MANUAL_STEPS.md`.
 
-_Last updated: Nov 23 (merged main into `eduardo`; review fixes: LaTeX `\%`, month skip, comma constants, `run_name` in three_way/hint_test; provisional greedy/beam5 labels, Stage 1 table and confidence; float32 for attention features)._
+_Last updated: Nov 23 (A-2 code check by Claude: section 2 (A)/(both) files checked, `Claude check` lines under A1–A7, edge cases in `tests/test_numbers.py`; earlier: merged main into `eduardo`; review fixes: LaTeX `\%`, month skip, comma constants, `run_name` in three_way/hint_test; provisional greedy/beam5 labels, Stage 1 table and confidence; float32 for attention features)._
 
 ## This week: Yvette (Thu Nov 5 – Sun Nov 8)
 
@@ -24,40 +24,75 @@ Each choice is also in `LOG.md`. Keep it, change it, or replace it; once we deci
 **Stage 1 (Eduardo)**
 
 - [ ] **A1:** pool FinQA train+dev+test and re-split by report (243 of FinQA's 278 test reports are also in its train file)
+  Claude check (Nov 23): yes: `load_finqa` concatenates train, dev and test; `assign_splits` re-splits by `report_key`. Rerun: 278 FinQA test reports, 243 also in train. No unit test of the pooling (script only); the by-report split is tested in `tests/test_splits.py`.
 - [ ] **A1:** drop the 154 yes/no questions
+  Claude check (Nov 23): yes: `is_numeric(exe_ans)` keeps int/float answers only; rerun gives 154 dropped, 8,127 left. No unit test.
 - [ ] **A1:** drop FinQA's `"."`-only lines; one sentence per line in the report text
+  Claude check (Nov 23): yes: `_is_junk` drops lines with no letter or digit (13,057 lines are exactly "."), and `build_context` joins one sentence per line. Tested: `test_build_context_order_and_junk_lines`, `test_build_context_keeps_lines_with_digits`.
 - [ ] **A1:** send the prompt through the chat template; `max_context_tokens` counts the full templated prompt
+  Claude check (Nov 23): yes: `to_model_text` applies the chat template; `build_subset.py` filters on `len(encode(...)["input_ids"])`, the full templated prompt. Tested: `test_encode_chat_template`, `test_encode_with_real_model_tokenizer`.
 - [ ] **A1:** split rule: shuffle reports, then fill train → val → test by question count; a split can go over by one report
+  Claude check (Nov 23): yes: reports sorted, shuffled with the seed, each goes to the first split under its question limit. Tested: `test_split_sizes_close_to_ratios` (overflow at most one report) and the order/seed tests. The rerun reproduces the subset's 1,000 ids and splits.
 - [ ] **A1:** the subset stores `gold_steps`, each gold program step's value (`common/program.py` matches FinQA's own answer on all 8,127 questions)
+  Claude check (Nov 23): yes: `gold_steps = run_program(...)`; rerun: last step equals `exe_ans` on all 8,127 numeric questions. Tested: `tests/test_program.py` (10 programs).
 - [ ] **A1 → A3, B1:** the report's token span is half-open (`ids[ctx_start:ctx_end]`); a token that straddles the report's edge counts as context
+  Claude check (Nov 23): yes: `tokens_in_span` keeps any token overlapping the report's characters and `ctx_end` = last + 1. Tested: `test_tokens_in_span` (partial overlap counts), `test_encode_context_span`.
 - [ ] **A2:** a number with a scale word vs a bare number: the bare one is tried in ones, thousands, millions and billions (`$4.2 billion` = table `4215`). Lenient: a few made-up numbers may count as copied
+  Claude check (Nov 23): yes: `_readings` divides a scaled number by 1, 1e3, 1e6, 1e9 only when the other side has no scale word. Tested: `$4.2 billion` vs `4215` in `test_same_value` and `test_find_match`.
 - [ ] **A2:** sign is ignored when matching (`a decrease of 12` = `(12)`); `ignore_sign=False` turns this off
+  Claude check (Nov 23): yes: `same_value(..., ignore_sign=True)` compares absolute values; `label_numbers` uses the default. Tested: `test_same_value` (`(12)` vs 12) and `test_same_value_with_sign`.
 - [ ] **A2:** a percent matches both readings: `12%` = `0.12` and `12%` = `12`
+  Claude check (Nov 23): yes: `_readings` adds value/100 for a percent vs a non-percent; two percents are compared as written. Tested: `12%` vs 0.12, vs 12, vs `0.12%` in `test_same_value`.
 - [ ] **A2:** extra skip rules beyond README §6.3: the day after a month name (`december 31`), ordinals (`3rd`), digits inside words (`Q4`, `page_49`); list markers also include `1)` and `(1)`
+  Claude check (Nov 23): yes for all four: `_MONTH_BEFORE` (month name before a day 1–31), a letter right after the digits (`3rd`), the `(?<![\w.])` lookbehind (`Q4`, `page_49`), `_is_list_marker` (`1.`, `1)`, `(1)` + space at a line start). Tested in `CASES`. Not skipped (strict xfails added): `10-K`, `COVID-19`, `30 june`, `**1.**`.
 - [ ] **A2:** `(12)` = −12 also turns FinQA footnote markers like `( 1 )` into −1
+  Claude check (Nov 23): yes: `( 1 )` mid-line or at a line start reads as -1 (a line-start `(1) ` with no inner spaces is a list marker instead). Now pinned in `EDGE_CASES` (`net income ( 1 ) was 4,215`).
 - [ ] **A2 → A4:** `tok_start`/`tok_end` cover only the digits (`4.2`); the whole mention (`$4.2 billion`) is in `char_start`/`char_end`
+  Claude check (Nov 23): yes: `label_answer` takes tokens from `num_start`/`num_end` and chars from `start`/`end`. Tested: `test_label_answer_spans`, `test_spans`, `test_latex_percent_span`.
 - [ ] **A3:** decoding parameters a setting doesn't name are off (top-k 0, top-p 1, temperature 1, repetition penalty 1), not Qwen's defaults (temperature 0.7, top-p 0.8, top-k 20, repetition penalty 1.05)
+  Claude check (Nov 23): yes: `generation_kwargs` sets num_beams 1, repetition_penalty 1, and top_k 0 / top_p 1 / temperature 1 when sampling; `plain_generation_config` replaces the shipped config with special tokens only. Tested: `test_generation_kwargs`, `test_every_config_setting_is_valid`; `plain_generation_config` has no unit test (needs the model).
 - [ ] **A3:** batches of 8 with left padding and one seed per batch, so sampled answers depend on the batch size, and fp16 batching can change a greedy answer slightly
+  Claude check (Nov 23): yes: `--batch-size` default 8, `left_pad`, `set_seed(batch_seed(seed, setting, first id))`, so the seed depends on which id starts the batch. Tested: `test_left_pad`, `test_batch_seed`; the batch-size dependence itself is not tested.
 - [ ] **A3:** questions run in a fixed shuffled order; the 50 for B are the first 50 of that order
+  Claude check (Nov 23): yes: `question_order` sorts then shuffles with the seed; `--limit` takes `order[:limit]`. Tested: `test_question_order_is_fixed`.
 - [ ] **A3:** two extra fields in `gen/answers_*.jsonl`: `n_new_tokens` and `hit_max_tokens`; `answer_text` is the decoded tokens up to the stop token, not stripped
+  Claude check (Nov 23): yes: `n_new_tokens`/`hit_max_tokens` from `count_new_tokens`; `answer_text` = `decode(toks[:n_new], skip_special_tokens=True)` with no strip. Tested: `test_count_new_tokens`.
 - [ ] **A3 (Nov 6):** `max_new_tokens` = 512, up from 128, because 128 cut 44 of the first 50 greedy answers before the final answer. Trade-off: longer answers mean more numbers per answer (9 vs 4) and slower feature extraction; 384 would cut 1 of 50 too
+  Claude check (Nov 23): yes: `config.yaml` has 512. No test pins the value.
 - [ ] **A3 (Nov 7):** runs with other models: a config with `extends: config.yaml` + `model` + `run_name` writes to `<folder>/<run_name>/`; the FinQA subset (questions, splits, the A1 length filter counted with Qwen's tokenizer) stays shared. Review: whether a second model should reuse the same 1,000 questions, and which model(s) to try
+  Claude check (Nov 23): yes: `load_config` (`extends`, top-level override) and `run_dir`; `--subset` defaults to `data/finqa_subset.jsonl` for every model. Tested: `tests/test_io.py`. The reuse/which-model question is a decision.
 - [ ] **A3 (Nov 7):** `gen/answers_*.jsonl` carries `model`; label, confidence, features and a resumed generate stop on a mismatch. Added to the existing greedy and beam5 files after the fact
+  Claude check (Nov 23): yes: `check_model` is called in `label.py` (unless `--tokenizer`), `confidence.py`, `features/extract.py` and `read_done`; both answer files have `model` = Qwen/Qwen2.5-1.5B-Instruct on all 1,000 rows. Tested: `test_check_model`, `test_generate_resume_refuses_other_model`.
 - [ ] **A4:** a new label, `question`: a number found only in the question. Left out of every detector task (README §6.5)
+  Claude check (Nov 23): yes: checked after computed in `label_numbers`; `detector/train_eval.py` TASKS has `question` in neither class. Tested: the `Costs rose 7%` case in `test_label_numbers`; `tests/test_detector.py` checks question numbers are scored but left out.
 - [ ] **A4 (Nov 6):** a new label, `constant`, checked **before** `copied`: a bare integer that is a FinQA program constant (1–10, 100, 1,000, …, 1,000,000), like the 100 in "multiply by 100". Left out of training, counts as a good input for `wrong_calc`. Review: the constant set, whether it should come before `copied` (a bare `100` copied from a table becomes `constant`), and whether the hand-check agrees
+  Claude check (Nov 23): yes: `is_constant` runs first; the set is 1–10 and 10^2–10^6, mention must be digits only (commas allowed). Tested: `test_constant_is_checked_before_copied`, `test_constant_with_comma`, and the decorated `$100`/`100%`/`100 million` case.
 - [ ] **A2 (Nov 6, not changed):** a bare number vs a bare report number is matched as written, so a value the model rescaled (`$739,187,000` for a table cell `739187` in thousands) is `fabricated`. Decide in the hand-check whether that is right, or whether bare-vs-bare should also try ×1,000 and ×1,000,000
+  Claude check (Nov 23): yes: `same_value("$739,187,000", "739187")` is False (no scale word on either side, so no unit readings). No test pins this.
 - [ ] **A2/A4 (Nov 23, review fixes):** LaTeX `\%` counts as a percent; the date skip needs a real month name; `1,000`-style constants are `constant`. These changed 276 greedy and 304 beam5 labels (mostly wrong_calc → computed). Not changed, decide at the hand-check: LaTeX scale words (`24 \text{ million}`) and the 1% tolerance on small rounded ratios (`1.6%` vs 0.0164)
+  Claude check (Nov 23): the three fixes are in the code and tested (`\approx 17.14\%`, `growth = 8.1 \%`, `revenue decreased 12`, `margin of 5`, `test_constant_with_comma`, `test_latex_percent_is_a_percent`). Open: `24 \text{ million}` is now a strict xfail; `same_value("1.6%", 0.0164)` is False (2.4% apart, tolerance 1%), no test.
 - [ ] **A4:** `wrong_calc` = every number before it in the answer is copied, computed or question, and at least one is copied. A number after a `wrong_calc` or `fabricated` one is `fabricated`
+  Claude check (Nov 23): yes: `"copied" in labels and all(x in GOOD_INPUTS ...)`, with constant also a good input. Tested: the wrong_calc cases in `test_label_numbers`, including `4,215 then 999 then 20%` (fabricated after wrong_calc).
 - [ ] **A4:** `copied` is checked against every report number, so a wrong value can be `copied` by coincidence (in a test on fake answers, 3 of 14 wrong values matched within 1%, e.g. `3.473` vs `3.5%`). Watch for this in the hand-check
+  Claude check (Nov 23): yes: `find_match(n, report_numbers, tol)` over all report numbers. No test of the coincidence rate (the 3 of 14 is from a LOG Nov 5 trial).
 - [ ] **A4:** the hand-check sheet is 50 random numbers from one setting (not balanced by label); answers whose tokens don't line up with the prompt are skipped and counted
+  Claude check (Nov 23): yes: `random.Random(seed).sample(records, n)` over one setting's records, no balancing; skipped answers are counted and printed in `main`. Tested: `test_handcheck_hides_auto_labels`.
 - [ ] **A5 (not decided yet):** which agreement does README A5's "~90%" mean? `labels/agreement.py` prints four: A vs B (with Cohen's kappa), A vs auto, B vs auto, and auto vs the rows where A = B
+  Claude check (Nov 23): yes: `compare` returns `a_vs_b` + `kappa_a_b`, `a_vs_auto`, `b_vs_auto`, `consensus_vs_auto`; all printed. Tested: `test_compare`, `test_cohen_kappa_by_hand`.
 - [ ] **A6:** accuracy = the answer's **last** number equals the gold answer within `label_tolerance` (sign ignored; `12%` = `0.12`). The table also has `gold_anywhere`: gold equals any number in the answer
+  Claude check (Nov 23): yes: `is_correct` = `same_value(final_number, gold, tol)` (sign ignored, percent both readings); `gold_anywhere` uses `find_match`. Tested: `test_final_number_and_correctness`, `test_setting_metrics_by_hand`.
 - [ ] **A6:** fabrication rate two ways: share of numbers labeled `fabricated` (in the chart), and share of answers with at least one
+  Claude check (Nov 23): yes: `fabricated_share` (plotted in `plot_bars`) and `answers_with_fabricated`. Tested: `test_setting_metrics_by_hand` (1/5 and 1/3).
 - [ ] **A6:** "distinct answers across settings" = per setting, % of questions whose last number differs from greedy's; overall, the mean number of different last numbers per question
+  Claude check (Nov 23): yes: `differs_from_greedy` and `mean_distinct_finals` ("no number" counts as one answer). Tested: `test_differs_from_greedy`, `test_same_final_and_distinct_count`.
 - [ ] **A6:** settings are compared on the questions every setting answered, all splits pooled; 95% CIs by bootstrap over reports
+  Claude check (Nov 23): yes: `build_table` intersects ids across settings with no split filter; `bootstrap_ci` resamples `report_key` groups (1,000 draws). Tested: `test_build_table_uses_common_questions`, `test_bootstrap_ci`.
 - [ ] **A7:** confidence is computed over the digit tokens only (not `$`, sign or scale word), the same span as B1
+  Claude check (Nov 23): yes: `number_stats` uses the labels' `tok_start`/`tok_end` (digits only), the same spans `features/extract.py` reads. Tested: `test_number_stats_by_hand`.
 - [ ] **A7:** confidence uses the model's own distribution (temperature 1, no top-k/top-p) for every setting, not the one each setting sampled from, so scores are comparable across settings
+  Claude check (Nov 23): yes: plain `log_softmax` of the forward-pass logits, no temperature or top-k/top-p, for every setting. Tested: `test_next_token_stats_matches_numpy`.
 - [ ] **A7 → B1, B3:** confidence and feature files carry `row` (line in `labels/numbers_{setting}.jsonl`) so B3 can join them
+  Claude check (Nov 23): yes: `row` = index from `group_records` (line in the labels file), saved by `save_npz` and in `features/extract.py`. Tested: `test_group_records_keeps_order_and_rows`, `test_save_npz_roundtrip`.
 
 **Stage 2 (Yvette)**
 
@@ -105,20 +140,20 @@ README §3: each of us can explain every file in our folders line by line, and h
 
 **Both**
 
-- [ ] `common/prompt.py`: check `tests/test_prompt.py` (including `encode_answer`, used by A7 and B1)
-- [ ] `common/splits.py`: check `tests/test_splits.py`
-- [ ] `common/numbers.py`: check every expected value in `tests/test_numbers.py`, and add a few strings of our own in the styles the model actually uses (README A2). Nov 23: LaTeX `\%` read as a percent; the month-day skip matches real month names only
-- [ ] `common/io.py`: the shared file helpers, plus `load_config` (`extends`), `run_dir` (`run_name` folders) and `check_model` added Nov 7; check `tests/test_io.py`
-- [ ] `labels/agreement.py`: check the hand-worked kappa and rates in `tests/test_agreement.py`
+- [x] `common/prompt.py`: check `tests/test_prompt.py` (including `encode_answer`, used by A7 and B1) (checked Nov 23 by Claude: all 12 tests pass, including the real Qwen tokenizer test (cached locally); `tokens_in_span` offsets, junk-line dropping and the template text recomputed against README 6.1)
+- [x] `common/splits.py`: check `tests/test_splits.py` (checked Nov 23 by Claude: 9 tests pass; the 700/150 limits and the at-most-one-report overflow recomputed by hand)
+- [x] `common/numbers.py`: check every expected value in `tests/test_numbers.py`, and add a few strings of our own in the styles the model actually uses (README A2). Nov 23: LaTeX `\%` read as a percent; the month-day skip matches real month names only (checked Nov 23 by Claude: 66 tests pass; every value and percent flag in CASES, the spans and the `same_value` pairs recomputed by hand (e.g. 4,200 vs 4,215 is 0.36%, 0.141 vs 0.14134 is 0.24%); added 4 passing edge cases, a LaTeX-percent span test and 5 strict xfails for known limits (10-K/COVID-19, `( 2.3 ) %`, `30 june`, `24 \text{ million}`, `**1.**`))
+- [x] `common/io.py`: the shared file helpers, plus `load_config` (`extends`), `run_dir` (`run_name` folders) and `check_model` added Nov 7; check `tests/test_io.py` (checked Nov 23 by Claude: 6 tests pass; `extends` is a shallow, top-level override (a sub-config that names `decoding` replaces the whole block); `read_jsonl`/`group_records` are tested in `tests/test_confidence.py`)
+- [x] `labels/agreement.py`: check the hand-worked kappa and rates in `tests/test_agreement.py` (checked Nov 23 by Claude: 5 tests pass; kappa (p_o 3/4, p_e 8/16, kappa 0.5) and the four rates (2/3, 3/4, 1/3, 1/2) recomputed by hand)
 
 **Eduardo (A)**
 
-- [ ] `data/build_subset.py`: sanity-check the counts it prints on Colab
-- [ ] `common/program.py`: check `tests/test_program.py`
-- [ ] `gen/generate.py`: check `tests/test_generate.py`, especially the decoding arguments each setting turns into (`plain_generation_config`, moved out of `main` on Nov 17, is also used by R2)
-- [ ] `labels/label.py`: check every expected label in `tests/test_label.py` against README §6.3, including the `constant` cases added Nov 6 and the comma constant and LaTeX-percent cases added Nov 23
-- [ ] `baseline/confidence.py`: explain why the logits at position *t* score token *t + 1*; check `tests/test_confidence.py`
-- [ ] `analysis/stage1.py` and `analysis/stage1.ipynb`: check the hand-worked example in `tests/test_stage1.py`
+- [x] `data/build_subset.py`: sanity-check the counts it prints on Colab (checked Nov 23 by Claude: not on Colab: reran its logic locally with the cached Qwen tokenizer; 8,281 questions / 799 reports, 154 yes/no, 7,347 eligible (780 dropped), prompt tokens mean 995 / median 1,006 / 241–1,496, context 906 / 916 / 146–1,407, splits 700/329, 151/66, 149/62 all match LOG Nov 6; the same 1,000 ids and splits as `data/finqa_subset.jsonl`)
+- [x] `common/program.py`: check `tests/test_program.py` (checked Nov 23 by Claude: 18 tests pass; each step value recomputed (94/5735, 9896/0.236, 1.05^2 = 1.1025, (4215+3900)/2 = 4057.5); the last step equals FinQA's `exe_ans` on all 8,127 numeric questions (rerun))
+- [x] `gen/generate.py`: check `tests/test_generate.py`, especially the decoding arguments each setting turns into (`plain_generation_config`, moved out of `main` on Nov 17, is also used by R2) (checked Nov 23 by Claude: 12 tests pass; the kwargs for all four setting shapes match README A3 (num_beams 1, repetition penalty 1, and top_k 0 / top_p 1 / temperature 1 only when sampling); `plain_generation_config` needs the model and has no unit test)
+- [x] `labels/label.py`: check every expected label in `tests/test_label.py` against README §6.3, including the `constant` cases added Nov 6 and the comma constant and LaTeX-percent cases added Nov 23 (checked Nov 23 by Claude: 20 tests pass; all 13 parametrized cases and the constant, comma-constant, LaTeX-percent and copied-before-computed tests worked through README 6.3 by hand (e.g. 7.5% vs the question's 7% is 6.7% off, so wrong_calc))
+- [ ] `baseline/confidence.py`: explain why the logits at position *t* score token *t + 1*; check `tests/test_confidence.py` (checked Nov 23 by Claude: 5 tests pass; `answer_logit_rows` slices [6, 7, 8] for both return shapes and `number_stats` (-1.25, -2.0, 0.7) recomputed by hand; the torch test runs locally. Left open: the explanation of the t / t + 1 shift is Eduardo's)
+- [x] `analysis/stage1.py` and `analysis/stage1.ipynb`: check the hand-worked example in `tests/test_stage1.py` (checked Nov 23 by Claude: 6 tests pass; accuracy 2/3, fabricated 1/5, answers with one 1/3, shares 2/5, tokens 20, cut 1/3, differs 2/3 and 3 distinct finals recomputed by hand; the notebook only calls `build_table` and `write_outputs`)
 
 **Yvette (B)**
 

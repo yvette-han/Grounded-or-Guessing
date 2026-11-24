@@ -123,3 +123,50 @@ def test_find_match():
     report = extract_numbers("revenue | 2009 | 4,215\ncost | 2009 | 3,100")
     assert find_match(one("$4.2 billion"), report, TOL).value == 4215
     assert find_match(one("$5 billion"), report, TOL) is None
+
+
+# Edge cases added at the A-2 review (Nov 23) -----------------------------------
+# Strings in the styles the model and FinQA actually write. The first block pins
+# current behaviour that matches README 6.3 and LOG.md. The xfail block states the
+# behaviour we would want where the parser falls short today; strict=True makes the
+# test fail loudly once the parser is fixed, so the case moves up to the first block.
+
+EDGE_CASES = [
+    ("100,200", [(100200, N)]),                      # thousands comma, as in tables: one number
+    ("(2.3%)", [(-2.3, P)]),                         # "%" inside the brackets: negative percent
+    ("net income ( 1 ) was 4,215", [(-1, N), (4215, N)]),  # a FinQA footnote marker reads as -1 (an A2 choice under review, ANALYSIS_TODO section 1)
+    ("a decrease of 5 may be", [(5, N)]),            # "may" after the number is not a date
+]
+
+
+@pytest.mark.parametrize("text, expected", EDGE_CASES)
+def test_extract_edge_cases(text, expected):
+    test_extract_values(text, expected)
+
+
+def test_latex_percent_span():
+    # The mention includes the LaTeX "\%" (LOG Nov 23); the digit span does not.
+    (n,) = extract_numbers(r"\approx 17.14\%")
+    assert n.text == r"17.14\%"
+    assert r"\approx 17.14\%"[n.num_start:n.num_end] == "17.14"
+
+
+@pytest.mark.parametrize("text, expected", [
+    pytest.param("the 10-K and COVID-19", [],
+                 marks=pytest.mark.xfail(strict=True, reason="digits joined to a word by a hyphen "
+                                         "(10-K, COVID-19) are read as numbers; README 6.3 skips digits inside words")),
+    pytest.param("( 2.3 ) %", [(-2.3, P)],
+                 marks=pytest.mark.xfail(strict=True, reason="'%' after the closing bracket is dropped: "
+                                         "read as -2.3, not a percent")),
+    pytest.param("30 june 2009", [],
+                 marks=pytest.mark.xfail(strict=True, reason="only the day after a month name is skipped; "
+                                         "a day before it ('30 june') is kept")),
+    pytest.param(r"24 \text{ million}", [(24e6, N)],
+                 marks=pytest.mark.xfail(strict=True, reason="LaTeX scale word not read (LOG Nov 23: "
+                                         "not changed, decide at the hand-check)")),
+    pytest.param("**1.** revenue 4,215", [(4215, N)],
+                 marks=pytest.mark.xfail(strict=True, reason="a Markdown-bold list marker '**1.**' is "
+                                         "not recognized as a list marker")),
+])
+def test_extract_known_limits(text, expected):
+    test_extract_values(text, expected)
